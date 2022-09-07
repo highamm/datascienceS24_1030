@@ -1,0 +1,141 @@
+---
+title: "Wrangling with dplyr"
+format: html
+---
+
+## Section 4.1: New Variables with `mutate()`
+
+```{r}
+library(babynames)
+head(babynames)
+library(tidyverse)
+slumajors_df <- read_csv("data/SLU_Majors_15_19.csv")
+slumajors_df
+slumajors_df |> mutate(ntotal = nfemales + nmales)
+slumajors_df |>
+  mutate(percfemale = 100 * nfemales / (nfemales + nmales))
+
+slumajors_df <- slumajors_df |>
+  mutate(percfemale = 100 * nfemales / (nfemales + nmales))
+slumajors_df <- slumajors_df |> mutate(ntotal = nfemales + nmales)
+
+slumajors_df <- slumajors_df |>
+  mutate(ntotal = nfemales + nmales) |>
+  mutate(percfemale = 100 * nfemales / (nfemales + nmales))
+slumajors_df |> mutate(morewomen = if_else(percfemale > 50,
+                                            true = "Yes",
+                                            false = "No"))
+slumajors_df |> mutate(large_majority =
+                          case_when(percfemale >= 70 ~ "female",
+                                    percfemale <= 30 ~ "male",
+                                    percfemale > 30 & percfemale < 70 ~ "none")) 
+slumajors_df <- slumajors_df |>
+  mutate(morewomen = if_else(percfemale > 50,
+                             true = "Yes",
+                             false = "No")) |>
+  mutate(large_majority =
+           case_when(percfemale >= 70 ~ "female",
+                     percfemale <= 30 ~ "male",
+                     percfemale > 30 & percfemale < 70 ~ "none"))
+```
+
+Exercises 4.1.2
+
+```{r}
+## 2
+
+## 3
+slumajors_df |> 
+  mutate(majors_size2 =
+           case_when(ntotal >= 150 ~ "large",
+                     ntotal <= 40 ~ "small",
+                     TRUE ~ "medium"))
+
+## 4
+## no straightforward solution, might consider who our target
+## audience is for the analysis
+
+## 5
+
+```
+
+## Section 4.2: `arrange()`, `slice()`, `filter()`, and `select()`
+
+```{r}
+
+slumajors_df |> arrange(percfemale)
+slumajors_df |> arrange(desc(percfemale))
+slumajors_df |> select(Major, ntotal)
+slumajors_df |> select(-ntotal, -nfemales, -nmales)
+slumajors_df |> mutate(propfemale = percfemale / 100) |>
+  select(propfemale, everything())
+
+## STOP
+slumajors_df |> arrange(desc(ntotal)) |>
+  slice(1, 2, 3, 4, 5)
+library(babynames)
+babynames
+babynames |> filter(name == "Matthew") ## keep rows with Matthew
+babynames |> filter(year >= 2000) ## keep rows with babies 2000 or later
+babynames |> filter(sex != "M") ## keeps rows where sex is not male
+babynames |> filter(prop > 0.05) ## keep rows names with prop more than 0.05
+babynames |> filter(year == max(year)) ## keep rows only in the latest (largest) year
+
+
+## keeps rows where n is more than 20000 or where prop is more than 0.05
+babynames |> filter(n > 20000 | prop > 0.05)
+## keeps rows with female Mary's
+babynames |> filter(sex == "F" & name == "Mary")
+
+## keeps rows with female mary's where the proportion of 
+## babies born Mary is also more than 0.05
+babynames |> filter(sex == "F" & name == "Mary" & prop > 0.05)
+```
+
+
+Exercises 4.2.4
+
+```{r}
+## exercise 4
+
+## make and name a new data set with only our name (with filter)
+babynames_matthew <- babynames |> filter(sex == "F" & name == "Monica")
+ggplot(data = babynames_matthew, aes(x = year, y = n)) +
+  geom_line()
+
+## ggplot() and geom_line() to make a line plot of popularity
+
+## exercise 3
+babynames |> filter(sex == "M" & year == 2017) |>
+  arrange()
+slumajors_df |>
+  summarise(meantotalmajor = mean(ntotal),
+            totalgrad = sum(ntotal))
+babynames |> group_by(year) |>
+  summarise(totalbirths = sum(n))
+babynames |> summarise(totalobs = n())
+babynames |> group_by(year) |>
+  summarise(ngroup = n())
+toy_df <- tibble(x = c(NA, 3, 4, 7),
+                 y = c(1, 4, 3, 2),
+                 z = c("A", "A", "B", NA))
+toy_df
+toy_df |> summarise(meanx = mean(x, na.rm = TRUE))
+toy_df |> mutate(missingx = is.na(x))
+toy_df |> filter(is.na(x) != TRUE)
+toy_df |> filter(!is.na(x))
+videogame_df |> filter(!is.na(metascore))
+filter(videogame_df, !is.na(metascore))
+videogame_df |> filter(!is.na(metascore)) |>
+  filter(median_playtime > 0) |>
+  group_by(price_cat) |>
+  summarise(avg_med_time = median(median_playtime, na.rm = TRUE))
+filter(videogame_df, !is.na(metascore))
+filter(filter(videogame_df, !is.na(metascore)), median_playtime > 0)
+group_by(filter(filter(videogame_df, !is.na(metascore)),
+                median_playtime > 0), price_cat)
+summarise(group_by(filter(filter(videogame_df, !is.na(metascore)),
+  median_playtime > 0), price_cat), 
+  avg_med_time = median(median_playtime, na.rm = TRUE))
+```
+
