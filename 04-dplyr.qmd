@@ -172,14 +172,45 @@ babynames |> group_by(year, sex) |>
   summarise(n_appearances = n()) |>
   arrange(desc(n_appearances))
 
+## exercise 6
+
+babynames_test <- babynames |>
+  group_by(year, sex) |> mutate(ntest = n / prop)
+babynames_test |> ungroup() |> slice(1, 2, 3, 4, 5)
+## if the data is grouped, slice(1:5) returns the first 
+## rows from each group
+```
+
+## Section 4.4: Missing Values
+
+```{r}
 toy_df <- tibble(x = c(NA, 3, 4, 7),
                  y = c(1, 4, 3, 2),
                  z = c("A", "A", "B", NA))
 toy_df
+
+
+toy_df |> mutate(x_add = x / y) ## new variable gets NA
+toy_df |> arrange(x)
+toy_df |> arrange(desc(x)) ## NAs get sorted last
+toy_df |> filter(x < 5) ## gets rid of NA
+toy_df |> summarise(min_x = min(x)) ## NA gets returned
+toy_df |> group_by(z) |>
+  summarise(mean_x = mean(x))
+## for any group where x is missing, an NA is returned
+## for groups with non-missing x's, the mean is computed
 toy_df |> summarise(meanx = mean(x, na.rm = TRUE))
+
+
 toy_df |> mutate(missingx = is.na(x))
 toy_df |> filter(is.na(x) != TRUE)
 toy_df |> filter(!is.na(x))
+```
+
+## Section 4.5: More About the Pipe
+
+```{r}
+videogame_df <- read_csv("data/videogame_clean.csv")
 videogame_df |> filter(!is.na(metascore))
 filter(videogame_df, !is.na(metascore))
 videogame_df |> filter(!is.na(metascore)) |>
@@ -193,5 +224,51 @@ group_by(filter(filter(videogame_df, !is.na(metascore)),
 summarise(group_by(filter(filter(videogame_df, !is.na(metascore)),
   median_playtime > 0), price_cat), 
   avg_med_time = median(median_playtime, na.rm = TRUE))
+## piping allows us to read code from left-to right. top to bottom
+## if we don't use the pipe, we have to read our functions 
+## from the inside to the outside, which is harder
+
+```
+
+## Chapter Exercises
+
+```{r}
+## 2 and 3 (for now)
+babynames_5 <- babynames |> filter(name == "Matthew" | name == "Jessica" |
+                      name == "Robin" | name == "Michael" |
+                      name == "Ivan")
+babynames_5sum <- babynames_5 |> group_by(name, year) |>
+  summarise(n_total = sum(n))
+ggplot(data = babynames_5sum, aes(x = year, y = n_total,
+                                  colour = name)) +
+  geom_line()
+
+## 3
+babynames_91m <- babynames |> filter(year == 1991 & sex == "M") |>
+  mutate(rank_name = rank(desc(n))) |>
+  slice(1:10)
+babynames_91m
+ggplot(data = babynames_91m, aes(x = name, y = n)) +
+  geom_col()
+
+ggplot(data = babynames_91m, aes(x = fct_reorder(name, n), y = n)) +
+  geom_col() +
+  coord_flip()
+
+## exercise 4
+## mutate: safe to keep the same name: we are only adding a
+## variable to the data set (all other variables are kept)
+
+## arrange: safe: just reordering rows 
+
+## filter: generally not safe to use the same name unless
+## you are SURE you will never use the rows you delete
+
+## summarise: generally unsafe: you no lonber would have 
+## access to the original data
+
+## select: generally not safe unless you are SURE you will 
+## never use the columns you delete
+
 ```
 
