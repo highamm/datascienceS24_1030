@@ -1,0 +1,156 @@
+---
+title: "Section 5: Communication"
+format: html
+---
+
+## Section 5.3: ggplot2 communication
+
+```{r}
+library(tidyverse)
+hpi_df <- read_csv("data/hpi-tidy.csv")
+head(hpi_df)
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region)) +
+  geom_point()
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region)) +
+  geom_point() +
+  labs(title = "Countries with a Higher Ecological Footprint Tend to Have Citizens with Longer, Happier Lives", 
+       ## add title
+       subtitle = "HappyLifeYears is a Combination of Life Expectancy and Citizen Well-Being", 
+       ## add subtitle (smaller text size than the title)
+       caption = "Data Source: http://happyplanetindex.org/countries", 
+       ## add caption to the bottom of the figure
+       x = "Ecological Footprint", ## change x axis label
+       y = "Happy Life Years", ## change y axis label
+       colour = "World Region") ## change label of colour legend
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region)) +
+  geom_point() +
+  ylim(c(0, 70))
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region)) +
+  geom_point() +
+  scale_colour_brewer(palette = "Accent")
+
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = GDPcapita)) +
+  geom_point() +
+  scale_colour_viridis_b(option = "plasma")
+
+## find other options for brewer() and/or viridis()
+## scale_colour_viridis_c() vs. scale_colour_viridis_d() vs. scale_colour_viridis_b()
+## _d is for discrete colours
+## _c is for continuous colours
+## _b is for binning a continuous colour variable
+
+
+
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region)) +
+  geom_point() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(aes(label = Country))
+plot_df <- hpi_df |> group_by(Region) |>
+  filter(HPIRank == min(HPIRank))
+plot_df
+
+
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region)) +
+  geom_point() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(data = plot_df, aes(label = Country))
+
+
+
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region)) +
+  geom_point(aes(colour = Region)) +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(data = plot_df, aes(label = Country), show.legend = FALSE)
+
+
+library(ggrepel)
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region)) +
+  geom_point() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label_repel(data = plot_df, aes(label = Country)) 
+## note to me: investigate ggrepel error
+
+
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears, colour = Region)) +
+  geom_point() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(data = plot_df, aes(label = Country), show.legend = FALSE) +
+  geom_point(data = plot_df, size = 3, shape = 1, show.legend = FALSE) 
+
+plot_df_us <- hpi_df |>
+  filter(Country == "United States of America" | Country == "Denmark")
+
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region)) +
+  geom_point() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_point(data = plot_df_us, size = 3, shape = 1,
+             show.legend = FALSE) +
+  geom_label(data = plot_df_us, aes(label = Country),
+                   show.legend = FALSE)
+library(ggthemes)
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region)) +
+  geom_point() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_point(data = plot_df_us, size = 3, shape = 1, show.legend = FALSE) +
+  geom_label(data = plot_df_us, aes(label = Country), show.legend = FALSE) +
+  theme_solarized()
+
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region)) +
+  geom_point() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_point(data = plot_df_us, size = 3, shape = 1, show.legend = FALSE) +
+  geom_label(data = plot_df_us, aes(label = Country), show.legend = FALSE) +
+  theme_fivethirtyeight()
+
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region)) +
+  geom_point() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_point(data = plot_df_us, size = 3, shape = 1, show.legend = FALSE) +
+  geom_label(data = plot_df_us, aes(label = Country), show.legend = FALSE) +
+  theme_minimal()
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region)) +
+  geom_point()
+```
+
+## Chapter Exercises
+
+```{r}
+library(gapminder)
+gapminder
+## look into group aes() for one of the questions## 
+## chapter exercises 1 through 3
+
+library(tidyverse)
+## exercise 1
+
+gapminder |> filter(continent == "Europe" & lifeExp < 50)
+gapminder |> filter(continent == "Africa" & lifeExp < 30)
+
+label_df <- gapminder |> filter((country == "Turkey" |
+                                  country == "Rwanda") & 
+                                  year == 1952)
+label_df
+
+ggplot(data = gapminder, aes(x = year, y = lifeExp,
+                             group = country)) +
+  geom_line(aes(colour = continent)) +
+  facet_wrap(~continent) +
+  scale_colour_viridis_d() +
+  geom_label(data = label_df, aes(label = country))
+## theere are better ways to label Rwanda and Turkey
+## which we will do next time
+```
