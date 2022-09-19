@@ -3,6 +3,17 @@ title: "Section 5: Communication"
 format: html
 ---
 
+## Section 5.1: Reproducibility
+
+1. In Quarto, we can write text to go along with code whereas in R, every line must be code or a comment.
+
+2. While a base R script analysis _can_ be reproducible, Quarto lends itself more to a reproduible analysis because you can describe what your code is doing and why you made certain decisions.
+
+3. While an excel analysis _can_ be reproducible, it's generallyt harder to explain all of the formulas and graphics you create in Excel. In Quarto, someone can see the code directly.
+
+4. he deleted some rows which cannot be traced.
+
+he changed the y-axis limits without that action being traceable.
 ## Section 5.3: ggplot2 communication
 
 ```{r}
@@ -70,20 +81,20 @@ ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
   scale_colour_brewer(palette = "Dark2") +
   geom_label(data = plot_df, aes(label = Country), show.legend = FALSE)
 
-
+## https://github.com/slowkow/ggrepel/issues/113
 library(ggrepel)
 ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
                           colour = Region)) +
-  geom_point() +
-  scale_colour_brewer(palette = "Dark2") +
-  geom_label_repel(data = plot_df, aes(label = Country)) 
+  geom_point()  +
+  geom_label_repel(data = plot_df, aes(label = Country),
+                   show.legend = FALSE) 
 ## note to me: investigate ggrepel error
 
 
 ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears, colour = Region)) +
   geom_point() +
   scale_colour_brewer(palette = "Dark2") +
-  geom_label(data = plot_df, aes(label = Country), show.legend = FALSE) +
+  geom_label_repel(data = plot_df, aes(label = Country), show.legend = FALSE) +
   geom_point(data = plot_df, size = 3, shape = 1, show.legend = FALSE) 
 
 plot_df_us <- hpi_df |>
@@ -111,7 +122,7 @@ ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
   geom_point() +
   scale_colour_brewer(palette = "Dark2") +
   geom_point(data = plot_df_us, size = 3, shape = 1, show.legend = FALSE) +
-  geom_label(data = plot_df_us, aes(label = Country), show.legend = FALSE) +
+  geom_label_repel(data = plot_df_us, aes(label = Country), show.legend = FALSE) +
   theme_fivethirtyeight()
 
 ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
@@ -153,4 +164,37 @@ ggplot(data = gapminder, aes(x = year, y = lifeExp,
   geom_label(data = label_df, aes(label = country))
 ## theere are better ways to label Rwanda and Turkey
 ## which we will do next time
+
+label_df_colour <- gapminder |> filter((country == "Turkey" |
+                                  country == "Rwanda"))
+
+ggplot(data = gapminder, aes(x = year, y = lifeExp,
+                             group = country)) +
+  geom_line(alpha = 0.2) +
+  facet_wrap(~continent) +
+  scale_colour_viridis_d() +
+  geom_line(data = label_df_colour, aes(colour = country),
+            size = 2) +
+  theme_minimal()
+## 1. change the line size of Rwanda and Turkey
+## 2.  google how to change line transparency for the other country's lines
+
+## switch order of geom_lines and discuss what happens
+ggplot(data = gapminder, aes(x = year, y = lifeExp,
+                             group = country)) +
+  geom_line(data = label_df_colour, aes(colour = country),
+            size = 2) +
+  geom_line(alpha = 0.2) +
+  facet_wrap(~continent) +
+  scale_colour_viridis_d() +
+  theme_minimal()
+
+```
+
+```{r}
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region,
+                          size = GDPcapita)) +
+  geom_point() +
+  theme()
 ```
