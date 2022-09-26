@@ -1,0 +1,143 @@
+---
+title: "Section 7: `tidyr`"
+format: html
+---
+
+## Section 7.2: `separate()` and `unite()`
+
+```{r}
+library(tidyverse)
+library(here)
+polls <- read_csv(here("data/rcp-polls.csv"), na = "--")
+polls
+polls |> summarise(meansample = mean(Sample))
+polls |>
+  separate(col = Sample, into = c("Sample_size", "Sample_type"), 
+           sep = " ")
+polls_sep <- polls |>
+  separate(col = Date, into = c("Start", "End"),
+           sep = " - ")
+polls_sillytest <- polls_sep |>
+  separate(col = Start, into = c("Start_month", "Start_day"), 
+           sep = "/")
+polls_sillytest
+polls_sillytest |>
+  unite("New_start_date", c(Start_month, Start_day),
+        sep = "/")
+c(1, 4, 2)
+c("A", "A", "D")
+polls_sep
+polls_new <- polls_sep |>
+  rename(Clinton_D = `Clinton (D)`, Trump_R = `Trump (R)`,
+         Johnson_L = `Johnson (L)`, Stein_G = `Stein (G)`)
+polls_new
+polls_clean <- polls |>
+  separate(col = Sample, into = c("Sample_size", "Sample_type"), 
+           sep = " ")  |>
+  separate(col = Date, into = c("Start", "End"),
+           sep = " - ") |> 
+  rename(Clinton_D = `Clinton (D)`, Trump_R = `Trump (R)`,
+         Johnson_L = `Johnson (L)`, Stein_G = `Stein (G)`)
+polls_clean
+```
+
+Exercises
+
+```{r}
+baseball_df <- read_csv(here("data/mlb2016.csv"))
+head(baseball_df)
+baseball_df <- baseball_df |>
+  mutate(Salary = parse_number(Salary),
+         Total.Value = parse_number(Total.Value),
+         Avg.Annual = parse_number(Avg.Annual))
+
+ggplot(data = baseball_df, aes(x = POS, y = Salary)) +
+  geom_boxplot()
+## can't see the sample size in each group
+
+ggplot(data = baseball_df, aes(x = POS, y = Salary)) +
+  geom_violin()
+
+baseball_mean <- baseball_df |> group_by(POS) |>
+  summarise(med_sal = median(Salary, na.rm = TRUE))
+ggplot(data = baseball_mean, aes(x = POS, y = med_sal)) +
+  geom_col()
+## can't see the shape of the distribution of salary
+## can't see the sample size or the variability of salary in each POS
+
+ggplot(data = baseball_df, aes(x = POS, y = Salary)) +
+  geom_jitter(width = 0.2) +
+  geom_point(data = baseball_mean, aes(x = POS, y = med_sal),
+             colour = "purple")
+```
+
+Person 1. Construct a reprex for how to use separate()
+Person 2. Construct a reprex for how to use unite()
+```{r}
+## reprex 1
+library(tidyverse)
+## how do I split up this variable of names
+sep_reprex <- tibble(people = c("Matt Higham", "Other Person", "Spongebob Squarepants", "Patrick Starr"))
+
+
+## solve for reprex:
+sep_reprex |> separate(people, into = c("first_name", "last_name"), sep = " ")
+```
+
+```{r}
+## how to do I combine the first n ame and last name into a single column for name
+unite_reprex <- tibble(first_name = c("Matt", "Spongebob", "Patrick"),
+                       last_name = c("Higham", "Squarepants", "Starr"))
+
+## solve for reprex
+unite_reprex |> unite("overall_name", c(first_name, last_name))
+```
+
+## Section 7.3: Pivoting
+
+```{r}
+polls_clean |>
+  pivot_longer(cols = c(Clinton_D, Trump_R, Johnson_L, Stein_G),
+               names_to = "candidate", values_to = "poll_percent")
+polls_long <- polls_clean |>
+  pivot_longer(cols = c(Clinton_D, Trump_R, Johnson_L, Stein_G),
+               names_to = "candidate", values_to = "poll_percent")
+
+## ignore as.Date for now....we will get to dates later!
+ggplot(data = polls_long,
+       aes(x = as.Date(Start, "%m/%d"), y = poll_percent,
+           colour = candidate)) +
+  geom_point() + xlab("Poll Start Date")
+
+
+
+library(here)
+airlines <- read_csv(here("data/airline-safety.csv"))
+head(airlines)
+airlines |>
+  pivot_longer(c(3, 4, 5, 6, 7, 8), names_to = "type_year",
+  values_to = "total_num") 
+airlines |> pivot_longer(c(3, 4, 5, 6, 7, 8), names_to = "type_year",
+                          values_to = "total_num") |>
+  separate(type_year, into = c("type", "year"), sep = " ")
+## name the long data set
+airlines_long <- airlines |>
+  pivot_longer(c(3, 4, 5, 6, 7, 8), names_to = "type_year",
+               values_to = "total_num") |>
+  separate(type_year, into = c("type", "year"), sep = " ")
+
+## use pivot_wider() to create variables for incidents, fatalities, and
+## fatal_accidents:
+airlines_long |> pivot_wider(names_from = type,
+                              values_from = total_num)
+
+## person 1: make reprex for pivot_longer
+## person 2: make reprex for pivot_wider
+toy_df <- tibble(sex = c("M", "F", "M", "F", "M", "F"),
+       class = c("FY", "FY", "SO", "SO", "JR", "JR"),
+       nstudents = c(31, 2, 4, 51, 89, 54))
+## how do I convert this to a table with year as the columns
+
+## solve for reprex
+toy_df |> pivot_wider(names_from = class, values_from = nstudents)
+```
