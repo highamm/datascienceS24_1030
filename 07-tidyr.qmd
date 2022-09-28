@@ -141,3 +141,40 @@ toy_df <- tibble(sex = c("M", "F", "M", "F", "M", "F"),
 ## solve for reprex
 toy_df |> pivot_wider(names_from = class, values_from = nstudents)
 ```
+
+7.3.3 Exercises
+
+```{r}
+## 2
+prices_df <- read_csv(here("data/UBSprices2.csv"))
+prices_long <- prices_df |> pivot_longer(2:7,
+                          names_to = "commodity",
+                          values_to = "price") |>
+  separate(commodity, into = c("fooditem",
+                               "year"),
+           sep = -4)
+
+## 3
+prices_long |> pivot_wider(names_from = fooditem,
+                           values_from = price)
+## 4
+## first plot: wide data set
+## second plot: longer data set(need to colour by commodity)
+
+mortality_df <- read_csv(here("data/under5mortality.csv"))
+head(mortality_df)
+mortality_long <- mortality_df |> pivot_longer(2:217,
+                             names_to = "Year",
+                             values_to = "mortality", names_transform = list(Year = as.numeric))
+
+## 6
+ggplot(data = mortality_long, aes(x = Year,
+                                  y = mortality,
+                                  group = `Under five mortality`)) +
+  geom_line(alpha = 0.1)
+
+## 7
+## multiple countries have a constant mortality from
+## 1800 to 1900
+## this could be an "average" from the entire century
+```
