@@ -81,6 +81,34 @@ testlist <- list("a", 4, c(1, 4, 2, 6),
 testlist
 ```
 
+8.3.4 Exercises 1, 2, 3, 4
+
+```{r}
+## 1
+## slice for rows and select for columns
+
+## 2
+library(tidyverse)
+fitness_df <- read_csv(here("data/higham_fitness_notclean.csv"))
+fitness_df[894:993, ]
+fitness_df |> slice(894:993)
+
+fitness_df |> arrange(desc(Start)) |> slice(1:100)
+## can also use nrow()
+
+fitness_df[ ,-4]
+fitness_df |> select(-flights)
+
+## 4
+weekday_vec <- 2:6
+weekend_vec <- c(1, 7)
+
+fitness_df |>
+  mutate(weekend_ind = case_when(weekday %in% weekday_vec ~ "schoolday",
+                                 weekday %in% weekend_vec ~ "weekend")) |>
+  select(weekend_ind, weekday, everything())
+```
+
 ```{r}
 set.seed(15125141)
 toy_df <- tibble(xvar = rnorm(100, 3, 4),
@@ -90,12 +118,29 @@ toy_df <- tibble(xvar = rnorm(100, 3, 4),
                                  replace = TRUE))
 toy_df
 table(toy_df$group1)
+## recreate with dplyr and tidyr
+toy_df |> group_by(group1) |>
+  summarise(n_count = n()) |>
+  pivot_wider(values_from = n_count, names_from = group1)
 
 table(toy_df$group1, toy_df$group2)
-nrow(toy_df)
-summary(toy_df$yvar)
+toy_df |> group_by(group1, group2) |>
+  summarise(n_count = n()) |>
+  pivot_wider(values_from = n_count, names_from = group2)
+## recreate with dplyr and tidyr
+
+
+nrow(toy_df) ## get number of rows of a data frame or tibble
+summary(toy_df$yvar) ## get some summary stats for a vector
+
+toy_df
 toy_df |>
   print(n = 60) ## print out 60 rows
 toy_df |>
   print(width = Inf) ## print out all of the columns
+
+fitness_df |>
+  print(width = Inf)
 ```
+
+Skipping Chapter Exercises
