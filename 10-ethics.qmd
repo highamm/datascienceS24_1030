@@ -1,0 +1,13 @@
+---
+title: "Data Ethics"
+format: html
+---
+
+Section 10.2: Data Privacy
+
+Not putting your name on something does not necessarily make it anonymous.
+
+
+```{r}
+
+```

@@ -172,6 +172,12 @@ babynames |> group_by(year, sex) |>
   summarise(n_appearances = n()) |>
   arrange(desc(n_appearances))
 
+baby1991 <- babynames |> filter(sex == "M" & year == 1991) |>
+  slice(1:10) |>
+  mutate(new_name = fct_reorder(name, .x = n))
+ggplot(data = baby1991, aes(x = name, y = n)) +
+  geom_col() +
+  coord_flip()
 ## exercise 6
 
 babynames_test <- babynames |>
