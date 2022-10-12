@@ -135,13 +135,15 @@ ggplot(data = pokemon_long, aes(x = Type_Deford,
 ```
 
 
-
+```{r}
 mortality_df <- read_csv(here("data/gun_violence_us.csv")) |>
   mutate(region = factor(region))
 ggplot(data = mortality_df,
        aes(x = ownership_rate, y = mortality_rate, colour = region)) +
   geom_point() +
   geom_smooth(method = "lm")
+
+## SKIP fct_reorder2()
 mortality_df <- mortality_df |>
   mutate(region_2 = fct_reorder2(region,
                                  .x = ownership_rate,
@@ -150,6 +152,10 @@ ggplot(data = mortality_df,
        aes(x = ownership_rate, y = mortality_rate, colour = region_2)) +
   geom_point() +
   geom_smooth(method = "lm")
+## END SKIP
+
+## fct_relevel() reorders the levels of a factor 
+## by customizing the specific order that we want
 mortality_df <- mortality_df |>
   mutate(region_3 = fct_relevel(region, c("South", "West", "MW", "NE")))
 ggplot(data = mortality_df,
@@ -162,4 +168,45 @@ mod3 <- lm(mortality_rate ~ ownership_rate + region_3, data = mortality_df)
 summary(mod)
 summary(mod2)
 summary(mod3)
+```
+
+## Chapter Exercises
+
+```{r}
+library(tidyverse)
+library(here)
+standings_df <- read_csv(here("data/standings.csv"))
+
+## 1
+table(standings_df$team_name)
+
+## 2
+standings_new <- standings_df |> mutate(team_name = fct_recode(team_name,
+                                              Commanders = "Redskins")) |> ## 3
+  unite("franchise", c(team, team_name), sep = " ") |> ## 4
+  mutate(franchise = fct_collapse(franchise,
+                                  `San Diego LA Chargers` = c("San Diego Chargers", "Los Angeles Chargers"),
+                                  `St. Louis LA Rams` = c("St. Louis Rams", "Los Angeles Rams"))) 
+
+## 5
+standings_new |> filter(playoffs == "Playoffs") |>
+  group_by(franchise) |>
+  summarise(n_playoff = n()) |>
+  arrange(desc(n_playoff)) |>
+  slice(1:10)
+
+standings_topten <- standings_new |> mutate(playoff_lgl = if_else(playoffs == "Playoffs",
+                                              true = TRUE,
+                                              false = FALSE)) |>
+  group_by(franchise) |>
+  summarise(n_playoff = sum(playoff_lgl)) |>
+  arrange(desc(n_playoff)) |>
+  slice(1:10) |>
+  mutate(franchise = fct_reorder(franchise, n_playoff))
+
+ggplot(data = standings_topten, aes(x = franchise, y = n_playoff)) +
+  geom_segment(aes(xend = franchise, y = 0, yend = n_playoff)) +
+    geom_point(size = 5, color="red", fill=alpha("orange", 0.3), alpha=0.7, shape=21, stroke=2) +
+  coord_flip() +
+  theme_minimal()
 ```
