@@ -7,7 +7,23 @@ Section 10.2: Data Privacy
 
 Not putting your name on something does not necessarily make it anonymous.
 
+## Section 10.3
 
+Exercise 1
+
+Hypothesis generation is exploring the data and coming up with questions you might want to formally test while hypothesis confirmation is formally testing one specific question.
+
+Exercise 2
+
+Use an observation in generation as many times as you want while in confirmation you would only use an observation once.
+
+Exercise 3
+
+a. hypothesis confirmation
+
+b. hypothesis generation
+
+c. a little ambiguous
 ```{r}
 
 ```
