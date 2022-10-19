@@ -134,6 +134,9 @@ tail(obj)
 obj2 <- tab[[2]] |> html_table(fill = TRUE)
 head(obj2)
 tail(obj2)
+```
+
+```{r}
 ## install.packages("jsonlite")
 library(jsonlite)
 cr_cards <- fromJSON(here("data/clash_royale_card_info.json"))
