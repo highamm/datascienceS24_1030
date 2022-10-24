@@ -1,0 +1,149 @@
+---
+title: "Section 12: Merging"
+format: html
+---
+
+## Section 12.1: `bind_rows()` and `bind_cols()`
+
+```{r}
+library(tidyverse)
+theme_set(theme_minimal())
+library(here)
+atp_2019 <- read_csv(here("data/atp_matches_2019.csv"))
+atp_2018 <- read_csv(here("data/atp_matches_2018.csv"))
+head(atp_2019) 
+head(atp_2018)
+spec(atp_2018)
+atp_2018 <- read_csv(here("data/atp_matches_2018.csv"),
+                     col_types = cols(winner_seed = col_character(),
+                                      loser_seed = col_character()))
+atp_df <- bind_rows(atp_2018, atp_2019)
+atp_df
+df_test2a <- tibble(xvar = c(1, 2))
+df_test2b <- tibble(xvar = c(1, 2), y = c(5, 1))
+bind_rows(df_test2a, df_test2b)
+df_test1a <- tibble(xvar = c(1, 2), yvar = c(5, 1))
+df_test1b <- tibble(x = c(1, 2), y = c(5, 1))
+bind_cols(df_test1a, df_test1b)
+```
+
+## Section 12.2: Mutating Joins
+
+```{r}
+library(tidyverse)
+df1 <- tibble(name = c("Emily", "Miguel", "Tonya"), fav_sport = c("Swimming", "Football", "Tennis"))
+df2 <- tibble(name = c("Tonya", "Miguel", "Emily"),
+              fav_colour = c("Robin's Egg Blue", "Tickle Me Pink", "Goldenrod"))
+df1
+df2
+## cannot use bind_cols: rows do not go in the same
+## order in each data set
+## name is the key
+
+##install.packages("babynames")
+library(babynames)
+life_df <- babynames::lifetables
+birth_df <- babynames::births
+babynames_df <- babynames::babynames
+head(babynames)
+head(births)
+head(lifetables)
+
+
+combined_left <- left_join(babynames_df, birth_df, by = c("year" = "year"))
+head(combined_left)
+tail(combined_left)
+## missing values in head() because these do not have
+## a matching key in birth_df (which starts at 1909)
+
+## these will always do the same exact thing
+right_join(babynames_df, birth_df, by = c("year" = "year"))
+left_join(birth_df, babynames_df, by = c("year" = "year"))
+
+
+full_join(babynames_df, birth_df, by = c("year" = "year"))
+## full_join will keep all observations from
+## both data sets, regardless if there is a matching ## key
+inner_join(babynames_df, birth_df, by = c("year" = "year"))
+## only keep observations with a matching key
+## in the other data set
+
+slumajors_df <- read_csv(here("data/SLU_Majors_15_19.csv"))
+collegemajors_df <- read_csv(here("data/college-majors.csv"))
+head(slumajors_df)
+head(collegemajors_df)
+left_join(slumajors_df, collegemajors_df, by = c("Major" = "Major"))
+collegemajors_df <- collegemajors_df |>
+  mutate(Major = str_to_title(Major))
+
+
+left_join(slumajors_df, collegemajors_df)
+## a key must be __exactly__ the same in the 
+## two data sets
+```
+
+```{r}
+## exercise 1
+## in the second join, any row in babynames_df 
+## that does not have a matching key in birth_df
+## gets dropped 
+
+## exercise 2: true: an inner_join only contains
+## observations with matching keys. A full_join
+## would have those observations plus anything
+## without a matching key.
+
+## exercise 3: true: similar reasoning to exercise 2
+
+## exercise 4: false: if there are duplicate keys
+## in the second data set, the left_join will 
+## have more rows
+```
+
+Section 13.3: Filtering Joins
+
+```{r}
+
+atp_2019 <- read_csv(here("data/atp_matches_2019.csv"))
+atp_2018 <- read_csv(here("data/atp_matches_2018.csv"))
+atp_2019
+atp_2018
+
+## make data set of players with 10 or more  wins
+## in 2018
+win10 <- atp_2018 |> group_by(winner_name) |>
+  summarise(nwin = n()) |> 
+  filter(nwin >= 10)
+win10
+tennis_2019_10 <- semi_join(atp_2019, win10,
+                            by = c("winner_name" = "winner_name"))
+## equivalent to
+atp_2019 |> filter(winner_name %in% win10$winner_name)
+
+
+
+
+new_winners <- anti_join(atp_2019, atp_2018,
+                         by = c("winner_name" = "winner_name")) 
+new_winners$winner_name
+new_winners |> group_by(winner_name) |>
+  summarise(nwin = n()) |>
+  arrange(desc(nwin))
+```
+
+## Chapter Exercises
+
+```{r}
+library(tidyverse)
+mortality_df <- read_csv(here("data/gun_violence_us.csv"))
+
+## exercise 1
+dc_df <-  tibble(state = "DC", mortality_rate = 16.7,
+                ownership_rate = 0.087, region = "NE")
+bind_rows(mortality_df, dc_df)
+
+## exercise 2:
+## test1: owneship has wrong units
+## test2: NE needs quotes
+## test3: different variable classes in data sets
+```
