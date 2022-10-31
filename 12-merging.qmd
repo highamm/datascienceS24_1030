@@ -140,10 +140,24 @@ mortality_df <- read_csv(here("data/gun_violence_us.csv"))
 ## exercise 1
 dc_df <-  tibble(state = "DC", mortality_rate = 16.7,
                 ownership_rate = 0.087, region = "NE")
-bind_rows(mortality_df, dc_df)
+all_df <- bind_rows(mortality_df, dc_df)
 
 ## exercise 2:
 ## test1: owneship has wrong units
 ## test2: NE needs quotes
 ## test3: different variable classes in data sets
+
+df1 <- as_tibble(state.x77)
+df2 <- as_tibble(state.abb)
+states_df <- bind_cols(df1, df2)
+## assume states appear in the same order in each 
+## data set
+left_join(mortality_df, states_df, by = c("state" = "value"))
+## left_join(states, mortality), inner_join(), full_join()
+
+## erxercise 7
+ne_df <- all_df |> filter(region == "NE")
+
+semi_join(states_df, ne_df, by = c("value" = "state"))
+states_df |> semi_join(ne_df, by = c("value" = "state"))
 ```

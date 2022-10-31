@@ -1,0 +1,31 @@
+---
+title: "Untitled"
+format: html
+---
+
+Lubridate
+
+```{r}
+library(tidyverse)
+library(here)
+fed_df <- read_csv(here("data/fed_data.csv"))
+fed_df
+
+toy_df <- tibble(pop = c("1", "2", "<1", "<1"))
+toy_df |> mutate(pop_fix = if_else(pop == "<1", 
+                                   true = "0",
+                                   false = pop)) |>
+  mutate(pop_fix = as.numeric(pop_fix))
+library(lubridate)
+fed_df <- fed_df |> mutate(Month = ymd(Month, truncated = 1))
+
+ggplot(data = fed_df, aes(x = Month, y = fed_pop)) +
+  geom_line() +
+  geom_smooth(se = FALSE, span = 0.2)
+
+fed_sum <- fed_df |>
+  mutate(year = year(Month)) |>
+  group_by(year) |>
+  summarise(max_pop = max(fed_pop))
+
+```
