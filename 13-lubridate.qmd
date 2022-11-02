@@ -5,6 +5,93 @@ format: html
 
 Lubridate
 
+## Section 13.1: Converting to `<date>` Format
+
+```{r}
+library(tidyverse)
+library(lubridate)
+today()
+now()
+library(here)
+holiday_df <- read_csv(here("data/animal_crossing_holidays.csv"))
+holiday_df
+holiday_df |> mutate(Date_test = dmy(Date1)) |>
+  select(Date_test, everything())
+holiday_df |> mutate(Date_test = mdy(Date2)) |>
+  select(Date_test, everything())
+ggplot(data = holiday_df, aes(x = Date1, y = Holiday)) +
+  geom_point()
+holiday_df <- holiday_df |> mutate(Date_test_plot = dmy(Date1)) |>
+  select(Date_test_plot, everything())
+ggplot(data = holiday_df, aes(x = Date_test_plot, y = Holiday)) +
+  geom_point()
+holiday_df |> mutate(Date_test2 = make_date(year = Year,
+                                             month = Month,
+                                             day = Day)) |>
+  select(Date_test2, everything())
+holiday_df |> mutate(Date_test2 = make_date(year = Year,
+                                             month = Month2,
+                                             day = Day)) |>
+  select(Date_test2, everything())
+```
+
+13.1.3 Exercises 
+
+```{r}
+## exercise 1
+## there are different formats for the date in the same 
+## column
+```
+
+## Section 13.2: Functions for `<date>` class variables
+
+```{r}
+## install.packages("quantmod")
+library(quantmod)
+
+start <- ymd("2011-01-01")
+end <- ymd("2021-5-19")
+getSymbols(c("GME", "NTDOY", "CMG", "SPY"), src = "yahoo",
+           from = start, to = end)
+
+
+date_tib <- as_tibble(index(GME)) |>
+  rename(start_date = value)
+gme_tib <- as_tibble(GME)
+nint_tib <- as_tibble(NTDOY)
+chip_tib <- as_tibble(CMG)
+spy_tib <- as_tibble(SPY)
+all_stocks <- bind_cols(date_tib, gme_tib, nint_tib, chip_tib, spy_tib)
+
+stocks_long <- all_stocks |>
+  select(start_date, GME.Adjusted, NTDOY.Adjusted,
+                      CMG.Adjusted, SPY.Adjusted) |>
+  pivot_longer(2:5, names_to = "Stock_Type", values_to = "Price") |>
+  mutate(Stock_Type = fct_recode(Stock_Type,
+                                 Gamestop = "GME.Adjusted",
+                                 Nintendo = "NTDOY.Adjusted",
+                                 Chipotle = "CMG.Adjusted",
+                                 `S & P 500` = "SPY.Adjusted"
+                                 ))
+tail(stocks_long)
+stocks_gs <- stocks_long |> filter(Stock_Type == "Gamestop")
+ggplot(data = stocks_gs, aes(x = start_date, y = Price)) +
+  geom_line()
+## gamestop on y-axis
+
+stocks_long |> mutate(year_stock = year(start_date))
+stocks_long |> mutate(month_stock = month(start_date))
+stocks_long |> mutate(day_stock = mday(start_date))
+test <- mdy("November 4, 2020")
+yday(test)
+stocks_long |> mutate(day_in_year = yday(start_date))
+stocks_long |> mutate(day_of_week = wday(start_date))
+stocks_long |> mutate(day_of_week = wday(start_date,
+                                          label = TRUE, abbr = FALSE))
+
+stocks_gs |> group_by(Stock_Type) |>
+  mutate(lag_price = lag(Price))
+```
 ```{r}
 library(tidyverse)
 library(here)
