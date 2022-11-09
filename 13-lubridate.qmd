@@ -116,3 +116,13 @@ fed_sum <- fed_df |>
   summarise(max_pop = max(fed_pop))
 
 ```
+
+```{r}
+library(tidyverse)
+library(lubridate)
+ds_df <- read_csv(here("data/ds_google.csv"))
+ds_df
+
+## exercises 6 - 8
+```
+
