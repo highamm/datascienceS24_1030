@@ -4,6 +4,10 @@ format: html
 ---
 
 ```{r}
+x <- 7
+
+
+
 library(tidyverse)
 library(here)
 beyonce <- read_csv(here("data/beyonce_lyrics.csv"))
