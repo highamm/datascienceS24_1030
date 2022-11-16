@@ -73,6 +73,10 @@ tennis_db |> mutate(rank_diff = winner_rank_points - loser_rank_points) |>
   show_query()
 ```
 
+## Section 17.3: SQL
+
+```{r}
+
 tennis_db |> show_query()
 tennis_db |> filter(winner_hand == "L") |>
   arrange(desc(tourney_date)) |>
@@ -96,4 +100,40 @@ tennis_db |> filter(winner_age > 35 | loser_age > 35) |>
   show_query()
 tennis_db |> arrange(desc(winner_rank_points)) |>
   show_query()
+```
+
+Exercises 17.3.1
+
+```{r}
+## exercise 1
+tennis_db |> filter(tourney_name == "Wimbledon")
+
+## exercise 2
+tennis_db |> select(winner_name, loser_name, w_ace,
+                    l_ace) |>
+  mutate(ace_diff = w_ace - l_ace) |>
+  arrange(desc(ace_diff)) |>
+  show_query()
+
+## exercise 3
+tennis_db |> group_by(tourney_name) |>
+  summarise(mean_min = mean(minutes)) |>
+  show_query()
+
+mtcars |> select(mpg) |>
+  show_query()
+```
+
+Chapter Exercises
+
+```{r}
+## 2
+tennis_db |>
+  mutate(surface_ord = fct_relevel(surface, c("Hard")))
+
+## 3
+## ! is "not" in both R and SQL
+
+## 4
+## %in% in R maps to IN in SQL
 ```
