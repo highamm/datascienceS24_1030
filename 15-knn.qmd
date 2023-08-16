@@ -1,7 +1,0 @@
----
-title: "Untitled"
-format: html
----
-
-1. 15.3 code: run and understand
-2. 15.3 Exercise: look at scatterplot matrix and improve classification rate by changing predictors and/or k
