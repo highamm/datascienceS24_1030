@@ -1,0 +1,54 @@
+---
+title: "Untitled"
+format: html
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+library(tidyverse)
+
+library(tidyverse)
+
+pres_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/pres2000.csv") 
+head(pres_df)
+#> # A tibble: 6 × 6
+#>     Gore   Bush Buchanan Nader Other County  
+#>    <dbl>  <dbl>    <dbl> <dbl> <dbl> <chr>   
+#> 1  47365  34124      263  3226   751 ALACHUA 
+#> 2   2392   5610       73    53    26 BAKER   
+#> 3  18850  38637      248   828   242 BAY     
+#> 4   3075   5414       65    84    35 BRADFORD
+#> 5  97318 115185      570  4470   852 BREVARD 
+#> 6 386561 177323      788  7101  1623 BROWAR
+
+ggplot(data = pres_df, aes(x = Gore)) +
+  geom_histogram(colour = "pink", fill = "purple",
+                 bins = 15) +
+  labs(x = "Votes for Gore in Florida")
+
+
+ggplot(data = pres_df, aes(x = Gore, y = Bush)) +
+  geom_point()
+
+ggplot(data = pres_df, aes(x = Buchanan, y = Bush)) +
+  geom_point()
+
+View(pres_df)
+```
+
+You can add options to executable code like this 
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).

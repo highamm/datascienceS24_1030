@@ -1,0 +1,22 @@
+---
+title: "Section 2: Plotting with ggplot"
+format: html
+---
+
+
+```{r}
+
+```
+
+```{r}
+library(tidyverse)
+stat113_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/stat113.csv")
+stat113_df
+
+ggplot(data = stat113_df, aes(x = GPA)) +
+  geom_histogram()
+
+ggplot(data = stat113_df, aes(x = GPA)) +
+  geom_histogram(colour = "black", fill = "white", bins = 17)
+```
+
