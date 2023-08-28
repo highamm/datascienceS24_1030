@@ -1,6 +1,9 @@
 ---
-title: "Section 2: Plotting with ggplot"
-format: html
+title: "Your Title"
+author: "Your Name"
+format: 
+  html:
+    embed-resources: true
 ---
 
 
@@ -20,3 +23,89 @@ ggplot(data = stat113_df, aes(x = GPA)) +
   geom_histogram(colour = "black", fill = "white", bins = 17)
 ```
 
+## Section 2.4: Practice Exercises
+
+```{r}
+stat113_restructured <- stat113_df |> group_by(SocialMedia) |>
+  summarise(n_social = n())
+stat113_restructured
+
+## b
+ggplot(data = stat113_restructured,
+       aes(x = SocialMedia)) +
+  geom_bar()
+
+## c
+ggplot(data = stat113_restructured,
+       aes(x = SocialMedia, y = n_social)) +
+  geom_col()
+```
+
+Class Exercisse 2
+
+```{r}
+
+fitness_full <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/higham_fitness_clean.csv",
+                         col_types = list(stepgoal = col_factor())) |>
+  mutate(weekend_ind = case_when(weekday == "Sat" | weekday == "Sun" ~ "weekend",
+                                 TRUE ~ "weekday"))
+ggplot(data = fitness_full, aes(x = active_cals, y = distance)) +
+  geom_point() +
+  geom_smooth(se = FALSE, span = 0.00001)
+## method = "lm"
+## span controls how "wiggly" the smoother is
+```
+
+Class Exercise 3
+
+```{r}
+fitness_full
+ggplot(data = fitness_full, aes(x = Start, y = steps)) +
+  geom_line() +
+  geom_smooth() 
+```
+
+
+facet_grid(name_of_var ~ name_of_var2)
+
+```{r}
+ggplot(data = stat113_df, aes(x = Exercise, y = GPA)) +
+  geom_point() +
+  facet_grid(Sport ~ Sex)
+
+ggplot(data = stat113_df, aes(x = Exercise, y = GPA)) +
+  geom_point() +
+  facet_wrap(Sport ~ Sex)
+```
+
+Class Exercise 5
+
+Class Exercise 6
+
+
+Your Turn 1
+
+done by hand
+
+Your Turn 2
+
+```{r}
+ggplot(data = stat113_df, aes(x = GPA, y = Exercise)) +
+  geom_point(aes(colour = Sport))
+
+ggplot(data = stat113_df, aes(x = GPA, y = Exercise)) +
+  geom_point() +
+  facet_wrap(~ Sport)
+```
+
+Your Turn 4
+
+```{r}
+fitness_full
+ggplot(data = fitness_full, aes(x = steps, colour = weekday)) +
+  geom_freqpoly()
+
+ggplot(data = fitness_full, aes(x = steps)) +
+  geom_histogram() +
+  facet_wrap(~ weekday)
+```
