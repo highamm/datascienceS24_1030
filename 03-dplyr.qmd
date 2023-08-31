@@ -1,0 +1,18 @@
+---
+title: "Section 3: Wrangling with `dplyr`"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(babynames)
+babynames
+
+babynames_matthew <- babynames |>
+  filter(name == "Matthew" & sex == "M" & year >= 1900)
+
+ggplot(data = babynames_matthew, aes(x = year, y = n)) +
+  geom_line()
+```

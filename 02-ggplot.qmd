@@ -80,8 +80,18 @@ ggplot(data = stat113_df, aes(x = Exercise, y = GPA)) +
 
 Class Exercise 5
 
+```{r}
+ggplot(data = stat113_df, aes(x = Sport, y = GPA)) +
+  geom_boxplot(outlier.shape = 8)
+```
+
 Class Exercise 6
 
+```{r}
+ggplot(data = stat113_df, aes(x = Haircut,
+                              y = ..density..)) +
+  geom_histogram(colour = "black", fill = "white")
+```
 
 Your Turn 1
 
@@ -108,4 +118,61 @@ ggplot(data = fitness_full, aes(x = steps, colour = weekday)) +
 ggplot(data = fitness_full, aes(x = steps)) +
   geom_histogram() +
   facet_wrap(~ weekday)
+```
+
+
+Your Turn 5
+
+```{r}
+ggplot(data= stat113_df, aes(x = GPA, y = Exercise)) +
+  geom_point()
+```
+
+Line plots only make sense when there is one y value per unique x value.
+
+Your Turn 6
+
+There are 70 NA values of GPA, likely from first year students filling out the survey.
+
+Your Turn 7 and 8
+
+Skip
+
+## Section 2.5
+
+## Section 2.6
+
+Class Exercise 1.
+
+```{r}
+ggplot(data = stat113_df, aes(x = Wgt, y = Hgt,
+                              colour = Sport)) +
+  geom_point(colour = "purple") +
+  geom_smooth()
+```
+
+```{r}
+ggplot(data = stat113_df, aes(x = TV)) +
+  geom_histogram(colour = "black", fill = "white")
+```
+
+Your Turn 1
+
+Both b and e would work. These are the only two sets of code where purple is not in an `aes()` function and where `groupvar` is in an `aes()` function.
+
+Your Turn 2
+
+If specified locally, `aes(x = xvar, y = yvar)` would have to go in both `geom_point()` and in `geom_smooth()`. Because usually they are used in the remaining geoms, `x` and `y` aesthetics are usually specified globally.
+
+```{r}
+stat_social <- stat113_df |> group_by(SocialMedia) |>
+  summarise(n_social = n()) |>
+  mutate(SocialMedia = fct_reorder(SocialMedia, n_social))
+
+ggplot(data = stat_social, aes(x = SocialMedia,
+                               y = n_social)) +
+  geom_point() +
+  geom_segment(aes(xend = SocialMedia, y = 0,
+                   yend = n_social)) +
+  coord_flip()
 ```
