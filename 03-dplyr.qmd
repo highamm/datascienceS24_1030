@@ -8,11 +8,106 @@ format:
 
 ```{r}
 library(babynames)
+library(tidyverse)
 babynames
 
+stat113_df
 babynames_matthew <- babynames |>
   filter(name == "Matthew" & sex == "M" & year >= 1900)
 
 ggplot(data = babynames_matthew, aes(x = year, y = n)) +
   geom_line()
+```
+
+## Class Exercises 
+
+Class Exercise 1
+
+```{r}
+babynames_m10 <- babynames |>
+  filter(year == 2017 & sex == "M") |>
+  arrange(desc(n)) |>
+  slice(1:10)
+```
+
+Class Exercise 2
+
+```{r}
+ggplot(data = babynames_m10, aes(x = name, y = n)) +
+  geom_col()
+```
+
+Class Exercise 3
+
+```{r}
+babynames_zelda <- babynames |>
+  filter(name == "Zelda" & sex == "F")
+
+## class exercise 4
+
+ggplot(data = babynames_zelda, aes(x = year, y = n)) +
+  geom_line()
+```
+
+Class Exercise 5
+
+```{r}
+fitness_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/higham_fitness_clean.csv",
+                         col_types = list(stepgoal = col_factor())) |>
+  mutate(weekend_ind = case_when(weekday == "Sat" | weekday == "Sun" ~ "weekend",
+                                 TRUE ~ "weekday"))
+fitness_df |> mean(distance)
+```
+
+fitness_df becomes the first argument to mean(), but the first argument of mean() cannot be a data frame.
+
+## Your Turn
+
+Your Turn 1
+
+```{r}
+## a
+babynames |> filter(year != 1945)
+
+## b
+babynames |> filter(n > 400 & n < 5000)
+
+## c
+babynames_hm <- babynames |>
+  filter((name == "Hilary" & sex == "F") | (name == "Monica" & sex == "F"))
+```
+
+Your Turn 2
+
+```{r}
+ggplot(data = babynames_hm, aes(x = year, y = n, colour = name)) +
+  geom_line()
+```
+
+
+Your Turn 3
+
+```{r}
+babynames_5 <- babynames |>
+  filter((name == "Matthew" & sex == "M") | 
+           (name == "Jessica" & sex == "F") |
+           (name == "Ivan" & sex == "M") |
+           (name == "Robin" & sex == "M") |
+           (name == "Michael" & sex == "M"))
+
+ggplot(data = babynames_5, aes(x = year, y = n,
+                               colour = name)) +
+  geom_line()
+```
+
+Your Turn 4
+
+```{r}
+babynames_f91 <- babynames |>
+  filter(sex == "F" & year == 1991) |>
+  arrange(desc(n)) |>
+  slice(1:10)
+
+ggplot(data = babynames_f91, aes(x = name, y = prop)) +
+  geom_col()
 ```
