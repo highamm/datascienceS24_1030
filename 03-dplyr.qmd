@@ -111,3 +111,162 @@ babynames_f91 <- babynames |>
 ggplot(data = babynames_f91, aes(x = name, y = prop)) +
   geom_col()
 ```
+
+
+```{r}
+library(tidyverse)
+slumajors_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/SLU_Majors_17_21.csv")
+
+slumajors_df <- slumajors_df |>
+  mutate(ntotal = nfemales + nmales) |>
+  mutate(percfemale = 100 * nfemales / (nfemales + nmales))
+slumajors_df <- slumajors_df |>
+  mutate(morewomen = if_else(percfemale > 50,
+                             true = "Yes",
+                             false = "No")) |>
+  mutate(large_majority =
+           case_when(percfemale >= 70 ~ "female",
+                     percfemale <= 30 ~ "male",
+                     percfemale > 30 & percfemale < 70 ~ "none")) 
+```
+
+## Class Exercises
+
+Class Exercise 1
+
+There might be reasons for either choice, but the exercise shows that there usually is some subjectivity in a data analysis.
+
+Class Exercise 2
+
+In general, we would all like to be as inclusive as possible but we also want to account for the anonymous nature of the Stat 113 survey.Class
+
+Class Exercise 3
+
+Skip for now.
+
+Class Exercise 4
+
+```{r}
+library(babynames)
+babynames_pop <- babynames |> group_by(year, sex) |> 
+  mutate(rank_pop = rank(desc(n)))
+
+## class exercise 5
+babynames_pop |> filter(rank_pop == 1) |>
+  ungroup() |>
+  group_by(name) |>
+  summarise(n_appear = n()) |>
+  arrange(desc(n_appear))
+
+# babynames_pop <- babynames |> group_by(year, sex) |> 
+#   mutate(rank_pop = rank(desc(n)))
+# babynames_pop |> filter(rank_pop == 1) |>
+#   summarise(n_appear = n()) |>
+#   arrange(desc(n_appear))
+
+
+```
+
+Class Exercise 6
+
+```{r}
+babynames_test <- babynames |>
+  group_by(year, sex) |> mutate(ntest = n / prop)
+babynames_test |> ungroup() |> slice(1, 2, 3, 4, 5)
+```
+
+Your Turn 1
+
+```{r}
+toy_df <- tibble(x = c(NA, 3, 4, 7),
+                 y = c(1, 4, 3, 2),
+                 z = c("A", "A", "B", NA))
+
+## a
+toy_df |> group_by(z) |>
+  mutate(sum_x_y = x + y,
+         max_y = max(y))
+
+## b
+toy_df |> group_by(z) |>
+  slice(1, 2) ## obtain the first two rows for each group
+
+## c
+toy_df |> group_by(z) |>
+  filter(y > 2)
+toy_df |> group_by(z) |>
+  filter(y == max(y))
+
+## d
+toy_df |> group_by(z) |>
+  arrange(desc(y))
+## arrange() ignores the grouping structure
+## look into arrange() and grouping
+
+## e
+toy_df |> group_by(z) |>
+  select(x)
+## group_by(z) means that z will be kept in the data frame
+```
+
+Your Turn 2
+
+```{r}
+## a
+toy_df |> mutate(sum_x_y = x + y)
+## any NA values are still NA in the new variable
+
+toy_df |> arrange(x)
+toy_df |> arrange(desc(x))
+## NA always go last
+
+## c
+toy_df |> filter(x < 4)
+## NA is dropped in the condition
+
+## d
+toy_df |>
+  summarise(mean_x = mean(x))
+## returns NA because we don't know one of the x values
+toy_df |>
+  summarise(mean_x = mean(x, na.rm = TRUE))
+
+## e
+toy_df |>
+  group_by(z) |>
+  summarise(mean_x = mean(x))
+## for the group where x is missing, the mean value is also
+## missing.
+## NA gets treated as its own group for z
+```
+
+Your Turn 3
+
+Your Turn 4
+
+
+
+
+
+
+Your Turn 5
+
+```{r}
+babynames_uniqueyear <- babynames |> group_by(year) |>
+  summarise(n_unique = n())
+ggplot(data = babynames_uniqueyear, aes(x = year, y = n_unique)) +
+  geom_line()
+```
+
+Your Turn 6
+
+```{r}
+babynames_uniqueyearsex <- babynames |> group_by(year, sex) |>
+  summarise(n_unique = n())
+
+ggplot(data = babynames_uniqueyearsex, aes(x = year, y = n_unique, colour = sex)) +
+  geom_line()
+```
+
+Your Turn 7
+
