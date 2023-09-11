@@ -142,7 +142,14 @@ In general, we would all like to be as inclusive as possible but we also want to
 
 Class Exercise 3
 
-Skip for now.
+```{r}
+slumajors_df |>
+  mutate(testcase = case_when(percfemale >= 40 ~ "Yes",
+                              percfemale > 60 ~ "No")) |>
+  relocate(testcase)
+## case_when evaluates the conditions you provide in order
+## rows that satisfy none of the conditions get an "NA"
+```
 
 Class Exercise 4
 
@@ -242,11 +249,32 @@ toy_df |>
 
 Your Turn 3
 
+a. Yes, mutate() is generally safe to do this with because we are just adding a new variable.
+
+b. Yes, arrange is fine too: we still have all of the rows and columnns  (the rows are just in a different order).
+
+c. No, because the rows that are removed with filter are gone "forever". (same logic for slice)
+
+d. No, summarise will collapse the data set so we cannot go back and use the original variables.
+
+e. No, because columns that are removed are gone (unless we are absolutely sure we never want to use the variables that are removed again).
+
+
 Your Turn 4
 
+```{r}
+slumajors_df |>
+  summarise(meantotalmajor = mean(ntotal),
+            totalgrad = sum(ntotal)) 
+slumajors_df |>
+  mutate(meantotalmajor = mean(ntotal),
+            totalgrad = sum(ntotal)) |>
+  select(meantotalmajor, totalgrad, everything())
+```
 
+summarise() returns one row for each group that you are summarising over (one row total in this case because we did not use group_by). And, summarise() keeps only the new variables that you create within summarise() (as well a column for each group).
 
-
+mutate() returns the same number of rows as the original data frame and simply adds columns for each new variable we create.
 
 
 Your Turn 5
@@ -270,3 +298,8 @@ ggplot(data = babynames_uniqueyearsex, aes(x = year, y = n_unique, colour = sex)
 
 Your Turn 7
 
+```{r}
+babynames |> group_by(name) |>
+  summarise(n_births = sum(n)) |>
+  arrange(desc(n_births))
+```

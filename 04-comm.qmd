@@ -1,0 +1,37 @@
+---
+title: "Section 4: Communication"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(gapminder)
+country_df <- gapminder
+country_df
+```
+
+Class Exercise 1.
+
+```{r}
+library(tidyverse)
+onecountry_df <- country_df |> filter((continent == "Africa" &
+                       lifeExp < 29) | (continent == "Asia" &
+                                          year > 1970 & lifeExp < 35))
+ggplot(data = country_df, aes(x = year, y = lifeExp,
+                              group = country,
+                              colour = continent)) +
+  geom_line(alpha = 0.2) +
+  facet_wrap(~ continent) +
+  labs(x = "Year", y = "Life Expectancy (years)",
+       title = "Graph of Life Expectancy through Time") +
+  scale_colour_viridis_d(begin = 0.1, end = 0.9) +
+  geom_text(data = onecountry_df, aes(label = country)) +
+  theme(legend.position = "bottom") +
+  theme_minimal()
+## rwandan genocide causes rwanda to have a large dip in
+## life expectancy
+
+## cambodia is the country (cambodian civil war)
+```
