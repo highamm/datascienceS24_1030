@@ -1,0 +1,13 @@
+---
+title: "Section 5: Workflow"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+library(here)
+athletes_df <- read_csv(here("data/athletesdata.csv"))
+```
