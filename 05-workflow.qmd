@@ -11,3 +11,83 @@ library(tidyverse)
 library(here)
 athletes_df <- read_csv(here("data/athletesdata.csv"))
 ```
+
+## Class Exercises
+
+Class Exercise 1. If we use the checkboxes and send out code to someone else, they cannot see which packages we have loaded in.
+
+Class Exercise 2.
+
+```{r}
+library(tidyverse)
+ggplot(data = mtcars, aes(x = hp, y = drat)) +
+  geom_point(aes(colour = factor(gear))) +
+  facet_wrap(~ cyl) +
+  geom_smooth()
+```
+
+Class Exercise 3.
+
+```{r}
+library(palmerpenguins)
+penguins |> mutate(flipper_ratio = flipper_length_mm / body_mass_g) |>
+  group_by(species, island) |>
+  summarise(mean_flipper = mean(flipper_ratio, na.rm = TRUE)) |>
+  arrange(mean_flipper) |>
+  pivot_wider(names_from = c("species"), values_from = "mean_flipper")
+```
+
+Class Exercise 4
+
+```{r}
+library(here)
+videogame_df <- read_csv(here("data/videogame_clean.csv"))
+
+videogame_df
+## find mean and median of `median_playtime` with all the values and then
+## again after removing the outliers
+videogame_df |> summarise(mean_medplay = mean(median_playtime, na.rm = TRUE),
+                          median = median(median_playtime, na.rm = TRUE))
+
+videogame_df |> filter(median_playtime < 1000) |>
+  summarise(mean_medplay = mean(median_playtime, na.rm = TRUE),
+                          median = median(median_playtime, na.rm = TRUE))
+
+## one strange thing is that the median is 0 hours (these are probably
+## really NA)
+
+## the mean was really affected by whether or not there were outliers
+```
+
+Class Exercise 5
+
+```{r}
+library(tidyverse)
+evals_df <- read_csv(here("data/evals_prof_S21.csv"))
+head(evals_df)
+
+toy_reprex <- tibble(Term = c("F19", "F19", "S20", "S20", "F20"))
+toy_reprex
+## Can you separate this term variable into a variable for semester and
+## a variable for year?
+```
+
+## Your Turn
+
+Your Turn 3
+
+```{r}
+penguins |> mutate(flipper_ratio = flipper_length_mm / body_mass_g) |>
+  relocate(flipper_ratio) |>
+  filter(flipper_ratio > median(flipper_ratio, na.rm = TRUE)) |>
+  group_by(species) |>
+  summarise(count_var = n())
+```
+
+Your Turn 4
+
+```{r}
+## how do I sort x_var by smallest to largest?
+arrange_reprex <- tibble(x_var = c(5, 2, 7, 10))
+arrange_reprex
+```
