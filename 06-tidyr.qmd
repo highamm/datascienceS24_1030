@@ -1,0 +1,116 @@
+---
+title: "Section 6: Tidying with `tidyr`"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Section 6.1: What is Tidy Data?
+
+1. every variable in the data set is stored in its own column
+2. every case in the data set is stored in its own row
+3. each value of a variable is stored in one cell
+4. values in the data set should not contain units
+5. there should not be any table headers or footnotes
+
+## Section 6.2
+
+```{r}
+library(tidyverse)
+library(here)
+polls <- read_csv(here("data/rcp-polls.csv"), na = "--")
+polls
+
+polls |> summarise(meansample = mean(Sample))
+
+polls |>
+  separate(col = Sample, into = c("Sample_size", "Sample_type"), 
+           sep = " ")
+
+polls_sep <- polls |>
+  separate(col = Date, into = c("Start", "End"),
+           sep = " - ")
+polls_sep
+
+
+polls_sillytest <- polls_sep |>
+  separate(col = Start, into = c("Start_month", "Start_day"), 
+           sep = "/")
+polls_sillytest
+
+polls_sillytest |>
+  unite("New_start_date", c(Start_month, Start_day),
+        sep = "/")
+```
+
+Exercises
+
+```{r}
+toy_df <- tibble::tibble(show = c("Bojack Horseman: Netflix",
+                                  "VEEP: HBO",
+                                  "American Vandal: Netflix",
+                                  "Community: Peacock"),
+                         seasons = c("1-6", "1-7", "1-2", "1-6"),
+                         main_first = c("Bojack", "Selina", "Peter", "Jeff"),
+                         main_last = c("Horseman", "Meyer", "Molganado", "Winger"))
+toy_df
+
+## exercise 1
+toy_df |> separate(show, into = c("Show Name", "Streaming"),
+                   sep = ": ")
+## exercise 2
+toy_df |> separate(seasons, into = c("start", "end"), sep = "-")
+
+## exercise 3
+toy_df |> unite("character_name", c(main_first, main_last), sep = " ")
+```
+
+## Section 6.3: Reshaping with `pivot_()`
+
+```{r}
+polls_clean <- polls |>
+  separate(col = Sample, into = c("Sample_size", "Sample_type"), 
+           sep = " ")  |>
+  separate(col = Date, into = c("Start", "End"),
+           sep = " - ") |> 
+  rename(Clinton_D = `Clinton (D)`, Trump_R = `Trump (R)`,
+         Johnson_L = `Johnson (L)`, Stein_G = `Stein (G)`)
+polls_clean
+
+polls_clean |>
+  pivot_longer(cols = c(Clinton_D, Trump_R, Johnson_L, Stein_G),
+               names_to = "candidate", values_to = "poll_percent") 
+
+polls_long <- polls_clean |>
+  pivot_longer(cols = c(Clinton_D, Trump_R, Johnson_L, Stein_G),
+               names_to = "candidate", values_to = "poll_percent")
+
+## ignore as.Date for now....we will get to dates later!
+ggplot(data = polls_long,
+       aes(x = as.Date(Start, "%m/%d"), y = poll_percent,
+           colour = candidate)) +
+  geom_point() + labs(x = "Poll Start Date")
+```
+
+#### `pivot_wider()`
+
+```{r}
+stat113_df <- read_csv(here::here("data/stat113.csv"))
+stat113_sum <- stat113_df |> filter(!is.na(Sex)) |> group_by(Year, Sex) |>
+  summarise(n_students = n())
+stat113_sum
+
+stat113_sum |> pivot_wider(names_from = Year, values_from = n_students)
+
+```
+
+Exercise 4
+
+```{r}
+stat113_df |> 
+  filter(!is.na(Sex) & !is.na(Sport)) |>
+  group_by(Sex, Sport) |>
+  summarise(mean_gpa = mean(GPA, na.rm = TRUE)) |>
+  pivot_wider(names_from = Sport, values_from = mean_gpa)
+```
