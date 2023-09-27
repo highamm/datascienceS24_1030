@@ -114,3 +114,127 @@ stat113_df |>
   summarise(mean_gpa = mean(GPA, na.rm = TRUE)) |>
   pivot_wider(names_from = Sport, values_from = mean_gpa)
 ```
+
+Exercise 5
+
+```{r}
+disease_df <- tibble::tibble(location = c("A", "B", "C", "D", "E"),
+                             year1 = c(5, 1, 10, 400, 31),
+                             year2 = c(10, 80, 99, 100, 1),
+                             year3 = c(0, 0, 20, 0, 40))
+disease_df |> pivot_longer(c(year1, year2, year3),
+                           names_to = "year",
+                           values_to = "deaths")
+```
+
+## Class Exercises
+
+Class Exercise 1
+
+Class Exercise 2
+
+```{r}
+prices_df <- read_csv(here("data/UBSprices2.csv"))
+
+prices_long <- prices_df |> pivot_longer(c(2, 3, 4, 5, 6, 7),
+                          names_to = "commodity_year",
+                          values_to = "price") |>
+  separate(commodity_year, into = c("commodity", "year"),
+           sep = -4)
+```
+
+Class Exercise 3
+
+```{r}
+prices_long |> pivot_wider(names_from = commodity,
+                           values_from  = price)
+```
+
+Class Exercises 4
+
+For the first line plot, the wider data set in class exercise 3 because rice is already its own column that can be used as an aesthetic in ggplot.
+
+For the second, the longer data set: commodity would be an aethetic in the plot so it should be its own column in the data set.
+
+Class Exercise 5
+
+```{r}
+mortality_df <- read_csv(here("data/under5mortality.csv"))
+head(mortality_df)
+
+mortality_long <- mortality_df |> pivot_longer(2:217,
+                             names_to = "year",
+                             values_to = "mortality") |>
+  rename( "country" = `Under five mortality`) |>
+  mutate(year = as.numeric(year))
+  
+```
+
+Class Exercise 6
+
+```{r}
+ggplot(data = mortality_long, aes(x = year, y = mortality,
+                                  group = country)) +
+  geom_line(alpha = 0.2)
+```
+
+Class Exercise 7
+
+Overall trend is down. The flat lines before 1900 probably indicate that we did not have data before that time point. 
+
+## Your Turn
+
+Your Turn 1
+
+```{r}
+library(tidyverse)
+library(here)
+baseball_df <- read_csv(here("data/mlb2016.csv"))
+baseball_df
+```
+
+The `Years` column contains a few variables: the duration and the start date and the end date of the contract.
+
+Also, the units ($) are in a few of the variables (like Salary, ...).
+
+Your Turn 2
+
+```{r}
+baseball_sep <- baseball_df |> separate(Years, into = c("duration", "contract"),
+                        sep = " ") |>
+  separate(contract, into = c("start", "end"),
+           sep = "-") |>
+  print(n = 100)
+```
+
+Your Turn 3
+
+Some players have single year contracts so there is no `-` to separate by, generating warnings for these players.
+
+Your Turn 4
+
+```{r}
+baseball_sep <- baseball_sep |> mutate(Salary = parse_number(Salary),
+                       start = parse_number(start),
+                       end = parse_number(end))
+```
+
+Your Turn 5
+
+```{r}
+ggplot(data = baseball_sep, aes(x = POS, y = Salary)) +
+  geom_boxplot()
+
+ggplot(data = baseball_sep, aes(x = POS, y = Salary)) +
+  geom_jitter(width = 0.2)
+
+ggplot(data = baseball_sep, aes(x = Salary)) +
+  geom_histogram(colour = "black", fill = "white") +
+  facet_wrap(~ POS)
+
+ggplot(data = baseball_sep, aes(x = Salary, colour = POS)) +
+  geom_freqpoly()
+
+ggplot(data = baseball_sep, aes(x = POS, y = Salary)) +
+  geom_violin()
+```
