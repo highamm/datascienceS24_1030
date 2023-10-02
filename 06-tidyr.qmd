@@ -293,3 +293,24 @@ ggplot(data = nfl_top20, aes(year, y = mean_salary)) +
   geom_line() +
   facet_wrap(~ position)
 ```
+
+## Your Turn 11
+
+```{r}
+nfl_top20 <- nfl_top20 |> filter(year == 2011 | year == 2018) |>
+  mutate(mean_salary_adj = if_else(year == 2011,
+                                   true = mean_salary * 1.1447,
+                                   false = mean_salary))
+
+ggplot(nfl_top20, aes(x = year, y = mean_salary_adj)) +
+  geom_line(aes(colour = position))
+```
+
+## Your Turn 12
+
+```{r}
+nfl_18 <- nfl_longer |> filter(year == 2018)
+ggplot(data = nfl_18, aes(x = rank_salary, y = salary)) +
+  geom_line(aes(colour = position)) +
+  scale_colour_viridis_d()
+```
