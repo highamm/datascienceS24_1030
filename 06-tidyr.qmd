@@ -238,3 +238,58 @@ ggplot(data = baseball_sep, aes(x = Salary, colour = POS)) +
 ggplot(data = baseball_sep, aes(x = POS, y = Salary)) +
   geom_violin()
 ```
+
+NFL Example
+
+## Your Turn 6
+
+```{r}
+nfl_df <- read_csv(here::here("data/nfl_salary.csv"))
+
+head(nfl_df)
+
+## the data is not tidy because the positions are spread out
+## over many different columns
+
+## Your Turn 7
+nfl_longer <- nfl_df |>
+  pivot_longer(c(2, 3, 4, 5, 6, 7, 8, 9, 10, 11), names_to = "position",
+                       values_to = "salary")
+```
+
+## Your Turn 8
+
+```{r}
+nfl_longer <- nfl_longer |> group_by(year, position) |>
+  mutate(rank_salary = rank(desc(salary),
+                            ties.method = "first")) 
+```
+
+## Your Turn 9
+
+```{r}
+nfl_max <- nfl_longer |> filter(rank_salary == 1)
+
+ggplot(data = nfl_max, aes(year, y = salary)) +
+  geom_line(aes(colour = position))
+
+ggplot(data = nfl_max, aes(year, y = salary)) +
+  geom_line() +
+  facet_wrap(~ position)
+
+## colour is easeier to compare positions, but faceting
+## lets us examine the pattern for each position more clearly
+```
+
+## Your Turn 10
+
+```{r}
+nfl_top20 <- nfl_longer |>
+  filter(rank_salary <= 20) |>
+  group_by(position, year) |>
+  summarise(mean_salary = mean(salary))
+
+ggplot(data = nfl_top20, aes(year, y = mean_salary)) +
+  geom_line() +
+  facet_wrap(~ position)
+```
