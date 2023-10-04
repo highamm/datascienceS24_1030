@@ -1,0 +1,74 @@
+---
+title: "Section 7: Base `R`"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Class Exercises
+
+Class Exercise 1
+
+```{r}
+library(tidyverse)
+library(here)
+fitness_df <- read_csv(here("data/higham_fitness_notclean.csv"))
+
+## a
+weekdays_vec <- c(2, 3, 4, 5, 6)
+weekends_vec <- c(1, 7)
+
+##majors_mcss <- c("Computer Science", "Statistics", "Mathematics", "Environment / Math")
+
+###filter(major %in% majors_mcss)
+fitness_df |> mutate(weekend_ind = if_else(weekday %in% weekdays_vec,
+                                           true = "weekday",
+                                           false = "weekend"))
+
+```
+
+Class Exercise 2
+
+```{r}
+set.seed(15125141)
+toy_df <- tibble(xvar = rnorm(100, 3, 4),
+                 yvar = rnorm(100, -5, 10),
+                 group1 = sample(c("A", "B", "C"), size = 100, replace = TRUE),
+                 group2 = sample(c("Place1", "Place2", "Place3"), size = 100,
+                                 replace = TRUE))
+toy_df |> group_by(group1) |>
+  summarise(n_count = n()) |>
+  pivot_wider(names_from = group1,
+              values_from = n_count)
+
+## b
+table(toy_df$group1, toy_df$group2)
+
+toy_df |> group_by(group1, group2) |>
+  summarise(n_count = n()) |>
+  pivot_wider(names_from = group2,
+              values_from = n_count)
+```
+
+## Your Turn
+
+Your Turn 1
+
+```{r}
+videogame_df <- read_csv(here("data/videogame_clean.csv"))
+videogame_filtered <- videogame_df |>
+  filter(!is.na(metascore) & !is.na(median_playtime) & 
+           median_playtime != 0)
+
+## your turn 2
+ggplot(data = videogame_filtered, aes(x = metascore, y = median_playtime)) +
+  geom_point()
+
+## your turn 3, 4, 5
+library(ggrepel)
+videogame_label <- videogame_filtered |> filter(median_playtime > 1500)
+ggplot(data = videogame_filtered, aes(x = metascore, y = median_playtime)) +
+  geom_jitter(alpha = 0.4) +
+  geom_text_repel(data = videogame_label, aes(label = game))
+## geom_jitter adds a little bit of noise to each point that is plotted
+```

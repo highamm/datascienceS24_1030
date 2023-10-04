@@ -33,8 +33,12 @@ babynames_m10 <- babynames |>
 Class Exercise 2
 
 ```{r}
-ggplot(data = babynames_m10, aes(x = name, y = n)) +
-  geom_col()
+babynames_m10 <- babynames_m10 |> mutate(name_ord = fct_reorder(name, n))
+ggplot(data = babynames_m10, aes(x = name_ord, y = n)) +
+  geom_col() +
+  coord_flip()
+
+fct_
 ```
 
 Class Exercise 3
