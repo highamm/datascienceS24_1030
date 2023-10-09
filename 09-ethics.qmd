@@ -1,0 +1,26 @@
+---
+title: "Section 9: Ethics"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Data Privacy
+
+Just because you don't put your name on something does not necessarily make you unidentifiable.
+
+example: course evaluation sheets might identify you given the other information you provide.
+
+## Hypothesis Generation vs. Confirmation
+
+Your Turn 1
+
+Hypothesis generation/exploration is much more flexible, allowing us to explore many questions of interest while hypothesis confirmation is much more focused on answering one and only one specific question of interest. 
+
+Your Turn 3
+
+a. Hypothesis Confirmation
+
+b. Hypothesis Generation/Exploration
+
+c. Hypothesis Generation/Exploration
