@@ -1,0 +1,22 @@
+---
+title: "Section 11: Merging and Joining with `dplyr`"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Your Turn 
+
+Your Turn 1
+
+a. True
+
+b. True (see Venn diagrams on handout)
+
+c. False (a semi_join can result in fewer rows than a left_join on the same two data sets)
+
+Your Turn 2
+
+a. 6 rows
+
+b. 8 rows

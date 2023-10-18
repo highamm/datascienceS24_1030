@@ -1,5 +1,5 @@
 ---
-title: "Section 9: Data Import"
+title: "Section 10: Data Import"
 format: 
   html:
     embed-resources: true
@@ -58,3 +58,40 @@ h <- read_html(url)
 tab <- h |> html_nodes("table")
 tab[[5]] |> html_table()
 ```
+
+## Section 10.3: JSON Files
+
+```{r}
+library(jsonlite)
+cr_cards <- fromJSON(here("data/clash_royale_card_info.json"))
+cr_cards
+
+library(tidyverse)
+cr_cards_flat <- cr_cards[["cards"]]
+cr_cards_df <- as_tibble(cr_cards_flat)
+head(cr_cards_df)
+```
+
+## Class Exercises
+
+Class Exercise 1
+
+```{r}
+library(tidyverse)
+df <- read_delim(here("data/birthdays.txt"), delim = " - ",
+                 skip = 4, 
+                 col_names = c("birthdate",
+                               "name",
+                               "animal",
+                               "time"),
+                 na = c("?", "N/A", ""),
+                 col_types = cols(animal = col_factor())) |>
+  mutate(time = parse_number(time))
+head(df)
+```
+
+Class Exercise 2 and 3: Skip
+
+## Your Turn
+
+Your Turn 1
