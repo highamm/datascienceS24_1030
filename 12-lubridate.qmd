@@ -1,0 +1,67 @@
+---
+title: "Untitled"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(here)
+library(lubridate)
+ds_pop_df <- read_csv(here("data/multiTimeline.csv"),
+         skip = 2)
+ds_pop_df <- ds_pop_df |> mutate(date_var = ymd(Month, truncated = 1),
+                    date_var2 = ym(Month))
+ggplot(data = ds_pop_df,
+       aes(x = date_var,
+           y = `data science: (United States)`)) +
+  geom_line() +
+  geom_smooth(se = FALSE)
+```
+
+Class Exercise 3
+
+```{r}
+## install.packages("quantmod")
+library(quantmod)
+
+start <- ymd("2011-01-01")
+end <- ymd("2023-11-01")
+getSymbols(c("AAPL", "NTDOY", "CMG", "SPY", "GME"), src = "yahoo",
+           from = start, to = end)
+#> [1] "AAPL"  "NTDOY" "CMG"   "SPY"
+
+date_tib <- as_tibble(index(AAPL)) |>
+  rename(start_date = value)
+app_tib <- as_tibble(AAPL)
+nint_tib <- as_tibble(NTDOY)
+chip_tib <- as_tibble(CMG)
+spy_tib <- as_tibble(SPY)
+gme_tib <- as_tibble(GME)
+all_stocks <- bind_cols(date_tib, app_tib, nint_tib, chip_tib, spy_tib, gme_tib)
+
+stocks_long <- all_stocks |>
+  select(start_date, AAPL.Adjusted, NTDOY.Adjusted,
+                      CMG.Adjusted, SPY.Adjusted, GME.Adjusted) |>
+  pivot_longer(2:6, names_to = "Stock_Type", values_to = "Price") |>
+  mutate(Stock_Type = fct_recode(Stock_Type,
+                                 Apple = "AAPL.Adjusted",
+                                 Nintendo = "NTDOY.Adjusted",
+                                 Chipotle = "CMG.Adjusted",
+                                 `S & P 500` = "SPY.Adjusted",
+                                 Gamestop = "GME.Adjusted"
+                                 ))
+tail(stocks_long)
+#> # A tibble: 6 × 3
+#>   start_date Stock_Type  Price
+#>   <date>     <fct>       <dbl>
+#> 1 2021-05-17 Chipotle   1332. 
+#> 2 2021-05-17 S & P 500   402. 
+#> 3 2021-05-18 Apple       123. 
+#> 4 2021-05-18 Nintendo     14.1
+#> 5 2021-05-18 Chipotle   1325. 
+#> 6 2021-05-18 S & P 500   398.
+
+stocks_sp <- stocks_long |> filter(Stock_Type == "Gamestop")
+ggplot(data = stocks_sp, aes(x = start_date, y = Price)) +
+  geom_line()
+```
