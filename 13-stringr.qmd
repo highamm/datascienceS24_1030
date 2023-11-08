@@ -1,0 +1,59 @@
+---
+title: "Section 13: Tidy Text and `stringr`"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Section 13.2: Introduction to `stringr`
+
+```{r}
+library(here)
+library(tidyverse)
+med_djok_df <- read_csv(here("data/med_djok.csv"))
+head(med_djok_df)
+
+str_detect(med_djok_df$point, pattern = "f")
+
+str_detect(med_djok_df$point, pattern = "d@")
+
+sum(str_detect(med_djok_df$point, pattern = "d@"))
+```
+
+```{r}
+med_djok_df |> filter(str_detect(point, pattern = "@") == TRUE)
+
+med_djok_df |> filter(str_detect(point, pattern = "@") == TRUE) |>
+  mutate(error_type = case_when(str_detect(point, pattern = "d@") ~ "deep error",
+                                   str_detect(point, pattern = "w@") ~ "wide error",
+            str_detect(point, pattern = "n@") ~ "net error")) |>
+  group_by(PtWinner, error_type) |>
+  summarise(n_errors = n())
+```
+
+Exercise 4
+
+```{r}
+med_djok_df <- med_djok_df |>
+  mutate(serve_location =
+           case_when(str_detect(point, "^4") ~ "wide",
+                     str_detect(point, "^5") ~ "body",
+                     str_detect(point, "^6") ~ "down the center")) |>
+  relocate(serve_location)
+```
+
+Your Turn 1, 2, 3
+
+Your Turn 1
+
+```{r}
+med_djok_df |> group_by(Serving, serve_location) |>
+  summarise(serve_count = n())
+```
+
+Your Turn 2
+
+```{r}
+med_djok_df |> group_by(Serving, serve_location) |>
+  summarise(prop_win = mean(isSvrWinner))
+```

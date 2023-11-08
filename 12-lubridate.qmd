@@ -65,3 +65,6 @@ stocks_sp <- stocks_long |> filter(Stock_Type == "Gamestop")
 ggplot(data = stocks_sp, aes(x = start_date, y = Price)) +
   geom_line()
 ```
+
+## Your Turn 
+
