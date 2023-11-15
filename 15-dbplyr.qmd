@@ -1,0 +1,79 @@
+---
+title: "Section 16: SQL and `dbplyr`"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+
+library(DBI)
+library(duckdb)
+con <- DBI::dbConnect(duckdb::duckdb())
+
+library(here)
+duckdb_read_csv(conn = con, name = "tennis2018", 
+                files = here("data/atp_matches_2018.csv"))
+duckdb_read_csv(conn = con, name = "tennis2019", 
+                files = here("data/atp_matches_2019.csv"))
+
+dbListTables(con)
+```
+
+```{r query_sql}
+library(tidyverse)
+
+sql <- "
+  SELECT surface, winner_name, loser_name, w_ace, l_ace, minutes
+  FROM tennis2019 
+  WHERE minutes > 240
+"
+dbGetQuery(con, sql)|>
+  as_tibble()
+```
+
+Exercise 1
+
+This query is returning matches where minutes is more than 240 from the tennis 2019 data set (and it's selecting certain variables)
+
+Exercise
+
+SELECT is doing a `dplyr::select()` and WHERE is doing a `dplyr::filter()`
+
+## Section 16.2: `dbplyr`
+
+```{r}
+library(dbplyr)
+tennis_db <- tbl(con, "tennis2019")
+tennis_db
+
+tennis_query1 <- tennis_db |> 
+  filter(minutes > 240) |> 
+  select(minutes, winner_name, loser_name, minutes, tourney_name)
+tennis_query1
+
+tennis_query1 |>
+  collect()
+
+tennis_query1 |>
+  show_query()
+```
+
+```{r}
+over20aces <- tennis_db |> filter(w_ace > 20) |>
+  select(w_ace, winner_name) |>
+  group_by(winner_name) |>
+  summarise(nmatch = n()) |>
+  arrange(desc(nmatch))
+over20aces
+
+over20aces |> show_query()
+```
+
+Exercise 3
+
+```{r}
+tennis_surface <- tennis_db |> group_by(surface) |>
+  summarise(total = n())
+tennis_surface |> show_query()
+```
