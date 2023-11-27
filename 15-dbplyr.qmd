@@ -77,3 +77,33 @@ tennis_surface <- tennis_db |> group_by(surface) |>
   summarise(total = n())
 tennis_surface |> show_query()
 ```
+
+Exercise 4
+
+```{r}
+tennis_db |> filter(tourney_name == "Wimbledon")
+```
+
+## Class Exercises 
+
+Class Exercise 1
+
+```{r}
+tennis_db  |>
+  mutate("ace_diff" = w_ace - l_ace)   |>
+  select(winner_name, loser_name, w_ace, l_ace, ace_diff) |>
+  arrange(desc(ace_diff)) |>
+  show_query()
+
+```
+
+```{r}
+tennis_db |> mutate(rank_diff = winner_rank_points - loser_rank_points) |>
+  select(rank_diff, winner_name, loser_name)
+```
+
+```{r}
+tennis_db |> group_by(tourney_name) |>
+  mutate(mean_min = mean(minutes)) |>
+  show_query()
+```
