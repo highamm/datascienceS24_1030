@@ -1,3 +1,3 @@
-# Data Science Fall 2023
+# Data Science Spring 2024
 
-This repository contains notes from DATA/STAT 234 for the Fall 2023 semester. The repository is most useful for when you need to miss a class, as you can take a look at any exercises that we completed as a class for the day that you missed.
+This repository contains notes from DATA/STAT 234 for the 10:30 - 11:30 class in Spring 2024 semester. The repository is most useful for when you need to miss a class, as you can take a look at any exercises that we completed as a class for the day that you missed.
