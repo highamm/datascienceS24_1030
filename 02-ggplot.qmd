@@ -1,7 +1,11 @@
 ---
-title: "Untitled"
-format: html
+title: "Section 2: ggplot"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
 ---
+
 
 
 ```{r}
@@ -75,23 +79,76 @@ ggplot(data = stat113_df, aes(x = Year, y = GPA)) +
   geom_violin(colour = "lightpink4", fill = "lightpink")
 ```
 
-## Quarto
+## Class Exercises
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+Class Exercise 1.
 
 ```{r}
-1 + 1
+stat113_df
+
+ggplot(data = stat113_df, aes(x = SocialMedia)) +
+  geom_bar()
+
+stat113_restructured <- stat113_df |> group_by(SocialMedia) |>
+  summarise(n_social = n())
+stat113_restructured
+
+ggplot(data = stat113_restructured, aes(x = SocialMedia)) +
+  geom_bar()
+
+ggplot(data = stat113_restructured,
+       aes(x = SocialMedia, y = n_social)) +
+  geom_col()
 ```
 
-You can add options to executable code like this 
+Class Exercise 2.
 
 ```{r}
-#| echo: false
-2 * 2
+library(tidyverse)
+fitness_full <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/higham_fitness_clean.csv",
+                         col_types = list(stepgoal = col_factor())) |>
+  mutate(weekend_ind = case_when(weekday == "Sat" | weekday == "Sun" ~ "weekend",
+                                 TRUE ~ "weekday"))
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+```{r}
+ggplot(data = fitness_full, aes(x = distance, y = active_cals)) +
+  geom_point() +
+  geom_smooth(span = 0.1, se = FALSE,
+              method = "lm")
+## span controls how wiggly the smoother is
+## method = "lm" fits a linear regression model.
+```
+
+Class Exercise 3. 
+
+```{r}
+fitness_full
+ggplot(data = fitness_full, aes(x = Start,
+                                y = steps)) +
+  geom_line() +
+  geom_smooth()
+```
+
+Class Exercises 4 and 5.
+
+```{r}
+ggplot(data = stat113_df, aes(x = Exercise,
+                              y = GPA)) +
+  geom_point() +
+  facet_grid(Sex ~ Sport)
+
+ggplot(data = stat113_df, aes(x = Exercise,
+                              y = GPA)) +
+  geom_point() +
+  facet_wrap(~ Sex + Sport) ## not as nice
+
+ggplot(data = stat113_df, aes(x = Award,
+                              y = Exercise)) +
+  geom_boxplot(outlier.shape = 8)
+```
+
+Class Exercise 6. Skip.
+
+
+
