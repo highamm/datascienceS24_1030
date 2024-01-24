@@ -150,5 +150,101 @@ ggplot(data = stat113_df, aes(x = Award,
 
 Class Exercise 6. Skip.
 
+## Your Turn 
+
+Your Turn 1. See Handout
+
+Your Turn 2 and 3.
+
+```{r}
+ggplot(data = stat113_df, 
+       aes(x = Haircut, y = GPA)) +
+  geom_point(aes(colour = Sport))
+
+ggplot(data = stat113_df, 
+       aes(x = Haircut, y = GPA)) +
+  geom_point() +
+  facet_wrap(~ Sport)
+```
+
+Your Turn 4
+
+```{r}
+ggplot(data = fitness_full,
+       aes(x = steps)) +
+  geom_freqpoly(aes(colour = weekday))
+## or, equivalenttly, with a global 
+## colour aesthetic:
+ggplot(data = fitness_full,
+       aes(x = steps, colour = weekday)) +
+  geom_freqpoly()
+
+ggplot(data = fitness_full,
+       aes(x = steps)) +
+  geom_histogram() +
+  facet_wrap(~ weekday)
+```
+
+Your Turn 5
+
+A line plot is only useful if there is one value of y for each uniquye value of x.
+
+```{r}
+ggplot(data = stat113_df,
+       aes(x = GPA, y = Exercise)) +
+  geom_line()
+## this doesn't make sense to make
+## because there can be many students
+## with one GPA
+```
+
+Your Turn 6
+
+Those 70 values of GPA are missing, likely from first-years in STAT 113. 
+
+## Section 2.5
 
 
+
+## Section 2.6
+
+Class Exercises
+
+Class Exercise 1.
+
+```{r}
+ggplot(data = stat113_df,
+       aes(x = Wgt, y = Hgt)) +
+  geom_point(aes(colour = Sport)) +
+  geom_smooth()
+```
+
+Points are now coloured but the smoother does not use sport as a colour aesthetic so there is just one smoother now.
+
+```{r}
+## class exercise 2
+ggplot(data = stat113_df, aes(x = TV)) +
+  geom_histogram(colour = "black", fill = "white")
+```
+
+Your Turn 1.
+
+a will not work because "lm" is not a variable in our data set (so should not go inside aes()).
+
+
+```{r}
+ggplot(data = stat113_df,
+       aes(x = Wgt, y = Hgt, colour = Sport)) +
+  geom_point(colour = "purple") +
+  geom_smooth()
+```
+
+b will work: specifying `colour = "purple"` as a local option to geom_point() overrides the global aesthetic.
+
+c will not work: groupvar should be an aesthetic while purple should not be.
+
+d will not work: groupvar should be an aesthetic.
+
+e works!
+
+f does not work: purple is not a variable so should not go inside aes().
