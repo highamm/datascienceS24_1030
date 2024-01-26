@@ -248,3 +248,7 @@ d will not work: groupvar should be an aesthetic.
 e works!
 
 f does not work: purple is not a variable so should not go inside aes().
+
+Your Turn 2
+
+aes(x = xvar, y = yvar) would have to be put in both geom_point() and geom_smooth(). The advantage of global aesthetics is that they're useful if all subsequent geoms will use them.
