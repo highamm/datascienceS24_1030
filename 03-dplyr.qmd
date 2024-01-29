@@ -1,0 +1,82 @@
+---
+title: "Section 3: `Intro`dplyr`"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Section 3.2: Practice
+
+Class Exercises 1 and 2.
+
+```{r}
+library(babynames)
+library(tidyverse)
+babynames_m10 <- babynames |>
+  filter(sex == "M" & year == 2017) |>
+  arrange(desc(n)) |>
+  slice(1:10)
+babynames_m10
+
+ggplot(data = babynames_m10, aes(x = name, 
+                                 y = n)) +
+  geom_col()
+```
+
+Class Exercises 3 and 4
+
+```{r}
+babynames_hayden <- babynames |>
+  filter(name == "Hayden" & sex == "M")
+
+ggplot(data = babynames_hayden,
+       aes(x = year, y = n)) +
+  geom_line()
+```
+
+Class Exercise 5.
+
+This returns a missing value because the first argument of `mean()` is not a data frame. For most tidyverse functions (`slice()`, `filter()`, etc.), the first argument is a data frame so we can use the pipe for these.
+
+## Your Turn
+
+Your Turn 1
+
+```{r}
+## a
+babynames |> filter(year != 1945)
+
+## b
+babynames |> filter(n > 400 & n < 5000)
+
+
+## c
+babynames_mh <- babynames |>
+  filter((sex == "F" & name == "Hilary") |
+                      (sex == "F" & name == "Monica"))
+babynames_mh
+
+## your turn 2
+ggplot(data = babynames_mh, aes(x = year, y = n,
+                                colour = name)) +
+  geom_line()
+
+## your turn 4
+babynames_2001f <- babynames |> filter(year == 2001 & sex == "F") |>
+  arrange(desc(n)) |>
+  slice(1:10)
+ggplot(data = babynames_2001f, aes(x = name, y = n)) +
+  geom_col()
+
+## your turn 3
+baby5 <- babynames |>
+  filter((name == "Matthew" & sex == "M") |
+                      (name == "Ivan" & sex == "M") |
+                      (name == "Jessica" & sex == "F") |
+                      (name == "Robin" & sex == "M") |
+                      (name == "Michael" & sex == "M"))
+
+ggplot(data = baby5, aes(x = year, y = n)) +
+  geom_line(aes(colour = name))
+```
