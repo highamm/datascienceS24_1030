@@ -112,6 +112,17 @@ Class Exercise 1. It depends on what you're interested in. But, for example, if 
 
 Class Exercise 2. It is definitely nice to be as inclusive as possible. But we should be careful not to inadvertently make a survey that is supposed to be anonymous not so. 
 
+Class Exercise 3.
+
+```{r}
+slumajors_df |>
+  mutate(testcase = case_when(percfemale >= 40 ~ "Yes",
+                              percfemale > 60 ~ "No")) |>
+  select(testcase, percfemale, everything())
+## case_when() assesses the conditions in order
+## observations that satisfy none of the conditions 
+## get assigned an NA
+```
 Class Exercise 4 and 5.
 
 ```{r}
@@ -136,12 +147,15 @@ This is returning the first five rows for each of the 270 groups. If we want jus
 
 ## Your Turn
 
+Your Turn 1. See Handout.
+
 ```{r}
 toy_df <- tibble(x = c(NA, 3, 4, 7),
                  y = c(1, 4, 3, 2),
                  z = c("A", "A", "B", NA))
 toy_df
 ```
+
 Your Turn 2.
 
 a. 
@@ -223,4 +237,23 @@ babynames_distinct <- babynames |> group_by(year) |>
 ggplot(data = babynames_distinct, aes(x = year, 
                                       y = n_name)) +
   geom_line()
+```
+
+Your Turn 6.
+
+```{r}
+babynames_distinct2 <- babynames |> group_by(year, sex) |>
+  summarise(n_name = n())
+
+ggplot(data = babynames_distinct2, aes(x = year, 
+                                      y = n_name)) +
+  geom_line(aes(colour = sex))
+```
+
+Your Turn 7
+
+```{r}
+babynames |> group_by(name) |>
+  summarise(n_births = sum(n)) |>
+  arrange(desc(n_births))
 ```
