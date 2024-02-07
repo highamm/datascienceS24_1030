@@ -1,0 +1,28 @@
+---
+title: "Untitled"
+format: html
+---
+
+## Class Exercises
+
+Class Exercise 1 and 2.
+
+```{r}
+library(gapminder)
+library(tidyverse)
+gapminder
+
+country_df <- gapminder
+country_df
+ggplot(data = country_df, aes(x = year,
+                              y = lifeExp,
+                              colour = continent)) +
+  geom_line(aes(group = country)) +
+  facet_wrap(~ continent) +
+  scale_colour_viridis_d() +
+  labs(x = "Year",
+       y = "Life Expectancy",
+       colour = "Continent",
+       title = "Life Expectancy through Time")
+
+```
