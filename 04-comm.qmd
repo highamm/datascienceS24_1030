@@ -5,7 +5,7 @@ format: html
 
 ## Class Exercises
 
-Class Exercise 1 and 2.
+Class Exercise 1 - 6 (skip class exercise 5).
 
 ```{r}
 library(gapminder)
@@ -13,16 +13,65 @@ library(tidyverse)
 gapminder
 
 country_df <- gapminder
-country_df
+country_df |> filter(continent == "Africa") |>
+  filter(year == 1992 & lifeExp < 35)
+country_df |> filter(continent == "Asia") |>
+  filter(year == 1977 & lifeExp < 35)
+
+label_df <- country_df |> filter(country == "Rwanda" |
+                       country == "Cambodia") |>
+  group_by(country) |>
+  filter(lifeExp == min(lifeExp))
+label_df
 ggplot(data = country_df, aes(x = year,
                               y = lifeExp,
                               colour = continent)) +
-  geom_line(aes(group = country)) +
+  geom_line(aes(group = country), alpha = 0.4) +
   facet_wrap(~ continent) +
+  geom_text(data = label_df, aes(label = country),
+            show.legend = FALSE) +
   scale_colour_viridis_d() +
   labs(x = "Year",
        y = "Life Expectancy",
        colour = "Continent",
-       title = "Life Expectancy through Time")
+       title = "Life Expectancy through Time",
+       caption = "Rwandan Mass Genocide, Cambodian Civil War")
 
+```
+
+## Your Turn
+
+Your Turn 2.
+
+```{r}
+library(tidyverse)
+fitness_full <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/higham_fitness_clean.csv",
+                         col_types = list(stepgoal = col_factor())) |>
+  mutate(weekend_ind = case_when(weekday == "Sat" | weekday == "Sun" ~ "weekend", 
+                                 TRUE ~ "weekday"))
+```
+
+```{r}
+fitness_label <- fitness_full |> filter(Start == "2019-04-14" |
+                         Start == "2021-05-24") |>
+  mutate(event = case_when(month == "Apr" ~ "half-marathon",
+                           month == "May" ~ "grand canyon")) |>
+  relocate(event) |> ## puts event as the first variable
+  mutate(event_take2 = c("half-marathon", "grand canyon"))
+ggplot(data = fitness_full, aes(x = Start,
+                                y = steps)) +
+  geom_line() +
+  geom_smooth() +
+  geom_text(data = fitness_label, aes(label = event))
+```
+
+Your Turn 3
+
+```{r}
+mtcars <- mtcars |> rownames_to_column() |> rename(car_name = rowname)
+mtcars_label <- mtcars |> filter(mpg == max(mpg))
+
+ggplot(data = mtcars, aes(x = wt, y = mpg)) +
+  geom_point() +
+  geom_text(data = mtcars_label, aes(label = car_name))
 ```
