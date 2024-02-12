@@ -12,3 +12,51 @@ library(here)
 athletes_df <- read_csv(here("data/athletesdata.csv"))
 athletes_df
 ```
+
+## Class Exercises 
+
+Class Exercise 1. Doing so puts library(name-of-package) in your console, which is not a reproducible practice.
+
+Class Exercises 2 and 3
+```{r}
+ggplot(data = mtcars, aes(x = hp, y = drat)) +
+  geom_point(aes(colour = factor(gear))) +
+  facet_wrap(~ cyl) +
+  geom_smooth()
+```
+
+```{r}
+library(palmerpenguins)
+penguins |> mutate(flipper_ratio = flipper_length_mm / body_mass_g) |>
+  group_by(species, island) |>
+  summarise(mean_flipper = mean(flipper_ratio, na.rm = TRUE)) |>
+  arrange(mean_flipper) |>
+  pivot_wider(names_from = c("species"), values_from = "mean_flipper")
+```
+
+Class Exercise 4.
+
+```{r}
+library(here)
+videogame_df <- read_csv(here("data/videogame_clean.csv"))
+
+videogame_df |> summarise(mean_pt = mean(median_playtime, 
+                                         na.rm = TRUE),
+                          median_pt = median(median_playtime,
+                                             na.rm = TRUE))
+
+videogame_df |> filter(median_playtime <= 1000) |>
+  summarise(mean_pt = mean(median_playtime, 
+                                         na.rm = TRUE),
+                          median_pt = median(median_playtime,
+                                             na.rm = TRUE))
+```
+
+Class Exercise 5.
+
+```{r}
+## how do I separate the term variable into a semester and a year?
+library(tidyverse)
+df <- tibble(term = c("F19", "S20", "S21", "F19"))
+df
+```

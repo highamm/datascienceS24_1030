@@ -1,6 +1,13 @@
 ---
-title: "Untitled"
-format: html
+title: "Section 4: Communication"
+author: "Matt Higham"
+execute: 
+  output: false
+  echo: false
+  warning: false
+format: 
+  html:
+    embed-resources: true
 ---
 
 ## Class Exercises
@@ -23,6 +30,11 @@ label_df <- country_df |> filter(country == "Rwanda" |
   group_by(country) |>
   filter(lifeExp == min(lifeExp))
 label_df
+```
+
+```{r}
+#| output: true
+#| fig-height: 4
 ggplot(data = country_df, aes(x = year,
                               y = lifeExp,
                               colour = continent)) +
@@ -39,8 +51,17 @@ ggplot(data = country_df, aes(x = year,
 
 ```
 
+Skip Class Exercise 7.
+
+Class Exercise 8.
+
 ## Your Turn
 
+Your Turn 1.
+
+The boxplot options have been changed with point-and-click so trying to recreate them exactly would be really challenging.
+
+The removal of outliers is not reproducible unless he explicitly states in a write-up which outliers were removed.
 Your Turn 2.
 
 ```{r}
@@ -74,4 +95,28 @@ mtcars_label <- mtcars |> filter(mpg == max(mpg))
 ggplot(data = mtcars, aes(x = wt, y = mpg)) +
   geom_point() +
   geom_text(data = mtcars_label, aes(label = car_name))
+```
+
+Your Turn 4.
+
+```{r}
+library(tidyverse)
+hpi_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/hpi-tidy.csv")
+
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region)) +
+  geom_point() +
+  theme(panel.grid.major = element_line(colour = "green",
+                                        size = 5),
+        plot.background = element_rect(fill = "yellow4"),
+        axis.text = element_text(colour = "yellow"),
+        axis.line = element_line(linewidth = 6,
+                                 colour = "salmon3"),
+        legend.background = element_rect(fill = "green3"))
+## ggplot plots are made up of rectangles, lines, and text,
+## which can be modified in theme() with element_rect(),
+## element_line(), and element_text()
+
+## element_blank() can be used to get rid of something
+## entirely
 ```
