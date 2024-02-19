@@ -60,3 +60,25 @@ library(tidyverse)
 df <- tibble(term = c("F19", "S20", "S21", "F19"))
 df
 ```
+
+## Your Turn
+
+Your Turn 3
+
+```{r}
+library(palmerpenguins)
+library(tidyverse)
+penguins |> mutate(flipper_ratio = flipper_length_mm / body_mass_g) |>
+  filter(flipper_ratio > median(flipper_ratio, na.rm = TRUE)) |>
+  group_by(species) |>
+  summarise(count_var = n())
+```
+
+Your Turn 4
+
+```{r}
+library(tidyverse)
+## how do I sort this data so that x is going from smallest to largest
+toy_df <- tibble::tibble(x = c(10, 5, 15, 2))
+toy_df
+```
