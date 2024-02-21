@@ -1,0 +1,90 @@
+---
+title: "Section 6: `tidyr`"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Class Exercises
+
+Class Exercise 2
+
+```{r}
+library(tidyverse)
+library(here)
+prices_df <- read_csv(here("data/UBSprices2.csv"))
+prices_long <- prices_df |> pivot_longer(2:7,
+                          names_to = "commodity_year",
+                          values_to = "price") |>
+  separate(commodity_year, into = c("commodity", "year"),
+           sep = -4)
+## sep = -4 means that the separator will separate 
+## 4 digits from the right
+
+## class exercise 3
+prices_wide <- prices_long |> pivot_wider(names_from = commodity,
+                           values_from = price)
+prices_long
+prices_wide
+```
+
+Class Exercise 4. `prices_wide` is slightly easier for the first plot (you can make this plot with `prices_long`, just filtering so that `commodity == "rice"` first).
+
+`prices_long` is easier to make the second plot because you can use `commodity` as a `colour` aesthetic.
+
+Class Exercise 5.
+
+```{r}
+mortality_df <- read_csv(here("data/under5mortality.csv"))
+head(mortality_df)
+```
+
+
+```{r}
+mortality_long <- mortality_df |> pivot_longer(2:217, 
+                             names_to = "Year",
+                             values_to = "mortality",
+                             names_transform = list(Year = as.numeric)) |>
+  rename(country = `Under five mortality`)
+
+ggplot(data = mortality_long, aes(x = Year,
+                                  y = mortality)) +
+  geom_line(aes(group = country), alpha = 0.2)
+```
+
+Class Exercise 7. The plot looks odd because many lines are completely flat before 1900. One reason for this could be that we actually do not have data for each year before 1900. In Albania, the mortality is constant in the 1800s, but, this is probably some sort of average across the entire century.
+
+## Your Turn
+
+Your Turn 1
+
+```{r}
+baseball_df <- read_csv(here("data/mlb2016.csv"))
+head(baseball_df)
+```
+
+Some columns (salary, total.value, etc.) have a dollar sign, which is a unit.
+
+Years column actually has total years that the player has played in the MLB and also has the specific year duration they've played.
+
+Your Turn 2.
+
+```{r}
+baseball_df |> separate(Years, into = c("duration", "years_played"),
+                        sep = " ") |>
+  separate(years_played, into = c("start", "end"), sep = "-") |>
+  mutate(Salary = parse_number(Salary),
+         Total.Value = parse_number(Total.Value),
+         Avg.Annual = parse_number(Avg.Annual),
+         start = parse_number(start),
+         end = parse_number(end))
+```
+
+Your Turn 3. Those players do not have a range of years so there is no `-` so there is nothing to separate by.
+
+Your Turn 4.
+
+```{r}
+## see above/.
+```
