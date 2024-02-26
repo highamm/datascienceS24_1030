@@ -154,15 +154,18 @@ Your Turn 8 and 9.
 
 ```{r}
 ## all three of these achieve the task in the exercise
+## not viable for YT 10
 nfl_long |> group_by(position, year) |>
   mutate(rank_var = rank(salary, ties.method = "first")) |>
   summarise(max_salary = max(salary, 
                              na.rm = TRUE))
 
+## is viable for YT 10
 nfl_max <- nfl_long |> group_by(position, year) |>
   mutate(rank_var = rank(desc(salary), ties.method = "first")) |>
   filter(rank_var == 1)
 
+## is viable for YT 10
 nfl_long |> group_by(position, year) |>
   arrange(desc(salary)) |>
   slice(1)
@@ -187,6 +190,53 @@ ggplot(data = nfl_max, aes(x = year, y = salary)) +
 ## but it's just an example of how.
 
 ggplot(data = nfl_max, aes(x = year, y = salary)) +
+  geom_line() +
+  facet_wrap(~ position) +
+  theme_minimal()
+```
+
+Your Turn 10
+
+```{r}
+nfl_20 <- nfl_long |> group_by(position, year) |>
+  mutate(rank_var = rank(desc(salary), ties.method = "first")) |>
+  filter(rank_var <= 20) |>
+  group_by(position, year) |>
+  summarise(mean_sal = mean(salary, na.rm = TRUE))
+
+ggplot(data = nfl_20, aes(x = year, y = mean_sal)) +
+  geom_line() +
+  facet_wrap(~ position) +
+  theme_minimal()
+```
+
+Your Turn 11.
+
+```{r}
+## inflation is 1.13
+nfl_infl <- nfl_long |> group_by(position, year) |>
+  mutate(rank_var = rank(desc(salary), ties.method = "first")) |> 
+  filter(year == 2011 | year == 2018) |>
+  mutate(salary_adj = if_else(year == 2011,
+                              true = salary * 1.13,
+                              false = salary)) |>
+  filter(rank_var <= 20) |>
+  group_by(position, year) |>
+  summarise(mean_sal = mean(salary_adj, na.rm = TRUE))
+nfl_infl
+ggplot(data = nfl_infl, aes(x = year, y = mean_sal)) +
+  geom_line() +
+  facet_wrap(~ position) +
+  theme_minimal()
+```
+
+Your Turn 12.
+
+```{r}
+nfl_player <- nfl_long |> group_by(position, year) |>
+  mutate(rank_var = rank(desc(salary), ties.method = "first")) |>
+  filter(year == 2018)
+ggplot(data = nfl_player, aes(x = rank_var, y = salary)) +
   geom_line() +
   facet_wrap(~ position) +
   theme_minimal()
