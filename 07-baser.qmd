@@ -27,3 +27,23 @@ fitness_df |> mutate(weekend_ind = if_else(weekday %in% weekend_vec,
                                            false = "not weekend")) |>
   relocate(weekend_ind)
 ```
+
+Class Exercise 2
+
+```{r}
+set.seed(15125141)
+toy_df <- tibble(xvar = rnorm(100, 3, 4),
+                 yvar = rnorm(100, -5, 10),
+                 group1 = sample(c("A", "B", "C"), size = 100, replace = TRUE),
+                 group2 = sample(c("Place1", "Place2", "Place3"), size = 100,
+                                 replace = TRUE))
+toy_df
+
+toy_df |> group_by(group1) |>
+  summarise(n_group1 = n()) |>
+  pivot_wider(names_from = group1, values_from = n_group1)
+
+toy_df |> group_by(group1, group2) |>
+  summarise(n_count = n()) |>
+  pivot_wider(names_from = group2, values_from = n_count)
+```
