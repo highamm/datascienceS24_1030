@@ -1,0 +1,34 @@
+---
+title: "Section 9: Ethics"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Class Exercises
+
+Class Exercise 1. Not putting your name on something (but giving other possibly identifiable information) does not necessarily mean that your data can't be traced back to you.
+
+Class Exercise 2. For b and d, it would be not ethical because we've possibly provided too much information so that someone could obtain another student's grade.
+
+For a, I would lean toward this being not ethical because you never know if someone would be to trace the canvas time back to someone's GPA.
+
+For c, I would lean toward this being okay, as Major is often public and the other variables are not that sensitive.
+
+## Your Turn
+
+Your Turn 1. For hypothesis confirmation, we're usually answering one specific question of interest (think about a hypothesis test setting in STAT 113). Hypothesis generation/exploration usually is more flexible in that we can explore many different questions of interest with the same data set.
+
+Your Turn 2. For hypothesis confirmation, we only use each observation once. For generation, we can use them as many times as we want.
+
+Your Turn 3.
+
+a. Hypothesis confirmation (we have one specific question of interest).
+
+b. Hypothesis generation (using each observation more than once for each new question of interest).
+
+c. Hypothesis generation (using each observation more than once to answer different seasonal trend questions).
+
+
+

@@ -141,3 +141,17 @@ newnames <- paste(allen_stats[1, ], allen_stats[2, ])
 allen_stats |> set_names(newnames) |>
   slice(-1, -2)
 ```
+
+## Your Turn
+
+```{r}
+url <- "https://saintsathletics.com/sports/womens-basketball/stats/2023-24/"
+
+tab <- read_html(url) |> html_nodes("table")
+tab
+obj <- tab[[1]] |> html_table()
+obj
+obj2 <- tab[[2]] |> html_table()
+obj2
+
+```
