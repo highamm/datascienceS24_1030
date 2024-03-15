@@ -1,0 +1,103 @@
+---
+title: "Section 11: Merging"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+
+library(tidyverse)
+library(here)
+atp_2019 <- read_csv(here("data/atp_matches_2019.csv"))
+atp_2018 <- read_csv(here("data/atp_matches_2018.csv"))
+atp_2019
+atp_2018
+
+atp_df <- bind_rows(atp_2018, atp_2019)
+
+atp_2018 <- read_csv(here("data/atp_matches_2018.csv"),
+                     col_types = cols(winner_seed = col_character(),
+                                      loser_seed = col_character()))
+
+atp_df <- bind_rows(atp_2018, atp_2019)
+atp_df
+```
+
+```{r}
+df_test2a <- tibble(xvar = c(1, 2))
+df_test2b <- tibble(xvar = c(1, 2), y = c(5, 1))
+df_test2a
+df_test2b
+bind_rows(df_test2a, df_test2b)
+## if there is a variable that is missing from one of the
+## data frames, R fills this in with missing values for that variable
+#> # A tibble: 4 × 2
+#>    xvar     y
+#>   <dbl> <dbl>
+#> 1     1    NA
+#> 2     2    NA
+#> 3     1     5
+#> 4     2     1
+```
+
+```{r}
+df_test1a <- tibble(xvar = c(1, 2), yvar = c(5, 1))
+df_test1b <- tibble(x = c(1, 2), y = c(5, 1))
+bind_cols(df_test1a, df_test1b)
+#> # A tibble: 2 × 4
+#>    xvar  yvar     x     y
+#>   <dbl> <dbl> <dbl> <dbl>
+#> 1     1     5     1     5
+#> 2     2     1     2     1
+```
+
+Exercise 1.
+
+```{r}
+df_test1a <- tibble(xvar = c(1, 2), yvar = c(5, 1)) |>
+  rename(x = xvar,
+         y = yvar)
+df_test1a
+df_test1b <- tibble(x = c(1, 2), y = c(5, 1))
+bind_rows(df_test1a, df_test1b)
+```
+
+Exercise 3.
+
+a. 5 rows (the three rows with matches plus the two rows in the first data set that don't have a match).
+
+b. 6 rows
+
+c. 8 rows (3 rows for the matches plus 5 rows for the non-matching keys)
+
+d. 3 rows (only the matching keys)
+
+e. 3 rows (keeps A, C, E, the rows that have a matching key in df2)
+
+f. 2 rows (B and F do not have matches in df2).
+
+## Your Turn
+
+Your Turn 1.
+
+a. True
+
+b. True (venn diagrams: the inner area cannot ever be greater than the inner area plus the left area)
+
+c. False (duplicate keys for left join would create more rows, and, other reasons).
+
+Your Turn 2.
+
+a. 6 rows 
+
+b. 8 rows (A, A, B, C, C, D, D, D)
+
+c. 10 rows (A, A, B, C, C, D, D, D, F, F)
+
+d. 4 rows (A, C, C, C)
+
+e. 4 rows 
+
+f. 2 rows (the two F's)
