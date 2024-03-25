@@ -64,6 +64,56 @@ df_test1b <- tibble(x = c(1, 2), y = c(5, 1))
 bind_rows(df_test1a, df_test1b)
 ```
 
+## Mutating Joins
+
+```{r}
+library(babynames)
+life_df <- babynames::lifetables
+birth_df <- babynames::births
+babynames_df <- babynames::babynames
+
+head(babynames)
+head(births)
+head(lifetables)
+```
+
+
+```{r}
+library(tidyverse)
+combined_left <- left_join(babynames_df, birth_df,
+                           by = join_by(year == year))
+combined_left
+## first values of births are missing because
+## birth_df starts at 1909
+
+left_join(birth_df, babynames_df,
+          by = join_by(year == year))
+## exercise 2
+## there are fewer rows because now, the 1880 to 1908 rows
+## are dropped when we join
+
+full_join(babynames_df, birth_df, by = join_by(year == year))
+
+inner_join(babynames_df, birth_df, by = join_by(year == year))
+```
+
+## Filtering Joins
+
+```{r}
+win10 <- atp_2018 |> group_by(winner_name) |>
+  summarise(nwin = n()) |> 
+  filter(nwin >= 10)
+win10
+
+tennis_2019_10 <- semi_join(atp_2019, win10,
+                            by = join_by(winner_name == winner_name))
+
+tennis_2019_10$winner_name
+
+new_winners <- anti_join(atp_2019, atp_2018,
+                         by = join_by(winner_name == winner_name)) 
+```
+
 Exercise 3.
 
 a. 5 rows (the three rows with matches plus the two rows in the first data set that don't have a match).
@@ -78,6 +128,73 @@ e. 3 rows (keeps A, C, E, the rows that have a matching key in df2)
 
 f. 2 rows (B and F do not have matches in df2).
 
+## Class Exercises
+
+Class Exercise 1. Must be sure that the observations are in the exact same order in the two data sets that you are combining.
+
+Class Exercise 2.
+
+```{r}
+slumajors_df <- read_csv(here("data/SLU_Majors_17_21.csv"))
+collegemajors_df <- read_csv(here("data/college-majors.csv"))
+
+left_join(slumajors_df, collegemajors_df,
+          join_by(Major == Major))
+## because the keys do not match exactly,
+## the join does not work properly
+```
+
+Class Exercise 3.
+
+```{r}
+mortality_df <- read_csv(here("data/gun_violence_us.csv"))
+mortality_df
+
+dc_df <- tibble(state = "DC", mortality_rate = 16.7,
+       ownership_rate = 0.087,
+       region = "NE")
+
+mortality_df
+dc_df
+all_df <- bind_rows(mortality_df, dc_df) 
+```
+
+Class Exercise 4.
+
+```{r}
+df1 <- as_tibble(state.x77)
+df2 <- as_tibble(state.abb)
+df1
+df2
+states_df <- bind_cols(df1, df2)
+## must assume that the order of states is the same
+## in df1 and df2
+```
+
+Class Exercise 5.
+
+```{r}
+full_join(all_df, states_df, join_by(state == value))
+left_join(all_df, states_df, join_by(state == value))
+
+```
+
+Class Exercise 6.
+
+```{r}
+inner_join(all_df, states_df, join_by(state == value))
+left_join(states_df, all_df, join_by(value == state))
+```
+
+Class Exercise 7 and 8.
+
+```{r}
+ne_df <- all_df |> filter(region == "NE")
+semi_join(states_df, ne_df, join_by(value == state))
+
+not_ne_df <- all_df |> filter(region != "NE")
+anti_join(states_df, not_ne_df, join_by(value == state))
+```
 ## Your Turn
 
 Your Turn 1.
