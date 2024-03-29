@@ -218,3 +218,19 @@ d. 4 rows (A, C, C, C)
 e. 4 rows 
 
 f. 2 rows (the two F's)
+
+Your Turn 3.
+
+Skip.
+
+Your Turn 4.
+
+a. 300 rows: all rows in courses_df would be returned with full info for the matches in info_df and NA's for the professors without a match in info_df
+
+b. 5 rows: the 5 professors with a matching key in courses_df
+
+c. 285 rows: the 15 rows corresponding to the 5 professors in info_df are removed.
+
+d. 15 rows: only the rows with matching keys in both data frames are kept.
+
+e. 310 rows: the 300 rows from the first data frame plus 10 rows for professors in info_df without a matching key in course_df.
