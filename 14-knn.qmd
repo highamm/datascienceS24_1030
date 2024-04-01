@@ -1,0 +1,80 @@
+---
+title: "Section 14: k-nearest-neighbors"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+set.seed(1119)
+library(tidyverse)
+library(here) 
+
+pokemon <- read_csv(here("data", "pokemon_full.csv")) |>
+  filter(Type %in% c("Steel", "Dark", "Fire", "Ice")) |>
+  mutate(across(where(is.numeric), ~ (.x - min(.x)) /
+                                 (max(.x) - min(.x)))) 
+## mutate(across()) is scaling all of the quantiative variables
+## according to the formula in the handwritten notes
+## where(is.numeric) tells R to only scale numeric variables
+```
+
+```{r}
+train_sample <- pokemon |>
+  slice_sample(n = 75)
+## randomly sample 75 rows of pokemon
+
+test_sample <- anti_join(pokemon, train_sample)
+## anti_join() says to filter pokemon to only contain
+## rows not in the train_sample
+```
+
+```{r}
+## install.packages("GGally")
+library(GGally)
+ggpairs(data = train_sample, columns = c(4, 5, 6, 3))
+## looking at side-by-side boxplots, it looks like
+## all 3 predictors might be useful, but defense looks
+## most useful as the boxplots are most different for defense
+
+## the diagonal shows density plots which are liked smoothed histograms
+```
+
+```{r}
+## install.packages("class")
+library(class)
+
+## create a data frame that only has the predictors
+## that we will use
+train_small <- train_sample |> select(HP, Attack, Defense, Speed)
+test_small <- test_sample |> select(HP, Attack, Defense, Speed)
+
+## put our response variable into a vector
+train_cat <- train_sample$Type
+test_cat <- test_sample$Type
+
+knn_mod <- knn(train = train_small, test = test_small,
+               cl = train_cat, k = 9)
+knn_mod ## gives a vector of classifications for the test sample
+
+## vector of classifications and the vector of "true" values
+## rows are the predictions
+## columns are the actual values
+table(knn_mod, test_cat) 
+```
+
+Exercise 2. There were 11 pokemon that were correctly predicted to be fire that were actually fire pokemon.
+
+Exercise 3. There were 3 pokemon that were incorrectly predicted to be dark that were actually fire pokemon.
+
+Exercise 5.
+
+```{r}
+test_sample
+(1 + 11 + 1 + 3) / 45
+
+tab <- table(knn_mod, test_cat) 
+sum(diag(tab)) / sum(tab)
+## diag(tab) pulls only the diagonal elements from tab
+```
