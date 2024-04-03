@@ -33,7 +33,7 @@ test_sample <- anti_join(pokemon, train_sample)
 ```{r}
 ## install.packages("GGally")
 library(GGally)
-ggpairs(data = train_sample, columns = c(4, 5, 6, 3))
+ggpairs(data = train_sample, columns = c("SpAtk", "height", "weight", "Type"))
 ## looking at side-by-side boxplots, it looks like
 ## all 3 predictors might be useful, but defense looks
 ## most useful as the boxplots are most different for defense
@@ -47,8 +47,8 @@ library(class)
 
 ## create a data frame that only has the predictors
 ## that we will use
-train_small <- train_sample |> select(HP, Attack, Defense, Speed)
-test_small <- test_sample |> select(HP, Attack, Defense, Speed)
+train_small <- train_sample |> select(HP, Attack, Defense, Speed, SpAtk, weight)
+test_small <- test_sample |> select(HP, Attack, Defense, Speed, SpAtk, weight)
 
 ## put our response variable into a vector
 train_cat <- train_sample$Type
@@ -78,3 +78,11 @@ tab <- table(knn_mod, test_cat)
 sum(diag(tab)) / sum(tab)
 ## diag(tab) pulls only the diagonal elements from tab
 ```
+
+Exercise 6. Change predictors and/or change k to see if you can improve the classification rate.
+
+Exercise 8. Smaller values of k have the advantage that you're using more similar cases in the training sample to classify an observation in the test sample. But, a value of k that is too small is subject to a lot of random chance in what neighbors happen to be around the test observation.
+
+aside:
+small k: low bias, high variance
+large k: high bias, low variance
