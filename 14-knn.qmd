@@ -81,8 +81,111 @@ sum(diag(tab)) / sum(tab)
 
 Exercise 6. Change predictors and/or change k to see if you can improve the classification rate.
 
+Exercise 7.
+
+```{r}
+## figure out the most common Type 
+train_sample |> group_by(Type) |>
+  summarise(n_type = n())
+
+## figure out what proportion of Pokemon in test_sample
+## are of the most common type in train_sample
+test_sample |>
+  mutate(is_fire = if_else(Type == "Fire",
+                           true = 1,
+                           false = 0)) |>
+  relocate(is_fire) |>
+  summarise(prop_fire = mean(is_fire))
+## baseline: 0.356
+```
+
 Exercise 8. Smaller values of k have the advantage that you're using more similar cases in the training sample to classify an observation in the test sample. But, a value of k that is too small is subject to a lot of random chance in what neighbors happen to be around the test observation.
 
 aside:
 small k: low bias, high variance
 large k: high bias, low variance
+
+## Class Exercises
+
+Class Exercise 1.
+
+```{r}
+library(tidyverse)
+
+pokemon <- read_csv(here::here("data/pokemon_full.csv")) 
+set.seed(1119)
+
+## scale the quantitative predictors
+pokemon_scaled <- pokemon |>
+  mutate(across(where(is.numeric), ~ (.x - min(.x)) /
+                  (max(.x) - min(.x))))
+
+train_sample <- pokemon_scaled |>
+  slice_sample(n = 550)
+test_sample <- anti_join(pokemon_scaled, train_sample)
+
+library(class)
+
+train_pokemon <- train_sample |> select(HP, Attack, Defense, Speed,
+                                        SpAtk, SpDef, height, weight)
+test_pokemon <- test_sample |> select(HP, Attack, Defense, Speed,
+                                      SpAtk, SpDef, height, weight)
+
+## put our response variable into a vector
+train_cat <- train_sample$Type
+test_cat <- test_sample$Type
+
+knn_mod <- knn(train = train_pokemon, test = test_pokemon,
+               cl = train_cat, k = 19)
+knn_mod
+
+tab <- table(knn_mod, test_cat)
+sum(diag(tab)) / sum(tab)
+```
+
+```{r}
+get_class_rate <- function(k_val) {
+  knn_mod <- knn(train = train_pokemon,
+                 test = test_pokemon,
+                 cl = train_cat, k = k_val)
+  knn_mod
+  
+  tab <- table(knn_mod, test_cat)
+  class_rate <- sum(diag(tab)) / sum(tab)
+  
+  return(class_rate)
+}
+get_class_rate(k_val = 19)
+
+## b
+k_vec <- 1:60
+k_vec
+## purrr::map()
+class_rates <- map(k_vec, get_class_rate) |> unlist()
+
+k_df <- tibble(k_vec, class_rates)
+k_df
+## make a line plot showing the classification rate
+## for different values of k
+
+train_sample |> group_by(Type) |>
+  summarise(n_type = n()) |>
+  arrange(desc(n_type))
+
+## figure out what proportion of Pokemon in test_sample
+## are of the most common type in train_sample
+test_sample |>
+  mutate(is_water = if_else(Type == "Water",
+                           true = 1,
+                           false = 0)) |>
+  relocate(is_water) |>
+  summarise(prop_water = mean(is_water))
+
+ggplot(data = k_df, aes(x = k_vec,
+                        y = class_rates)) +
+  geom_line() +
+  geom_hline(yintercept = 0.14, linetype = 2) +
+  theme_minimal()
+## add a horizontal line that gives the baseline
+## classification rate for this example
+```
