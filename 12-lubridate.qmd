@@ -35,7 +35,7 @@ library(quantmod)
 
 start <- ymd("2011-01-01")
 end <- ymd("2024-3-19")
-getSymbols(c("AAPL", "NTDOY", "CMG", "SPY", "GME"), src = "yahoo",
+getSymbols(c("AAPL", "NTDOY", "CMG", "SPY", "VFC"), src = "yahoo",
            from = start, to = end)
 #> [1] "AAPL"  "NTDOY" "CMG"   "SPY"
 
@@ -45,27 +45,72 @@ app_tib <- as_tibble(AAPL)
 nint_tib <- as_tibble(NTDOY)
 chip_tib <- as_tibble(CMG)
 spy_tib <- as_tibble(SPY)
-gme_tib <- as_tibble(GME)
+vfc_tib <- as_tibble(VFC)
 
-all_stocks <- bind_cols(date_tib, app_tib, nint_tib, chip_tib, spy_tib, gme_tib)
+all_stocks <- bind_cols(date_tib, app_tib, nint_tib, chip_tib, spy_tib, vfc_tib)
 
 stocks_long <- all_stocks |>
   select(start_date, AAPL.Adjusted, NTDOY.Adjusted,
-                      CMG.Adjusted, SPY.Adjusted, GME.Adjusted) |>
+                      CMG.Adjusted, SPY.Adjusted, VFC.Adjusted) |>
   pivot_longer(2:6, names_to = "Stock_Type", values_to = "Price") |>
   mutate(Stock_Type = fct_recode(Stock_Type,
                                  Apple = "AAPL.Adjusted",
                                  Nintendo = "NTDOY.Adjusted",
                                  Chipotle = "CMG.Adjusted",
                                  `S & P 500` = "SPY.Adjusted",
-                                 Gamestop = "GME.Adjusted"
+                                 Northface = "VFC.Adjusted"
                                  ))
 tail(stocks_long)
 
-stocks_gme <- stocks_long |> filter(Stock_Type == "Gamestop")
+stocks_vfc <- stocks_long |> filter(Stock_Type == "Northface")
 
-ggplot(data = stocks_gme, aes(x = start_date,
+ggplot(data = stocks_vfc, aes(x = start_date,
                               y = Price)) +
   geom_line() +
   theme_minimal()
+```
+
+Class Exercise 4.
+
+```{r}
+stocks_vfc |> mutate(price_lag = lag(Price)) |>
+  mutate(positive_return = if_else(Price > price_lag,
+                                   true = 1,
+                                   false = 0)) |>
+  summarise(prop_positive = mean(positive_return,
+                                 na.rm = TRUE))
+
+## class exercise 5
+stocks_vfc |> mutate(weekday = wday(start_date, label = TRUE)) |>
+  filter(weekday == "Wed")
+## same process as 4
+
+## class exercise 6
+
+stocks_vfc |> mutate(day_of_month = mday(start_date),
+                     month = month(start_date),
+                     year = year(start_date)) |>
+  group_by(month, year) |>
+  filter(day_of_month == min(day_of_month)) |>
+  ungroup()
+## same as 4
+
+## lag() puts a value in row xxx as the value of the lagged variable
+## for row xxx + 1
+## CE 4-6
+
+
+```
+
+## Your Turn
+
+Your Turn 1.
+
+```{r}
+read_csv(here::here("data/swift_kelce.csv"),
+         skip = 2) |>
+  rename(swift = `Taylor Swift: (United States)`,
+         kelce = `Travis Kelce: (United States)`) |>
+  mutate(swift = parse_number(swift),
+         kelce = parse_number(kelce)) ## converts <1 to 1
 ```
