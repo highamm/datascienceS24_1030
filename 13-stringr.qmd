@@ -1,0 +1,60 @@
+---
+title: "Section 13:`tidytext` and `stringr`"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Section 13.2: `stringr`
+
+```{r}
+library(here)
+library(tidyverse)
+med_djok_df <- read_csv(here("data/med_djok.csv"))
+med_djok_df
+
+med_djok_df |> filter(str_detect(point, pattern = "@") == TRUE)
+## @ is used at the end of a point to denote an unforced error
+
+## filtering to keep only points with unforced errors
+med_djok_df |> filter(str_detect(point, pattern = "@") == TRUE) |>
+  ## creates an error type variable depending on the type of unforced error
+  mutate(error_type = case_when(str_detect(point, pattern = "d@") ~ "deep error",
+                                str_detect(point, pattern = "w@") ~ "wide error",
+                                str_detect(point, pattern = "n@") ~ "net error")) |>
+  ## counts up the number of error types that each PtWinner had
+  group_by(PtWinner, error_type) |>
+  summarise(n_errors = n())
+```
+
+Exercise 4.
+
+```{r}
+## should use the ^ symbol to denote "starts with" in the pattern of str_detect()
+med_djok_df <- med_djok_df |> mutate(serve_location =
+                        case_when(str_detect(point,
+                                             pattern = "^4") ~ "wide",
+                                  str_detect(point,
+                                             pattern = "^5") ~ "body",
+                                  str_detect(point, 
+                                             pattern = "^6") ~ "down the center")
+                                                 ) |>
+  relocate(serve_location)
+```
+
+## Your Turn
+
+Your Turn 1
+
+```{r}
+med_djok_df |> filter(is.na(serve_location))
+med_djok_df |>
+  group_by(Serving, serve_location) |>
+  summarise(n_locations = n())
+```
+
+Your Turn 2
+
+Your Turn 3
+
