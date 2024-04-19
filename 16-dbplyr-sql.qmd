@@ -21,7 +21,6 @@ duckdb_read_csv(conn = con, name = "tennis2019",
                 files = here("data/atp_matches_2019.csv"))
 
 dbListTables(con)
-
 ```
 
 ```{r}
@@ -57,4 +56,98 @@ tennis_query1
 
 tennis_query1 |> show_query()
 
+## converts the query back to a standard tibble in R
+tennis_query1 |>
+  collect()
+
 ```
+
+Exercise 3.
+
+```{r}
+tennis_db |> group_by(surface) |>
+  summarise(n_surface = n()) |>
+  show_query()
+```
+
+`filter()`: `WHERE`
+
+`arrange()`: `ORDER BY`
+
+`group_by()`: `GROUP BY`
+
+`select()`, `mutate()`, `summarise()`, `rename()`: `SELECT`
+
+Exercise 4.
+
+```{r}
+tennis_db |>
+  filter(tourney_name == "Wimbledon") |>
+  ## select(everything()) |>
+  show_query()
+```
+
+## Class Exercises
+
+Class Exercise 1.
+
+```{r}
+tennis_db |>
+  mutate(ace_diff = w_ace - l_ace) |>
+  select(w_ace, l_ace, winner_name, loser_name, ace_diff) |>
+  arrange(desc(ace_diff)) |>
+  show_query()
+```
+
+Class Exercise 2.
+
+```{r}
+tennis_db |>
+  mutate(rank_point_diff =
+           winner_rank_points - loser_rank_points) |>
+  select(winner_name, loser_name, rank_point_diff) |>
+  show_query()
+```
+
+## Your Turn
+
+Your Turn 1
+
+```{r}
+tennis_db |>
+  group_by(tourney_name) |>
+  summarise(longest_match = max(minutes)) |>
+  show_query()
+## SQL will remove NAs by default (recall that R does not)
+```
+
+Your Turn 2.
+
+```{r}
+library(lubridate)
+tennis_db |> mutate(date = mdy(tourney_date)) |>
+  show_query()
+
+tennis_db |> mutate(surface2 = fct_recode(surface,
+                                          "nonsense" = "Grass"))
+## forcats and a lot of R specific functions do not
+## have corresponding components in SQL
+## if wanting to do this, need to collect() first
+tennis_db |> collect() |>
+  mutate(surface2 = fct_recode(surface,
+                                "nonsense" = "Grass"))
+```
+
+Your Turn 4
+
+```{r}
+tennis_db |>
+  group_by(winner_name) |>
+  filter(surface == "Hard") |>
+  summarise(n_win = n()) |>
+  arrange(desc(n_win)) |>
+  show_query()
+  
+```
+
+
