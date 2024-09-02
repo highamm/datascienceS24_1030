@@ -45,11 +45,57 @@ ggplot(data = stat113_df, aes(x = Year, fill = Sex)) +
 Exercises 7 and 8
 
 
-You can add options to executable code like this 
+#### Section 2.4
+
+Class Exercises
+
+Class Exercise 1.
 
 ```{r}
-#| echo: false
-2 * 2
+ggplot(data = stat113_restructured,
+       aes(x = SocialMedia)) +
+  geom_bar()
+
+ggplot(data = stat113_restructured,
+       aes(x = SocialMedia, y = n_social)) +
+  geom_col()
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+Class Exercises 2 through 5.
+
+```{r}
+library(tidyverse)
+fitness_full <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/higham_fitness_clean.csv",
+                         col_types = list(stepgoal = col_factor())) |>
+  mutate(weekend_ind = case_when(weekday == "Sat" | weekday == "Sun" ~ "weekend",
+                                 .default = "weekday"))
+
+ggplot(data = fitness_full, aes(x = distance, y = active_cals)) +
+  geom_point() +
+  geom_smooth(span = 1.1,
+              se = FALSE)
+
+## method = "lm" makes a best fit line
+## se = FALSE gets rid of the gray error band
+## span controls how "wiggly" the smoother is
+```
+
+```{r}
+ggplot(data = stat113_df,
+       aes(x = Exercise,
+           y = GPA)) +
+  geom_point() +
+  facet_wrap(~ Sex + Sport)
+
+ggplot(data = stat113_df,
+       aes(x = Exercise,
+           y = GPA)) +
+  geom_point() +
+  facet_grid(Sex ~ Sport)
+
+ggplot(data = stat113_df, aes(x = Award, y = Exercise)) +
+  geom_boxplot(outlier.shape = 8)
+```
+
+Class Exercise 6. Skip.
+
