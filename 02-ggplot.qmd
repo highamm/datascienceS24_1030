@@ -99,3 +99,67 @@ ggplot(data = stat113_df, aes(x = Award, y = Exercise)) +
 
 Class Exercise 6. Skip.
 
+## Your Turn
+
+Your Turn 2 and 3
+
+```{r}
+ggplot(data = stat113_df,
+       aes(x = Wgt, y = Hgt)) +
+  geom_point(aes(colour = Sport))
+
+ggplot(data = stat113_df,
+       aes(x = Wgt, y = Hgt)) +
+  geom_point() +
+  facet_wrap(~ Sport)
+##in general, colour is more useful for
+## variables that have fewer levels
+
+```
+
+YYour Turn 4
+
+```{r}
+ggplot(data = fitness_full,
+       aes(x = distance)) +
+  geom_freqpoly(aes(colour = weekday))
+
+ggplot(data = fitness_full, aes(x = distance)) +
+  geom_histogram() +
+  facet_wrap(~ weekday)
+
+## colour is a little hard to distinguish,
+## but it is nice having all of the days on 
+## a single plot.
+```
+
+
+
+
+Your Turn 5
+
+Line plots are useful if there is one value for the y variable for each distinct value of the x variable. For the stat 113 data, theree would be more than one exercise value for each unique GPA.
+
+Your Turn 6, 7, 8. Skip
+
+## Section 2.5: Aesthetics
+
+
+
+## Section 2.6: Practice
+
+Class Exercise 1.
+
+```{r}
+ggplot(data = stat113_df,
+       aes(x = Wgt, y = Hgt)) +
+  geom_point() +
+  geom_smooth(aes(colour = Sport))
+```
+
+Class Exercise 2.
+
+```{r}
+ggplot(data = stat113_df, aes(x = TV)) +
+  geom_histogram(colour = "black", fill = "white")
+```
