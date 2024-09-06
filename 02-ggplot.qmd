@@ -52,6 +52,8 @@ Class Exercises
 Class Exercise 1.
 
 ```{r}
+stat113_restructured <- stat113_df |> group_by(SocialMedia) |>
+  summarise(n_social = n())
 ggplot(data = stat113_restructured,
        aes(x = SocialMedia)) +
   geom_bar()
@@ -162,4 +164,47 @@ Class Exercise 2.
 ```{r}
 ggplot(data = stat113_df, aes(x = TV)) +
   geom_histogram(colour = "black", fill = "white")
+```
+
+## Your TURN
+
+Your Turn 1
+
+a. "lm" is not a variable in our data frame so it should not go inside an aes().
+
+c and d. both have an issue that groupvar needs to be in an aes() function. Part c also has the issue that `colour = "purple"` should not be in aes().
+
+e. looks great!
+
+f. colour = "purple" should not be in an aes() function.
+
+```{r}
+ggplot(data = stat113_df, aes(x = Wgt, y = Hgt,
+                              colour = Sex)) +
+  geom_point(colour = "purple") +
+  geom_smooth(method = "lm")
+
+
+```
+
+b. also works! The local option for colour will override the global specification.
+
+
+```{r}
+ggplot(data = stat113_df, aes(x = Wgt, y = Hgt,
+                              colour = Sex)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  scale_colour_manual(values = c("purple", "blue"))
+```
+
+Your  Turn 2
+
+```{r}
+## ggplot(data = toy_df) +
+##  geom_point(aes(x = xvar, y = yvar), colour = "purple") +
+##  geom_smooth(method = "lm", aes(x = xvar, y = yvar,
+ ###                                colour = groupvar))
+## global aesthetics are more useful if they are used by
+## every subsequent GEOM.
 ```
