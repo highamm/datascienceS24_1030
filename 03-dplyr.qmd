@@ -1,0 +1,73 @@
+---
+title: "Section 3: Wrangling with `dplyr`"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Section 3.2
+
+Class Exercises
+
+Class Exercises 1 and 2.
+
+```{r}
+library(babynames)
+library(tidyverse)
+
+babynames_top10m <- babynames |>
+  filter(year == 2017 & sex == "M") |>
+  arrange(desc(n)) |>
+  slice(1:10)
+
+ggplot(data = babynames_top10m, aes(x = name,
+                                    y = n)) +
+  geom_col()
+```
+
+Class Exercises 3 and 4
+
+```{r}
+babynames_jack <- babynames |>
+  filter(name == "Jack" & sex == "M")
+
+ggplot(data = babynames_jack, aes(x = year,
+                                  y = n)) +
+  geom_line()
+```
+
+Class Exercise 5.
+
+When piping with data frames, the first argument of the function we use must be for a data frame (not a vector like it is for `mean()` and not a formula like it is for `lm()`).
+
+Your Turns
+
+Your Turn 1 and 2.
+
+```{r}
+## a
+babynames |> filter(year != 1945)
+
+## b
+babynames |> filter(n >= 400 & n <= 5000)
+
+## c
+babynames_hm <- babynames |>
+  filter((name == "Monica" & sex == "F") |
+                      (name == "Hilary" & sex == "F"))
+
+ggplot(babynames_hm, aes(x = year, y = n)) +
+  geom_line(aes(colour = name))
+```
+
+Your Turns 3 and 4.
+
+```{r}
+babynames |> 
+  filter((name == "Matthew" & sex == "M") |
+           (name == "Ivan" & sex == "M") |
+           (name == "Jessica" & sex == "F") |
+           (name == "Lillian" & sex == "F") |
+           (name == "Robin" & sex == "M"))
+```
