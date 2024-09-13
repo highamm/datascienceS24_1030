@@ -64,10 +64,105 @@ ggplot(babynames_hm, aes(x = year, y = n)) +
 Your Turns 3 and 4.
 
 ```{r}
-babynames |> 
+babynames_5 <- babynames |> 
   filter((name == "Matthew" & sex == "M") |
            (name == "Ivan" & sex == "M") |
            (name == "Jessica" & sex == "F") |
            (name == "Lillian" & sex == "F") |
            (name == "Robin" & sex == "M"))
+babynames_5
+ggplot(data = babynames_5, aes(x = year,
+                               y = n)) +
+  geom_line(aes(colour = name))
+
+## Your Turn 4
+
+babynames_2002 <- babynames |>
+  filter(year == 2002 & sex == "F") |>
+  arrange(desc(prop)) |>
+  slice(1:10)
+ggplot(data = babynames_2002, aes(x = name, y = prop)) +
+  geom_col(colour = "darkred", fill = "white")
+
+```
+
+
+
+
+
+## Section 3.4: Practice
+
+Class Exercises 
+
+Class Exercises 4 and 5
+
+```{r}
+babynames |> group_by(year, sex) |>
+  mutate(rank_var = rank(desc(n))) |>
+  filter(rank_var == 1) |>
+  ungroup() |>
+  group_by(name) |>
+  summarise(n_appear = n()) |>
+  arrange(desc(n_appear))
+```
+
+Class Exercise 6
+
+```{r}
+babynames_test <- babynames |>
+  group_by(year, sex) |> mutate(ntest = n / prop)
+babynames_test |> slice(1, 2, 3, 4, 5)
+## since we have grouped by year and sex,
+## slice(1, 2, 3, 4, 5) is giving the first 5 rows
+## __of each group__.
+babynames_test |> ungroup() |> slice(1, 2, 3, 4, 5)
+```
+
+Your Turn
+
+Your Turns 1 through 3
+```{r}
+toy_df <- tibble(x = c(NA, 3, 4, 7),
+                 y = c(1, 4, 3, 2),
+                 z = c("A", "A", "B", NA))
+toy_df
+
+## Your Turn 1
+## a
+toy_df |> group_by(z) |>
+  mutate(rank_y = mean(y))
+## calculating mean fopr each level of z
+
+## b
+toy_df |> group_by(z) |>
+  slice(1)
+
+## c
+toy_df |> group_by(z) |>
+  filter(x > 3.5) ## the same output as if we did not group_by() z.
+toy_df |> group_by(z) |>
+  filter(y == min(y)) ## does matter if we use a summary function inside filter()
+
+## d
+toy_df |> group_by(z) |>
+  arrange(x)
+## arrange() is not affected by group_by()
+
+## Your Turn 2
+## a: mutate
+toy_df |> mutate(x_over_y = x / y)
+## x_over_y is NA for any row with missing x or y
+
+## b: slice
+toy_df |> slice(1:2)
+## NA's do not affect behavior of slice()
+
+## c: filter
+toy_df |> filter(x > 5)
+toy_df |> filter(x <= 5)
+## NA values are removed for these types of filter()s.
+
+## d: summarise
+toy_df |> summarise(mean_x = mean(x))
+## returns a missing value if ANY value of x is NA
 ```
