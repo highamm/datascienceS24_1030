@@ -128,25 +128,31 @@ toy_df <- tibble(x = c(NA, 3, 4, 7),
 toy_df
 
 ## Your Turn 1
-## a
+## a: mutate
 toy_df |> group_by(z) |>
   mutate(rank_y = mean(y))
 ## calculating mean fopr each level of z
 
-## b
+## b: slice
 toy_df |> group_by(z) |>
   slice(1)
 
-## c
+## c: filter
 toy_df |> group_by(z) |>
   filter(x > 3.5) ## the same output as if we did not group_by() z.
 toy_df |> group_by(z) |>
   filter(y == min(y)) ## does matter if we use a summary function inside filter()
 
-## d
+## d: arrange
 toy_df |> group_by(z) |>
   arrange(x)
 ## arrange() is not affected by group_by()
+
+## e: select
+toy_df |> group_by(z) |>
+  select(2)
+## select() on a grouped data frame always
+## returns the group variable.
 
 ## Your Turn 2
 ## a: mutate
@@ -157,6 +163,11 @@ toy_df |> mutate(x_over_y = x / y)
 toy_df |> slice(1:2)
 ## NA's do not affect behavior of slice()
 
+## b: arrange
+toy_df |> arrange(x)
+toy_df |> arrange(desc(x))
+## NA gets put at the end (no matter what order you sort by).
+
 ## c: filter
 toy_df |> filter(x > 5)
 toy_df |> filter(x <= 5)
@@ -165,4 +176,39 @@ toy_df |> filter(x <= 5)
 ## d: summarise
 toy_df |> summarise(mean_x = mean(x))
 ## returns a missing value if ANY value of x is NA
+
+
+## e
+toy_df |> group_by(z) |>
+  summarise(mean_x = mean(x))
+## mean is missing for any level of the grouping
+## variable z that has a missing x value
+```
+
+Your Turn 3
+
+a. mutate is generally safe: just adding a variable but the rest of the data set would still be "okay" even if you made a mistake.
+
+b. arrange is generally safe: you're just sorting the data set.
+
+c. filter is generally not as safe: you would have to be sure that you never need access to the rows you filter out again.
+
+d. summarise is generally not as safe: you're changing the structure of the data to be only one row per group (and you lose access to the original data).
+
+e. select is generally not as safe: you would have to be sure that you never need access to the columns you select out again.
+
+Your Turns 5 through 7
+
+
+```{r}
+##babynames |> group_by(year) |>
+##  mutate(n_unique = n())
+babynames_unique <- babynames |> group_by(year) |>
+  summarise(n_unique = n())
+## summarise more convenient here than mutate because
+## it lets us get one row per year
+ggplot(babynames_unique, aes(x = year, y = n_unique)) +
+  geom_line()
+## since 1880, the number of unqiue names in the US has 
+## increased (with a little drop at the end)
 ```
