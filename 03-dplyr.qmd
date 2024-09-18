@@ -94,6 +94,10 @@ ggplot(data = babynames_2002, aes(x = name, y = prop)) +
 
 Class Exercises 
 
+Class Exercise 1. 50% might make more sense if you are going by a strict "majority" definition. But 55% makes more sense if you're thinking about this more as "are females represented" in each of the majors?
+
+
+
 Class Exercises 4 and 5
 
 ```{r}
@@ -197,6 +201,28 @@ d. summarise is generally not as safe: you're changing the structure of the data
 
 e. select is generally not as safe: you would have to be sure that you never need access to the columns you select out again.
 
+Your Turn 4
+
+```{r}
+slumajors_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/SLU_Majors_17_21.csv")
+slumajors_df <- slumajors_df |>
+  mutate(ntotal = nfemales + nmales) |>
+  mutate(percfemale = 100 * nfemales / (nfemales + nmales))
+slumajors_df |>
+  summarise(meantotalmajor = mean(ntotal),
+            totalgrad = sum(ntotal)) 
+## summarise() collapses the data set so that there
+## is one row per group (here there are no groups so
+## there is just one row). 
+slumajors_df |>
+  mutate(meantotalmajor = mean(ntotal),
+            totalgrad = sum(ntotal)) |>
+  relocate(meantotalmajor)
+## relocate(meantotalmajor) is equivalent to
+## select(meantotalmajor, everything())
+
+## mutate() just adds a new variable (keeps the same number of rows and all of the other variables)
+```
 Your Turns 5 through 7
 
 
@@ -211,4 +237,19 @@ ggplot(babynames_unique, aes(x = year, y = n_unique)) +
   geom_line()
 ## since 1880, the number of unqiue names in the US has 
 ## increased (with a little drop at the end)
+
+## Your Turn 6
+babynames_unique_ys <- babynames |> group_by(year, sex) |>
+  summarise(n_unique = n())
+
+ggplot(babynames_unique_ys, aes(x = year, y = n_unique)) +
+  geom_line(aes(colour = sex))
+```
+
+Your Turn 7
+
+```{r}
+babynames |> group_by(name) |>
+  summarise(n_births = sum(n)) |>
+  arrange(desc(n_births))
 ```
