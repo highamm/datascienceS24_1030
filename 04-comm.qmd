@@ -1,0 +1,43 @@
+---
+title: "Section 4: Communication"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(gapminder)
+country_df <- gapminder
+```
+
+Class Exercises 1 and 2
+
+use a group aesthetic in ggplot
+
+```{r}
+library(tidyverse)
+ggplot(data = country_df, aes(x = year, y = lifeExp)) +
+  geom_line(aes(colour = continent, group = country)) +
+  facet_wrap(~ continent) +
+  labs(x = "Year", y = "Life Expectancy (years)",
+       title = "Life Expectancy for Countries",
+       colour = "Continent") +
+  scale_colour_viridis_d()
+
+country_3 <- country_df |>
+  filter((continent == "Asia" & year == 1977 & lifeExp < 35) | (continent == "Africa" & year == 1992 & lifeExp < 30) | (country == "Turkey" & year == 1962))
+
+ggplot(data = country_df, aes(x = year, y = lifeExp)) +
+  geom_line(aes(colour = continent, group = country), alpha = 0.2) +
+  facet_wrap(~ continent) +
+  labs(x = "Year", y = "Life Expectancy (years)",
+       title = "Life Expectancy for Countries",
+       colour = "Continent") +
+  scale_colour_viridis_d() +
+  geom_text(data = country_3, aes(label = country, colour = continent), show.legend = FALSE) +
+  theme(legend.position = "bottom") +
+  theme_minimal()
+
+country_df |>
+```
