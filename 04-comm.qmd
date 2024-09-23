@@ -3,7 +3,12 @@ title: "Section 4: Communication"
 author: "Matt Higham"
 format: 
   html:
+    fig-height: 4
     embed-resources: true
+execute: 
+  echo: false
+  warning: false
+  output: false
 ---
 
 ```{r}
@@ -16,6 +21,8 @@ Class Exercises 1 and 2
 use a group aesthetic in ggplot
 
 ```{r}
+#| output: true
+
 library(tidyverse)
 ggplot(data = country_df, aes(x = year, y = lifeExp)) +
   geom_line(aes(colour = continent, group = country)) +
@@ -33,11 +40,60 @@ ggplot(data = country_df, aes(x = year, y = lifeExp)) +
   facet_wrap(~ continent) +
   labs(x = "Year", y = "Life Expectancy (years)",
        title = "Life Expectancy for Countries",
-       colour = "Continent") +
+       colour = "Continent",
+       caption = "The Rwandan genocide and the Cambodian civil war caused major dips in life expectancy in these two countries.") +
   scale_colour_viridis_d() +
   geom_text(data = country_3, aes(label = country, colour = continent), show.legend = FALSE) +
   theme(legend.position = "bottom") +
   theme_minimal()
 
-country_df |>
+
+```
+
+## Your Turn
+
+Your Turn 1. The analysis is not as reproducible as it could be in that the analyst:
+
+* deleted three rows without explicit code saying that they did so.
+* the graph limits were changed with point-and-click operation.
+* the calculations are in a different program than the write-up.
+
+Your Turns 2 and 3
+
+```{r}
+fitness_full <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/higham_fitness_clean.csv",
+                         col_types = list(stepgoal = col_factor())) |>
+  mutate(weekend_ind = case_when(weekday == "Sat" | weekday == "Sun" ~ "weekend",
+                                 .default = "weekday"))
+
+label_df <- fitness_full |> 
+  filter(Start == "2019-04-14" | Start == "2021-05-24") |>
+  mutate(label_var = c("half marathon", "grand canyon")) |>
+  relocate(label_var)
+
+ggplot(data = fitness_full, aes(x = Start, y = steps)) +
+  geom_line() +
+  geom_text(data = label_df, aes(label = label_var))
+```
+
+Your Turn 3.
+
+```{r}
+mtcars <- mtcars |> rownames_to_column() |>
+  rename(car_name = rowname)
+mtcars
+
+mtcars_label <- mtcars |>
+  filter(mpg == max(mpg))
+ggplot(data = mtcars, aes(x = wt, y = mpg)) +
+  geom_point() +
+  geom_text(data = mtcars_label, aes(label = car_name))
+
+
+ggplot(data = mtcars, aes(x = wt, y = mpg)) +
+  geom_point() +
+  geom_text(data = mtcars |> filter(mpg == max(mpg)),
+            aes(label = car_name))
+
+
 ```
