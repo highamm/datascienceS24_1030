@@ -90,10 +90,23 @@ ggplot(data = mtcars, aes(x = wt, y = mpg)) +
   geom_text(data = mtcars_label, aes(label = car_name))
 
 
-ggplot(data = mtcars, aes(x = wt, y = mpg)) +
+ggplot(data = mtcars, ame(es(x = wt, y = mpg)) +
   geom_point() +
   geom_text(data = mtcars |> filter(mpg == max(mpg)),
             aes(label = car_name))
+```
 
+Your Turn 4.
 
+```{r}
+hpi_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/hpi-tidy.csv")
+
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region)) +
+  geom_point() +
+  theplot.background = element_rect(fill = "yellow4"),
+        panel.grid.major = element_line(colour = "brown"),
+        strip.background.y = element_rect(fill = "grey"),
+        panel.border = element_rect(linetype = "dashed", fill = NA),
+        panel.background = element_rect(fill = "yellow"))
 ```

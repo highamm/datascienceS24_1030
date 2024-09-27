@@ -1,0 +1,44 @@
+---
+title: "Untitled"
+format: html
+---
+
+## Class Exercises
+
+Class Exercise 1. This is not a reproducible workflow. Loading packages with point-and-click operations means that someone else would not be able to explicitly see all of the code needed to complete your analysis.
+
+Class Exercises 2 and 3
+
+```{r}
+ggplot(data = mtcars, aes(x = hp, y = drat)) +
+  geom_point(aes(colour = factor(gear))) +
+  facet_wrap(~ cyl) +
+  geom_smooth()
+
+library(palmerpenguins)
+penguins |> mutate(flipper_ratio = flipper_length_mm / body_mass_g) |>
+  group_by(species, island) |>
+  summarise(mean_flipper = mean(flipper_ratio, na.rm = TRUE)) |>
+  arrange(mean_flipper) |>
+  pivot_wider(names_from = c("species"), values_from = "mean_flipper")
+```
+
+Class Exercise 4.
+
+```{r}
+library(here)
+videogame_df <- read_csv(here("data/videogame_clean.csv"))
+
+videogame_df |>
+  summarise(mean_pt = mean(median_playtime, na.rm = TRUE),
+            med_pt = median(median_playtime, na.rm = TRUE))
+
+videogame_df |> filter(median_playtime < 1000) |>
+  summarise(mean_pt = mean(median_playtime, na.rm = TRUE),
+            med_pt = median(median_playtime, na.rm = TRUE))
+
+## mean is smaller but median stays the same
+## mean is more affected by extreme outliers while the median
+## is more robust to outliers.
+
+```
