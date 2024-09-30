@@ -1,6 +1,9 @@
 ---
-title: "Untitled"
-format: html
+title: "Section 5: Workflow"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
 ---
 
 ## Class Exercises
@@ -41,4 +44,34 @@ videogame_df |> filter(median_playtime < 1000) |>
 ## mean is more affected by extreme outliers while the median
 ## is more robust to outliers.
 
+```
+
+Class Exercise 5.
+
+```{r}
+library(tidyverse)
+library(here)
+evals_df <- read_csv(here("data/evals_prof_S21.csv"))
+head(evals_df)
+
+toy_df <- tibble(Term = c("F19", "F19", "S21", "F20", "S20"),
+       agree = c(3, 5, 10, 4, 2))
+toy_df
+## how do I separate this Term variable so that 
+## there is a new column for semester and a new
+## column for year?
+```
+
+## Your Turn
+
+Your Turn 4.
+
+```{r}
+library(tidyverse)
+toy_df2 <- tibble(x = c(1, 3, 4, 5, 10, 1),
+                  z = c("group1", "group1", "group2",
+                        "group2", "group2", "group2"))
+toy_df2
+## how can I keep only the rows where z is group2 and
+## where x is more than its median?
 ```

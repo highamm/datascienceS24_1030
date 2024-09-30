@@ -1,0 +1,40 @@
+---
+title: "Section 6: Tidying with `tidyr`"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Class Exercises 
+
+Class Exercise 2.
+
+```{r}
+library(tidyverse)
+library(here)
+prices_df <- read_csv(here("data/UBSprices2.csv"))
+prices_df
+
+prices_long <- prices_df |>
+  pivot_longer(2:7, names_to = "temp",
+               values_to = "price") |>
+  separate(temp, c("commodity", "year"), sep = -4)
+prices_long
+## class exercise 3
+
+prices_wide <- prices_long |> pivot_wider(names_from = "commodity",
+                           values_from = "price")
+prices_wide
+
+## class exercise 4
+ggplot(data = prices_long |> filter(commodity == "rice"),
+       aes(x = year, y = price, group = city)) +
+  geom_line()
+
+ggplot(data = prices_wide, aes(x = year, y = rice)) +
+  geom_line(aes(group = city))
+
+## slightly easier to use the wider format here,
+## as we avoid an extra filter().
+```
