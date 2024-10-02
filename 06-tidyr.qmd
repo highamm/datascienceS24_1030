@@ -37,4 +37,74 @@ ggplot(data = prices_wide, aes(x = year, y = rice)) +
 
 ## slightly easier to use the wider format here,
 ## as we avoid an extra filter().
+
+prices_amsterdam <- prices_long |>
+  filter(city == "Amsterdam")
+
+ggplot(prices_amsterdam, aes(x = year, y = price)) +
+  geom_line(aes(colour = commodity, group = commodity))
+
+prices_wide
+## to make the plot with this data set, you would need
+## three different geom_lines: one with bicmac as the
+## y aesthetic, one with bread as the y aestehetic, and
+## one with rice as the y aesthetic.
+```
+
+Class Exercises 5 through 7.
+
+```{r}
+mortality_df <- read_csv(here("data/under5mortality.csv"))
+head(mortality_df)
+
+mortality_long <- mortality_df |>
+  pivot_longer(2:217, names_to = "year",
+               values_to = "mortality",
+               names_transform = list(year = as.numeric)) |>
+  rename(country = `Under five mortality`)
+
+ggplot(mortality_long, aes(x = year, y = mortality)) +
+  geom_line(aes(group = country), alpha = 0.1)
+```
+
+Class Exercise 7. The graph looks weird because many countries have a flat mortality rate from 1800 to 1900. Perhaps the data just has an "average" mortality rate for each of these countries in the 19th century.
+
+## Your Turn
+
+Your Turns 1 through 5.
+
+```{r}
+library(tidyverse)
+library(here)
+baseball_df <- read_csv(here("data/mlb2016.csv"))
+head(baseball_df)
+```
+
+Your Turn 1. The salary variables have dollar signs (units) when they should not (4. in tidy data definition).
+The Years column actually contains three variables: duration, start year, and end year (1. in tidy data definition).
+
+Your Turns 2 and 3.
+
+```{r}
+baseball_tidy <- baseball_df |>
+  separate(Years, into = c("duration", "temp"),
+           sep = " ") |>
+  separate(temp, into = c("start", "end"),
+           sep = "-") |>
+  mutate(Salary = parse_number(Salary),
+         start = parse_number(start),
+         end = parse_number(end),
+         Total.Value = parse_number(Total.Value),
+         Avg.Annual = parse_number(Avg.Annual))
+
+## we get a warning because for some players, they
+## are in a one year contract. So, there is no "-"
+## to separate by for those players
+
+ggplot(data = baseball_tidy, aes(x = POS, y = Salary)) +
+  geom_boxplot()
+
+ggplot(data = baseball_tidy, aes(x = Salary)) +
+  geom_histogram(colour = "black", fill = "white", bins = 20) +
+  facet_wrap(~POS)
 ```
