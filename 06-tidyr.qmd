@@ -101,10 +101,80 @@ baseball_tidy <- baseball_df |>
 ## are in a one year contract. So, there is no "-"
 ## to separate by for those players
 
+
 ggplot(data = baseball_tidy, aes(x = POS, y = Salary)) +
   geom_boxplot()
 
 ggplot(data = baseball_tidy, aes(x = Salary)) +
   geom_histogram(colour = "black", fill = "white", bins = 20) +
   facet_wrap(~POS)
+
+library(scales)
+ggplot(data = baseball_tidy, aes(x = POS, y = Salary)) +
+  geom_violin() +
+  scale_y_continuous(labels = label_comma())
+
+ggplot(data = baseball_tidy, aes(x = POS, y = Salary)) +
+  geom_jitter(width = 0.10) +
+  theme_minimal()
+```
+
+Your Turn 6
+
+```{r}
+nfl_df <- read_csv(here::here("data/nfl_salary.csv"))
+nfl_df
+```
+
+position should be a variable (and thus should be its own column). Salary is also a variable and should also be in its own column.
+
+```{r}
+##  OR 2:11 instead of -1
+nfl_long <- nfl_df |>
+  pivot_longer(-1, names_to = "position",
+               values_to = "salary")
+```
+
+Your Turn 8 and 9
+
+```{r}
+nfl_max <- nfl_long |>
+  group_by(position, year) |>
+  mutate(rank_salary = rank(desc(salary), ties.method = "first")) |>
+  arrange(position, year, rank_salary) |>
+  filter(rank_salary == 1)
+## ties.method by default breaks ranking ties by giving
+## the tied rows an "average" of their ranks
+## setting ties.method to be "first" breaks the tie
+## by giving the "first" player in the data set the 
+## higher rank
+ggplot(data = nfl_max, aes(x = year, y = salary, 
+                           colour = position)) +
+  geom_line() +
+  scale_colour_viridis_d() +
+  theme_minimal()
+
+ggplot(data = nfl_max, aes(x = year, y = salary)) +
+  geom_line() +
+  facet_wrap(~ position)
+```
+
+Your Turn 10.
+
+```{r}
+nfl_top20 <- nfl_long |>
+  group_by(position, year) |>
+  mutate(rank_salary = rank(desc(salary), ties.method = "first")) |>
+  arrange(position, year, rank_salary) |>
+  filter(rank_salary <= 20) |>
+  ## OR, since we have arranged in ascending order of rank
+  ## slice(1:20)
+  summarise(mean_salary = mean(salary))
+## nfl has become a passing league and you can see a 
+## relatively flat slope for the runningback position's
+## salary
+
+ggplot(data = nfl_top20, aes(x = year, y = mean_salary)) +
+  geom_line() +
+  facet_wrap(~ position)
 ```
