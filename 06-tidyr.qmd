@@ -178,3 +178,39 @@ ggplot(data = nfl_top20, aes(x = year, y = mean_salary)) +
   geom_line() +
   facet_wrap(~ position)
 ```
+
+Your Turn 11
+
+```{r}
+nfl_inflation <- nfl_long |>
+  group_by(position, year) |>
+  mutate(rank_salary = rank(desc(salary), ties.method = "first")) |>
+  arrange(position, year, rank_salary) |>
+  filter(year == 2011 | year == 2018) |>
+  mutate(salary_adj = if_else(year == 2011,
+                              true = salary * 1.12,
+                              false = salary)) |>
+  filter(rank_salary <= 20) |>
+  summarise(mean_sal_adj = mean(salary_adj))
+
+ggplot(data = nfl_inflation, aes(x = year, y = mean_sal_adj)) +
+  geom_line() +
+  facet_wrap(~ position)
+## runningbacks actually have a decrease in mean salary
+## after adjusting for inflation
+```
+
+Your Turn 12.
+
+```{r}
+nfl_rank <- nfl_long |>
+  group_by(position, year) |>
+  mutate(rank_salary = rank(desc(salary), ties.method = "first")) 
+
+nfl_rank_2018 <- nfl_rank |> filter(year == 2018)
+ggplot(data = nfl_rank_2018, aes(x = rank_salary, y = salary)) +
+  geom_line() +
+  facet_wrap(~ position)
+## quarterbacks have the largest "depreciation" from
+## higher ranked players to lower ranked players
+```
