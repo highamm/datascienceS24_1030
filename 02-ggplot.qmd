@@ -12,6 +12,14 @@ format:
 library(tidyverse)
 stat113_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/stat113.csv")
 
+stat113_df <- stat113_df |> mutate(year_cat =
+                       fct_relevel(Year,
+                                   c("FirstYear", "Sophomore", "Junior", "Senior")))
+ggplot(data = stat113_df, aes(x = year_cat)) +
+  geom_bar(colour = "darkorange4", fill = "darkorange") +
+  theme_minimal()
+
+
 ggplot(data = stat113_df, aes(x = GPA)) +
   geom_histogram()
 

@@ -22,9 +22,12 @@ babynames_top10m <- babynames |>
   arrange(desc(n)) |>
   slice(1:10)
 
-ggplot(data = babynames_top10m, aes(x = name,
+babynames_top10m <- babynames_top10m |> 
+  mutate(name_ordered = fct_reorder(name, n))
+ggplot(data = babynames_top10m, aes(x = name_ordered,
                                     y = n)) +
-  geom_col()
+  geom_col() +
+  coord_flip()
 ```
 
 Class Exercises 3 and 4
