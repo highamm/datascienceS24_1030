@@ -1,0 +1,99 @@
+---
+title: "Section 10: Data Import"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Section 10.1: `read_csv()` from `readr`
+
+```{r}
+library(tidyverse)
+library(here)
+cars_df <- read_csv(here("data/mtcarsex.csv"))
+head(cars_df)
+```
+
+```{r}
+cars_df <- read_csv(here("data/mtcarsex.csv"),
+                    skip = 2,
+                    na = c("NA", "",
+                           "-999"))
+cars_df
+## skip = 2 ignores the first two rows in the csv 
+## when trying to read it in.
+```
+
+```{r}
+read_csv(here("data/mtcarsex.csv"), na = c("NA", "-999"), skip = 2,
+         col_types = cols(
+  mpg = col_double(),
+  cyl = col_factor(),
+  disp = col_double(),
+  hp = col_double(),
+  drat = col_double(),
+  wt = col_double(),
+  qsec = col_double(),
+  vs = col_logical(),
+  am = col_logical(),
+  gear = col_double(),
+  carb = col_double()
+)) |>
+  slice(-1, -2)
+```
+
+Exercise 1.
+
+```{r}
+fitness_df <- read_csv(here::here("data/higham_fitness_notclean.csv"),
+                       col_types = cols(
+  Start = col_date(format = ""),
+  active_cals = col_double(),
+  distance = col_double(),
+  flights = col_double(),
+  steps = col_double(),
+  month = col_factor(),
+  weekday = col_factor(),
+  dayofyear = col_double(),
+  stepgoal = col_logical()
+))
+
+```
+
+## Section 10.2: Data Scraping
+
+```{r}
+library(tidyverse)
+library(rvest)
+
+## provide the URL and name it something (in this case, url).
+url <- "https://en.wikipedia.org/wiki/Gun_violence_in_the_United_States_by_state"
+
+## read_html() convert the html code from the URL into something R can read
+tab <- read_html(url) |> 
+  html_nodes("table") ## html_nodes can grab only the tables 
+tab[[1]] |> html_table()
+tab[[2]] |> html_table()
+```
+
+```{r}
+url <- "https://saintsathletics.com/sports/baseball/stats/2023"
+
+tab <- read_html(url) |> html_nodes("table")
+tab
+obj <- tab[[1]] |> html_table()
+obj
+obj2 <- tab[[2]] |> html_table()
+obj2
+```
+
+Exercise 2.
+
+```{r}
+url <- "https://www.stlawu.edu/offices/institutional-research/student-diversity-2021"
+
+diversity_tab <- read_html(url) |> html_nodes("table")
+
+diversity_tab[[1]] |> html_table()
+```
