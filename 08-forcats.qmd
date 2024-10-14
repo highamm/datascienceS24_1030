@@ -1,0 +1,103 @@
+---
+title: "Section 8: Factors with `forcats`"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+
+```{r}
+library(tidyverse)
+library(here)
+pokemon_df <- read_csv(here("data/pokemon_allgen.csv")) |>
+  mutate(Generation_cat = factor(Generation))
+
+pokemon_long <- pokemon_df |> pivot_longer(c(`Type 1`, `Type 2`),
+                            names_to = "Number",
+                            values_to = "Type")
+
+pokemon_nodup <- pokemon_df |> group_by(`#`) |> slice(1) |>
+  ungroup()
+pokemon_long <- pokemon_nodup |>
+  pivot_longer(c(`Type 1`, `Type 2`),
+               names_to = "Number",
+               values_to = "Type")
+```
+
+## Class Exercises
+
+Class Exercise 1.
+
+These are not great because Defense is quantitative (and so we want to see the spread of the distribution of defense for each type, we want to see if there are outliers, we want to see the shape of the distribution).
+
+The lollipop plot is an appropriate graph to visualize the number of pokemon in each Type (since Type is a categorical variable).
+
+Class Exercise 2.
+
+` group_by(#) |> slice(1) |> ungroup()` keeps only one pokemon for each pokemon number (whichever the first one is in the data set).
+
+```{r}
+## alternatively
+pokemon_df |>
+  distinct(`#`, .keep_all = TRUE)
+
+```
+
+Class Exercise 3.
+
+```{r}
+pokemon_nodup <- pokemon_df |> group_by(`#`) |> slice(1) ## |>
+  ## ungroup()
+pokemon_long <- pokemon_nodup |>
+  pivot_longer(c(`Type 1`, `Type 2`),
+               names_to = "Number",
+               values_to = "Type")
+
+pokemon_long <- pokemon_long |>
+  filter(!is.na(Type)) |>
+  ungroup() |> ## fct_reorder() does not work well with a grouped data frame
+  mutate(Type_Deford = fct_reorder(.f = Type, .x = Defense,
+                                   .fun = median))
+ggplot(data = pokemon_long, aes(x = Type_Deford,
+                               y = Defense)) +
+  geom_boxplot() + 
+  coord_flip()
+```
+
+Class Exercise 4.
+
+```{r}
+responses_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/heatmap.csv")
+responses_df
+```
+
+```{r}
+responses_sum <- responses_df |>
+  group_by(time, challenge) |>
+  summarise(n_students = n()) |>
+  ungroup() |>
+  mutate(time = as.factor(time),
+         challenge = as.factor(challenge)) |>
+  mutate(time = fct_recode(time,
+                                  "Most Time" = "1",
+                                  "Second" = "2",
+                                  "Third" = "3",
+                                  "Least Time" = "4"),
+         challenge = fct_recode(challenge,
+                                "Most Challenge" = "1",
+                                "Second" = "2",
+                                "Third" = "3",
+                                "Least Challenge" = "4"),
+         time = fct_relevel(time, 
+                                 c("Least Time", "Third", "Second", "Most Time")))
+responses_sum
+ggplot(data = responses_sum,
+       aes(x = challenge, y = time, fill = n_students)) +
+  geom_tile(colour = "grey") +
+  scale_fill_viridis_c() +
+  theme_minimal() +
+  scale_x_discrete(position = "top")
+```
+
+
