@@ -74,11 +74,11 @@ responses_df
 
 ```{r}
 responses_sum <- responses_df |>
-  group_by(time, challenge) |>
-  summarise(n_students = n()) |>
-  ungroup() |>
   mutate(time = as.factor(time),
          challenge = as.factor(challenge)) |>
+  group_by(time, challenge, .drop = FALSE) |>
+  summarise(n_students = n()) |>
+  ungroup() |>
   mutate(time = fct_recode(time,
                                   "Most Time" = "1",
                                   "Second" = "2",
@@ -100,4 +100,57 @@ ggplot(data = responses_sum,
   scale_x_discrete(position = "top")
 ```
 
+## Your Turn
+
+Your Turn 1.
+
+```{r}
+library(tidyverse)
+library(here)
+standings_df <- read_csv(here("data/standings.csv"))
+standings_df
+```
+
+```{r}
+table(standings_df$team_name)
+```
+
+There are 32 total times. Each team name appears in the data set 20 times (except for the Texans).
+
+Your Turns 2 through 4
+
+```{r}
+standings_new <- standings_df |>
+  mutate(team_name = fct_recode(team_name,
+                                "Commanders" = "Redskins")) |>
+  unite("franchise", c(team, team_name), sep = " ") |>
+  mutate(franchise = fct_collapse(franchise,
+                                  `St. Louis/LA Rams` = c("St. Louis Rams", "Los Angeles Rams"),
+                                  `San Diego/LA Chargers` = c("San Diego Chargers", "Los Angeles Chargers"))) 
+```
+
+Your Turn 5 and 6
+
+```{r}
+standings_new |> group_by()
+  
+  
+playoffs_df <- standings_new |>
+  mutate(playoffs_ind = if_else(playoffs == "Playoffs",
+                                           true = 1,
+                                           false = 0)) |>
+  group_by(franchise) |>
+  summarise(total_playoffs = sum(playoffs_ind)) |>
+  arrange(desc(total_playoffs)) |>
+  slice(1:10) |>
+  mutate(franchise = fct_reorder(franchise, total_playoffs))
+  
+
+ggplot(data = playoffs_df, aes(x = franchise, y = total_playoffs)) +
+  geom_segment(aes(xend = franchise, y = 0, yend = total_playoffs)) +
+  geom_point() +
+  theme_minimal() +
+  coord_flip()
+standings_new |> filter()
+```
 
