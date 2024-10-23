@@ -132,9 +132,19 @@ standings_new <- standings_df |>
 Your Turn 5 and 6
 
 ```{r}
-standings_new |> group_by()
+## these first two methods would drop teams
+## that never made the playoffs (which in this example,
+## we don't care about because we want the top 10)
+standings_new |> group_by(franchise, playoffs) |>
+  summarise(n_count = n()) |>
+  filter(playoffs == "Playoffs")
+## then arrange, slice, mutate with fct_reorder
   
-  
+standings_new |> filter(playoffs == "Playoffs") |>
+  group_by(franchise) |>
+  summarise(n_count = n())
+## then arrange, slice, mutate with fct_reorder
+
 playoffs_df <- standings_new |>
   mutate(playoffs_ind = if_else(playoffs == "Playoffs",
                                            true = 1,
@@ -147,10 +157,11 @@ playoffs_df <- standings_new |>
   
 
 ggplot(data = playoffs_df, aes(x = franchise, y = total_playoffs)) +
-  geom_segment(aes(xend = franchise, y = 0, yend = total_playoffs)) +
-  geom_point() +
+  geom_segment(aes(xend = franchise, y = 0, yend = total_playoffs), colour = "dodgerblue4", linewidth = 1.2) +
+  geom_point(size = 5, colour = "dodgerblue3",
+             fill = "dodgerblue") +
   theme_minimal() +
   coord_flip()
-standings_new |> filter()
+
 ```
 

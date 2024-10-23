@@ -97,3 +97,67 @@ diversity_tab <- read_html(url) |> html_nodes("table")
 
 diversity_tab[[1]] |> html_table()
 ```
+
+## Section 10.3: JSON
+
+Skip this but here for reference.
+
+## Class Exercises
+
+Class Exercise 1.
+
+```{r}
+library(tidyverse)
+df <- read_delim(here("data/birthdays.txt"), delim = " - ",
+                 skip = 4, 
+                 col_names = c("date", "name", "species",
+                               "time"),
+                 na = c("?", "N/A", "", "NA"),
+                 col_types = cols(
+                   date = col_character(),
+                   name = col_character(),
+                   species = col_factor(),
+                   time = col_character()
+                 )) |>
+  mutate(time = parse_number(time))
+head(df)
+```
+
+Class Exercises 2 and 3. Skipped
+
+Class Exercise 4.
+
+```{r}
+library(rvest)
+url1 <- "https://en.wikipedia.org/wiki/Josh_Allen_(quarterback)"
+tab_allen_stats <- read_html(url1) |> html_nodes("table")
+allen_df <- tab_allen_stats[[6]] |> html_table()
+
+## the issue here is that the table on wikipedia has
+## a "double header," creating some duplicate column names
+allen_stats <- tab_allen_stats[[6]] |> html_table(header = FALSE) 
+allen_stats
+
+## paste together the names from the first two rows
+newnames <- paste(allen_stats[1, ], allen_stats[2, ])
+## force the pasted names to be the "new" column names
+allen_stats |> set_names(newnames) |>
+  slice(-1, -2)
+```
+
+## Your Turn
+
+Pick Your Turn 1 or Your Turn 2
+
+Scrape in a table that you find interesting
+
+Tidy your data frame (using separate() and/or parse_number())
+
+Make a graph!
+
+```{r}
+animal_url <- "https://en.wikipedia.org/wiki/Animal_Crossing"
+tab <- read_html(animal_url) |> html_nodes("table")
+tab[[1]] |> html_table()
+
+```
