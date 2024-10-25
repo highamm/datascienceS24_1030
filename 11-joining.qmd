@@ -1,0 +1,31 @@
+---
+title: "Section 11: Data Joining/Merging"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Class Exercises
+
+Class Exercise 0.
+
+a. 5 rows (A, B, C, E, F)
+
+b. 6 rows (A, C, D, E, G, H)
+
+c. 8 rows (A, B, C, D, E, F, G, H)
+
+d. 3 rows (A, C, E)
+
+e. 3 rows (A, C, E), but no variables from df2
+
+f. 2 rows (B, F).
+
+Your Turn
+
+Your Turn 1.
+
+a and b. TRUE. Looking at the venn diagrams, the inner join must be contained within the left_join and also within the full_join.
+
+c. FALSE. This statement is only true if the second data frame does not have duplicates for the matching keys with the first data frame.
