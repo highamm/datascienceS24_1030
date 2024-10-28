@@ -22,6 +22,69 @@ e. 3 rows (A, C, E), but no variables from df2
 
 f. 2 rows (B, F).
 
+Class Exercise 1. We must assume that each of the two data frames have observations in the exact same order.
+
+for example, df1 had Dodgers, Yankees, Guardians as the first three rows, but df2 had Yankees, Guardians, Dodgers, then we wouldn't be able to use bind_cols().
+
+Class Exercise 2.
+
+```{r}
+library(tidyverse)
+library(here)
+slumajors_df <- read_csv(here("data/SLU_Majors_17_21.csv"))
+collegemajors_df <- read_csv(here("data/college-majors.csv"))
+slumajors_df
+collegemajors_df
+```
+
+It makes the most sense to use `Major` as the key. But there will be a couple of issues. An "easy" fix is that slumajors has Major in title case while collegemajors has it in all caps (can use `stringr` function to fix this). A harder to deal with issue is that the majors are not always going to have a match (Business in the Liberal Arts would likely be called Business in the other data set).
+
+Class Exercise 3.
+
+```{r}
+mortality_df <- read_csv(here("data/gun_violence_us.csv"))
+mortality_df
+
+dc_df <- tibble(state = "DC", mortality_rate = 16.7,
+                ownership_rate = 0.087,
+                region = "NE")
+dc_df
+
+## stack two data frames on top of each other
+all_df <- bind_rows(mortality_df, dc_df)
+```
+
+Class Exercises 4 through 8.
+
+```{r}
+df1 <- as_tibble(state.x77)
+df2 <- as_tibble(state.abb)
+states_df <- bind_cols(df2, df1)
+## assuming that all of the states are in the same
+## order in each of the two data frames (and they are)
+
+## class exercise 5
+right_join(states_df, all_df, join_by(value == state))
+left_join(all_df, states_df, join_by(state == value))
+
+full_join(all_df, states_df, join_by(state == value))
+
+## class exercise 6
+left_join(states_df, all_df, join_by(value == state))
+inner_join(states_df, all_df, join_by(value == state))
+
+## class exercise 7
+ne_allstate_df <- all_df |> filter(region == "NE")
+ne_allstate_df
+states_df
+semi_join(states_df, ne_allstate_df,
+          join_by(value == state))
+
+## class exercise 8
+not_ne_df <- all_df |> filter(region != "NE")
+anti_join(states_df, not_ne_df,
+          join_by(value == state))
+```
 Your Turn
 
 Your Turn 1.
@@ -29,3 +92,14 @@ Your Turn 1.
 a and b. TRUE. Looking at the venn diagrams, the inner join must be contained within the left_join and also within the full_join.
 
 c. FALSE. This statement is only true if the second data frame does not have duplicates for the matching keys with the first data frame.
+
+Your Turn 4.
+
+a. 300 rows: the 15 rows for the MCSS professors in course df would get their information from info_df appended. The info for the other 285 rows in courses_df would be given NAs.
+
+add-on: left_join(info_df, courses_df). 25 rows. There will be 15 rows for the 5 MCSS professors (when joined with course_df, the join results in 3 rows per professor for their courses) plus 10 rows for the non-MCSS professors who will get NAs for their course variables.
+
+b. 5 rows: I am filtering info_df to only keep rows with a matching name in courses_df (and there are 5 with a matching name).
+
+add-on: semi_join(courses_df, info_df): 15 rows (the 15 courses in courses_df from the 5 MCSS professors who are also in info_df).
+
