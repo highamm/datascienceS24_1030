@@ -93,6 +93,29 @@ a and b. TRUE. Looking at the venn diagrams, the inner join must be contained wi
 
 c. FALSE. This statement is only true if the second data frame does not have duplicates for the matching keys with the first data frame.
 
+
+Your Turn 2. 
+
+a. 6 rows (2 A's, 2 C's, 2 F's).
+
+b. 8 rows (2 A's, B, 2 C's, 3 F's)
+
+c. 10 rows (2 A's, B, 2 C's, 3 D's, 2 F's)
+
+d. 4 rows (2 A's, 2 C's).
+
+e. 4 rows (2 A's, 2 C's), the F's get dropped because there is no matching id in df4.
+
+f. 2 rows (2 F's: only rows without a matching key in df4).
+
+Your Turn 3.
+
+a. Incorrect because we are using inconsistent units in dc_df (which is in percent instead of a decimal).
+
+b. NE is not "NE": need the quotes here because region is either a character or factor.
+
+c. Putting mortality_rate and ownership_rate in quotes forces these to be `<chr>` classes but in mortality_df, they are `<dbl>` classes.
+
 Your Turn 4.
 
 a. 300 rows: the 15 rows for the MCSS professors in course df would get their information from info_df appended. The info for the other 285 rows in courses_df would be given NAs.
@@ -103,3 +126,8 @@ b. 5 rows: I am filtering info_df to only keep rows with a matching name in cour
 
 add-on: semi_join(courses_df, info_df): 15 rows (the 15 courses in courses_df from the 5 MCSS professors who are also in info_df).
 
+c. 285 rows (300 total rows minus the 15 rows for the professor's courses with a matching ID in info_df).
+
+d. 15 rows (3 courses for each of the 5 professors that appear in both data frames).
+
+e. 310 rows (285 rows with the professors who do not have their ID's in info_df + 15 rows with professors who have the matching ID's + 10 rows for the professors in info_df who do not have ID's in courses_df).
