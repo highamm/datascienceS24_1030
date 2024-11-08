@@ -32,3 +32,104 @@ test_sample <- anti_join(pokemon, train_sample)
 library(GGally)
 ggpairs(data = train_sample, columns = c(4, 5, 6, 3))
 ```
+
+Exercise 1. From the side-by-side boxplots, it looks like Defense is definitely a useful predictor for Type (at least one boxplot has little overlap with the others), and Attack looks useful too (HP may or may not improve the model).
+
+```{r}
+train_sample
+ggpairs(data = train_sample, columns = c(7, 8, 9, 3))
+```
+
+```{r}
+## install.packages("class")
+library(class)
+
+## create a data frame that only has the predictors
+## that we will use
+train_small <- train_sample |> select(HP, Attack, Defense, Speed)
+test_small <- test_sample |> select(HP, Attack, Defense, Speed)
+
+## put our response variable into a vector
+train_cat <- train_sample$Type
+test_cat <- test_sample$Type
+```
+
+```{r}
+## train: a data frame with only the predictors that we want to use in the model
+## test: a data frame with only the predictors that we want to use in the model (from the test sample)
+## cl: vector of the response (Type) from the training sample
+## k: the number of nearest neighbors to use to make classifications
+knn_mod <- knn(train = train_small, test = test_small,
+               cl = train_cat, k = 9)
+knn_mod
+## outputs a vector of classificatoins according to the 
+## knn model for the pokemon in the test sample
+## e.g., the first pokemon in the test sample is predicted to be Fire
+```
+
+## Section 14.3: Confusion Matrix / Classification Table
+
+```{r}
+## classification table
+## predicted classifications are on the rows
+## actual classifications (what types the pokemon actually are are on the columns)
+table(knn_mod, test_cat) 
+```
+
+Exercise 2. The knn model predicts 11 pokemon to be fire and these 11 pokemon actually are fire type (correct classifications).
+
+Exercise 3. The knn model predicts 3 pokemon to be dark but those 3 pokemon are actually Fire type (some incorrect classifications).
+
+Exercise 4. Of the dark type pokemon, the knn model predicts 0 of them to be Steel.
+
+Exercise 5.
+
+```{r}
+(1 + 11 + 1 + 3) / 45
+## classification rate: number of correct classifications divided by the total number of pokemon in the test sample
+
+tab <- table(knn_mod, test_cat) 
+sum(diag(tab)) / sum(tab)
+
+
+```
+
+Exercise 6.
+
+```{r}
+train_small <- train_sample |> select(HP, Attack, Defense, Speed, SpAtk)
+test_small <- test_sample |> select(HP, Attack, Defense, Speed, SpAtk)
+
+knn_mod <- knn(train = train_small, test = test_small,
+               cl = train_cat, k = 15)
+knn_mod
+table(knn_mod, test_cat) 
+
+tab <- table(knn_mod, test_cat) 
+sum(diag(tab)) / sum(tab)
+## is slightly higher so spatk seems to be improving
+## the model a little
+## chaniging k to 15 upped the classification rate more
+```
+
+Exercise 7. The baseline classification rate is the classification rate that you would get if you just classified every single pokemon in the test sample to be the most common Type in the training sample.
+
+```{r}
+## use dplyr to compute this baseline classification rate
+
+## figure out the most common type in the training sample with dplyr code
+train_sample |> group_by(Type) |>
+  summarise(n_type = n()) |>
+  arrange(desc(n_type)) |>
+  slice(1)
+## compute the classification rate from the test sample
+## assuming you classify everything as the most common Type in the training sample (again with dplyr)
+test_sample |>
+  mutate(is_fire = if_else(Type == "Fire",
+                           true = 1, 
+                           false = 0)) |>
+  relocate(is_fire) |>
+  summarise(prop_fire = mean(is_fire))
+## baseline classificiation: 35.6%
+```
+
