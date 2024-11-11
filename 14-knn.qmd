@@ -133,3 +133,76 @@ test_sample |>
 ## baseline classificiation: 35.6%
 ```
 
+Exercise 8. When k is smaller, it is only using observations that are the most similar to whatever observation you are looking at in the test data. But, when k is larger, you have the advantage of taking into account more observations in the training sample (known as the "bias-variance trade-off")
+
+## Class Exercises
+
+```{r}
+library(tidyverse)
+
+pokemon <- read_csv(here::here("data/pokemon_full.csv")) 
+set.seed(1119)
+
+## scale the quantitative predictors
+pokemon_scaled <- pokemon |>
+  mutate(across(where(is.numeric), ~ (.x - min(.x)) /
+                  (max(.x) - min(.x))))
+
+train_sample <- pokemon_scaled |>
+  slice_sample(n = 550)
+test_sample <- anti_join(pokemon_scaled, train_sample)
+
+library(class)
+
+train_pokemon <- train_sample |> select(HP, Attack, Defense, Speed,
+                                        SpAtk, SpDef, height, weight)
+test_pokemon <- test_sample |> select(HP, Attack, Defense, Speed,
+                                      SpAtk, SpDef, height, weight)
+
+## put our response variable into a vector
+train_cat <- train_sample$Type
+test_cat <- test_sample$Type
+
+knn_mod <- knn(train = train_pokemon, test = test_pokemon,
+               cl = train_cat, k = 9)
+knn_mod
+
+tab <- table(knn_mod, test_cat)
+sum(diag(tab)) / sum(tab)
+```
+
+```{r}
+get_class_rate <- function(k_val) {
+  knn_mod <- knn(train = train_pokemon, test = test_pokemon,
+                 cl = train_cat, k = k_val)
+  knn_mod
+  
+  tab <- table(knn_mod, test_cat)
+  class_rate <- sum(diag(tab)) / sum(tab)
+  
+  return(class_rate)
+}
+get_class_rate(k_val = 7)
+
+## iterate through this get_class_rate function
+k_vec <- 1:30
+k_vec
+
+## provide a vector that we want to map through
+## provide a function that we want to apply
+## to each element of the vector
+class_rates <- map(k_vec, get_class_rate)
+## output is a bunch of classification rates for 
+## each value of k specified in k_vec
+class_rate_vec <- class_rates |> unlist()
+
+class_df <- tibble(k_vec, class_rate_vec)
+## make line plot in part d
+ggplot(data = class_df, aes(x = k_vec, y = class_rate_vec)) +
+  geom_line() +
+  theme_minimal()
+## write code to figure out the "max" classification rate
+class_df |> filter(class_rate_vec == max(class_rate_vec))
+class_df |> arrange(desc(class_rate_vec))
+## my "best" k for this set of predictors is k = 19 or k = 20
+```
