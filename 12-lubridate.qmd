@@ -1,0 +1,169 @@
+---
+title: "Section 12: Dates with `lubridate`"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+library(lubridate)
+today()
+#> [1] "2024-10-18"
+now()
+#> [1] "2024-10-18 13:39:19 EDT"
+#> 
+#> library(here)
+holiday_df <- read_csv(here("data/animal_crossing_holidays.csv"))
+holiday_df
+#> # A tibble: 6 × 10
+#>   Holiday         Date1     Date2  Date3 Date4 Date5 Month  Year   Day Month2
+#>   <chr>           <chr>     <chr>  <chr> <chr> <chr> <dbl> <dbl> <dbl> <chr> 
+#> 1 New Year's Day  1-Jan-20  Jan-1… 1/1/… 1/1/… 2020…     1  2020     1 Janua…
+#> 2 Groundhog Day   2-Feb-20  Feb-2… 2/2/… 2/2/… 2020…     2  2020     2 Febru…
+#> 3 Valentine's Day 14-Feb-20 Feb-1… 2/14… 2020… 2020…     2  2020    14 Febru…
+#> 4 Shamrock Day    17-Mar-20 Mar-1… 3/17… 2020… 2020…     3  2020    17 March 
+#> 5 Bunny Day       12-Apr-20 Apr-1… 4/12… 12/4… 2020…     4  2020    12 April 
+#> 6 Earth Day       22-Apr-20 Apr-2… 4/22… 2020… 2020…     4  2020    22 April
+```
+
+```{r}
+## install.packages("quantmod")
+library(quantmod)
+
+start <- ymd("2011-01-01")
+end <- ymd("2021-5-19")
+getSymbols(c("AAPL", "NTDOY", "CMG", "SPY"), src = "yahoo",
+           from = start, to = end)
+#> [1] "AAPL"  "NTDOY" "CMG"   "SPY"
+
+date_tib <- as_tibble(index(AAPL)) |>
+  rename(start_date = value)
+app_tib <- as_tibble(AAPL)
+nint_tib <- as_tibble(NTDOY)
+chip_tib <- as_tibble(CMG)
+spy_tib <- as_tibble(SPY)
+all_stocks <- bind_cols(date_tib, app_tib, nint_tib, chip_tib, spy_tib)
+
+stocks_long <- all_stocks |>
+  select(start_date, AAPL.Adjusted, NTDOY.Adjusted,
+                      CMG.Adjusted, SPY.Adjusted) |>
+  pivot_longer(2:5, names_to = "Stock_Type", values_to = "Price") |>
+  mutate(Stock_Type = fct_recode(Stock_Type,
+                                 Apple = "AAPL.Adjusted",
+                                 Nintendo = "NTDOY.Adjusted",
+                                 Chipotle = "CMG.Adjusted",
+                                 `S & P 500` = "SPY.Adjusted"
+                                 ))
+tail(stocks_long)
+
+stocks_sp <- stocks_long |> filter(Stock_Type == "S & P 500")
+ggplot(data = stocks_sp, aes(x = start_date, y = Price)) +
+  geom_line() +
+  theme_minimal()
+```
+
+## Class Exercises
+
+Class Exercise 1.
+
+```{r}
+library(tidyverse)
+library(lubridate)
+ds_df <- read_csv(here("data/ds_google.csv"))
+ds_df
+
+## class exercise 1
+ds_df <- ds_df |> mutate(date_var = ym(Month))
+
+## class exercise 2
+ggplot(data = ds_df, aes(x = date_var, y = Data_Science)) +
+  geom_line() +
+  geom_smooth(se = FALSE) +
+  theme_minimal()
+```
+
+```{r}
+## class exercise 3
+library(quantmod)
+
+start <- ymd("2011-01-01")
+end <- ymd("2024-5-19")
+getSymbols(c("AAPL", "NTDOY", "CMG", "SPY", "GME"), src = "yahoo",
+           from = start, to = end)
+#> [1] "AAPL"  "NTDOY" "CMG"   "SPY"
+
+date_tib <- as_tibble(index(AAPL)) |>
+  rename(start_date = value)
+app_tib <- as_tibble(AAPL)
+nint_tib <- as_tibble(NTDOY)
+chip_tib <- as_tibble(CMG)
+spy_tib <- as_tibble(SPY)
+gme_tib <- as_tibble(GME)
+
+all_stocks <- bind_cols(date_tib, app_tib, nint_tib, chip_tib, spy_tib, gme_tib)
+
+stocks_long <- all_stocks |>
+  select(start_date, AAPL.Adjusted, NTDOY.Adjusted,
+                      CMG.Adjusted, SPY.Adjusted,
+         GME.Adjusted) |>
+  pivot_longer(2:6, names_to = "Stock_Type", values_to = "Price") |>
+  mutate(Stock_Type = fct_recode(Stock_Type,
+                                 Apple = "AAPL.Adjusted",
+                                 Nintendo = "NTDOY.Adjusted",
+                                 Chipotle = "CMG.Adjusted",
+                                 `S & P 500` = "SPY.Adjusted",
+                                 Gamestop = "GME.Adjusted"
+                                 ))
+tail(stocks_long)
+
+stocks_gamestop <- stocks_long |> filter(Stock_Type == "Gamestop")
+ggplot(data = stocks_gamestop, aes(x = start_date, y = Price)) +
+  geom_line() +
+  theme_minimal()
+```
+
+Class Exercises 4 - 6
+
+```{r}
+tibble(x = c(1, 5, 4, 10, 3, 12)) |>
+  mutate(x_lag = lag(x))
+
+stocks_gamestop |>
+  mutate(lag_price = lag(Price)) |>
+  mutate(is_higher = if_else(Price > lag_price,
+                             true = 1,
+                             false = 0)) |>
+  summarise(prop_higher = mean(is_higher,
+                               na.rm = TRUE))
+
+## class exercise 5
+stocks_gamestop |>
+  mutate(weekday = wday(start_date, label = TRUE)) |>
+  filter(weekday == "Wed") |>
+  mutate(lag_price = lag(Price)) |>
+  mutate(is_higher = if_else(Price > lag_price,
+                             true = 1,
+                             false = 0)) |>
+  summarise(prop_higher = mean(is_higher,
+                               na.rm = TRUE))
+
+## class exercise 6
+stocks_gamestop |>
+  mutate(month = month(start_date),
+         year = year(start_date),
+         day_of_month = mday(start_date)) |>
+  group_by(month, year) |>
+  filter(day_of_month == min(day_of_month)) |>
+  ## or 
+  ## arrange(day_of_month) |>
+  ## slice(1)
+  ungroup() |>
+  mutate(lag_price = lag(Price)) |>
+  mutate(is_higher = if_else(Price > lag_price,
+                             true = 1,
+                             false = 0)) |>
+  summarise(prop_higher = mean(is_higher,
+                               na.rm = TRUE))
+```
