@@ -167,3 +167,53 @@ stocks_gamestop |>
   summarise(prop_higher = mean(is_higher,
                                na.rm = TRUE))
 ```
+
+## Your Turn
+
+```{r}
+## Your Turns 1 through 3
+library(tidyverse)
+library(here)
+shows_df <- read_csv(here::here("data/shows.csv"),
+                     skip = 2) |>
+  rename(time = Month,
+         bojack = `bojack horseman: (United States)`,
+         veep = `veep: (United States)`)
+shows_clean <- shows_df |>
+  pivot_longer(c(bojack, veep), names_to = "term",
+               values_to = "popularity") |>
+  mutate(popularity = if_else(popularity == "<1",
+                              true = "0",
+                              false = popularity)) |>
+  mutate(time = ym(time),
+         popularity = as.numeric(popularity))
+
+ggplot(data = shows_clean, aes(x = time,
+                               y = popularity,
+                               colour = term)) +
+  geom_line() +
+  theme_minimal() +
+  scale_colour_viridis_d()
+
+## Your Turn 3
+shows_clean |>
+  mutate(year_var = year(time)) |>
+  group_by(term, year_var) |>
+  summarise(mean_pop = mean(popularity)) |>
+  print(n = Inf)
+```
+
+Your Turns 4 through 5
+
+```{r}
+fall_df <- read_csv(here::here("data/fall.csv"),
+                     skip = 2) |>
+  rename(fall_colours = `fall colors: (United States)`)
+
+
+ggplot(data = fall_df, aes(x = Day,
+                           y = fall_colours)) +
+  geom_line() +
+  geom_smooth(se = FALSE) +
+  theme_bw()
+```
