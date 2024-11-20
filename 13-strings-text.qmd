@@ -59,3 +59,32 @@ ggplot(data = office_sum, aes(x = word, y = n)) +
   coord_flip()
 
 ```
+
+## Your Turn
+
+Your Turn 1.
+
+```{r}
+med_djok_df |>
+  mutate(serve_location = case_when(str_detect(point, pattern = "^4") ~ "wide",
+                                    str_detect(point, pattern = "^5") ~ "body",
+                                    str_detect(point, pattern = "^6") ~ "down the center")) |>
+  group_by(Serving, serve_location) |>
+  summarise(n_count = n())
+```
+
+Your Turn 3.
+
+```{r}
+med_djok_df |>
+  mutate(is_volley = if_else(str_detect(point, pattern = "v") |
+                               str_detect(point, pattern = "z") |
+                               str_detect(point, pattern = "i") |
+                               str_detect(point, pattern = "k"),
+                             true = 1, 
+                             false = 0)) |>
+  relocate(is_volley) |>
+  summarise(prop_volley = mean(is_volley))
+```
+
+
