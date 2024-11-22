@@ -1,0 +1,156 @@
+---
+title: "Section 16: Intro to SQL and dbplyr"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+install.packages("DBI")
+install.packages("duckdb")
+
+library(DBI)
+library(duckdb)
+con <- DBI::dbConnect(duckdb::duckdb())
+```
+
+```{r}
+library(here)
+duckdb_read_csv(conn = con, name = "tennis2018", 
+                files = here("data/atp_matches_2018.csv"))
+duckdb_read_csv(conn = con, name = "tennis2019", 
+                files = here("data/atp_matches_2019.csv"))
+
+dbListTables(con)
+```
+
+```{r}
+
+library(tidyverse)
+
+sql <- "
+  SELECT surface, winner_name, loser_name, w_ace, l_ace, minutes
+  FROM tennis2019 
+  WHERE minutes > 240
+"
+dbGetQuery(con, sql) |>
+  as_tibble()
+```
+
+Exercise 1. It is keeping the variables specified in the SELECT statement from the tennis2019 data set and it is then keeping the matches that were longer than 240 minutes.
+
+Exercise 2. `WHERE` is similar to `filter()` while `SELECT` is similar to `select()` in this example.
+
+## Section 16.2: `dbplyr`
+
+```{r}
+library(dbplyr)
+
+## create a database table of the tennis2019 data set
+## in our database connection con
+tennis_db <- tbl(con, "tennis2019")
+tennis_db
+## top of printout:
+## gives us the number of columns (49) but not rows
+## tells us what database we are connected to (DuckDB v.....)
+
+```
+
+```{r}
+tennis_query1 <- tennis_db |> 
+  filter(minutes > 240) |> 
+  select(minutes, winner_name, loser_name, minutes, tourney_name)
+tennis_query1
+## returns this "database" object with ??? rows
+
+## if we want to turn this into a regular "tibble", we
+## can use `collect()`
+tennis_query1 |> collect()
+## no longer in a database and we can now treat this
+## just as a regular dataframe in R
+```
+
+```{r}
+tennis_query1 |>
+  show_query()
+## shows equivalent SQL code for our dbplyr query in 
+## dplyr code
+```
+
+```{r}
+totalaces <- tennis_db |>
+  group_by(winner_name) |>
+  summarise(total_aces = sum(w_ace)) |>
+  arrange(desc(total_aces))
+totalaces
+
+totalaces |> show_query()
+## ORDER BY is like arrange() and DESC is like desc()
+## GROUP BY winner_name is like group_by(winner_name)
+## SUM(w_ace) AS total_aces is like summarise(total_aces = ...)
+```
+
+Exercise 3.
+
+```{r}
+count_matches <- tennis_db |> group_by(surface) |>
+  summarise(n_matches = n())
+
+count_matches |> show_query()
+## COUNT(*) is equivalent to n()
+```
+
+## Section 16.3: SQL
+
+* `SELECT` covers:
+
+    * `select()` from dplyr to keep certain columns
+    * `rename()`. In SQL, new_name AS old_name renames a column called old_name to now be callew new_name
+    * `mutate()` x + y AS new_name
+    * `summarise()` AVG('minutes') AS mean_min
+    
+* `FROM`: which data set in the database you are using (tennis2019)
+
+* `WHERE`: equivalent to `filter()`
+
+* `GROUP BY`: equivalent to `group_by()`
+
+* `ORDER BY`: equivalent to `arrange()`
+
+Exercise 4.
+
+```{r}
+wimb <- tennis_db |> filter(tourney_name == "Wimbledon")
+wimb |> show_query()
+```
+
+## Class Exercises
+
+Class Exercise 1.
+
+```{r}
+ace_diff_q <- tennis_db |> select(winner_name, loser_name, w_ace, l_ace) |>
+  mutate(ace_diff = w_ace - l_ace) |>
+  arrange(desc(ace_diff))
+ace_diff_q |> show_query()
+```
+
+Class Exercise 2.
+
+```{r}
+test_query <- tennis_db |>
+  mutate(points_diff = winner_rank_points - loser_rank_points) |>
+  select(points_diff, winner_name, loser_name)
+test_query |> show_query()
+```
+
+## Your Turn 
+
+Your Turn 1.
+
+```{r}
+longest_match_query <- tennis_db |> group_by(tourney_name) |>
+  summarise(longest_match = max(minutes))
+longest_match_query |> show_query()
+```
