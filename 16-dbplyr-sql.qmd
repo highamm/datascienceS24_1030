@@ -7,8 +7,8 @@ format:
 ---
 
 ```{r}
-install.packages("DBI")
-install.packages("duckdb")
+##install.packages("DBI")
+##install.packages("duckdb")
 
 library(DBI)
 library(duckdb)
@@ -153,4 +153,58 @@ Your Turn 1.
 longest_match_query <- tennis_db |> group_by(tourney_name) |>
   summarise(longest_match = max(minutes))
 longest_match_query |> show_query()
+```
+
+Your Turn 2
+
+```{r}
+tennis_db |>
+  mutate(surface2 = fct_relevel(surface,
+                                c("Hard", "Clay", "Grass")))
+## things that are very R language specific (like factors)
+## won't work in SQL
+
+## if we want to use fct_relevel(), we must collect() the
+## data frame first to bring it in locally as an R object
+```
+
+Your Turn 3
+
+```{r}
+tennis_db |> filter(winner_name != "Daniil Medvedev") |>
+  show_query()
+## != 
+tennis_db |>
+  filter(winner_name %in% c("Daniil Medvedev", "Dominic Thiem")) |>
+  show_query()
+## IN is equivalent to %in%
+
+tennis_db |> distinct(tourney_name) |>
+  show_query()
+## DISTINCT is equivalent to distinct()
+```
+
+## Your Turn 4
+
+```{r}
+tennis_db |> filter(surface == "Hard") |>
+  group_by(winner_name) |>
+  summarise(n_win = n()) |>
+  arrange(desc(n_win)) |>
+  show_query()
+```
+
+Your Turn 5 (alt.).
+
+<SQL>
+SELECT tourney_level, "tourney_name" as "tournament"
+FROM "tennis2019"
+WHERE surface IN c('Hard', 'Clay')
+ORDER BY 'tourney_level'
+
+```{r}
+tennis_db |> filter(surface %in% c("Hard", "Clay")) |>
+  rename(tournament = tourney_name) |>
+  select(tourney_level, tournament) |>
+  arrange(tourney_level)
 ```
