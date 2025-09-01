@@ -1,0 +1,132 @@
+---
+title: "Section 2: ggplot2"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Section 2.3: Intro to Plotting
+
+```{r}
+library(tidyverse)
+stat113_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/stat113.csv")
+```
+
+```{r}
+## single quantitative
+ggplot(data = stat113_df, aes(x = GPA)) +
+  geom_histogram(colour = "black", fill = "white",
+                 bins = 15)
+
+ggplot(data = stat113_df, aes(x = GPA)) +
+  geom_freqpoly(bins = 15)
+
+ggplot(data = stat113_df, aes(x = GPA)) +
+  geom_histogram(colour = "black", fill = "white",
+                 bins = 15) +
+  geom_freqpoly(bins = 15)
+
+ggplot(data = stat113_df, aes(x = TV)) +
+  geom_freqpoly(bins = 15)
+
+ggplot(data = stat113_df, aes(x = GPA)) +
+  geom_histogram(colour = "khaki4", fill = "lavenderblush",
+                 bins = 15)
+```
+
+```{r}
+## single categorical
+
+ggplot(data = stat113_df, aes(x = Award)) +
+  geom_bar(colour = "olivedrab4", fill = "olivedrab1")
+```
+
+```{r}
+## two categorical
+ggplot(data = stat113_df, aes(x = Sport, fill = Award)) +
+  geom_bar() 
+
+ggplot(data = stat113_df, aes(x = Sport, fill = Award)) +
+  geom_bar(position = "fill") +
+  labs(y = "Proportion")
+
+## it's not too surprising that a high proportion of people
+## who play a sport prefer to win the olympic medal.
+```
+
+```{r}
+## categorical and quantitative
+## boxplots
+ggplot(data = stat113_df, aes(x = Award, y = Exercise)) +
+  geom_boxplot()
+
+## violin plots
+ggplot(data = stat113_df, aes(x = Award, y = Exercise)) +
+  geom_violin()
+
+## strip plot: see a rough sample size!
+ggplot(data = stat113_df, aes(x = Award, y = Exercise)) +
+  geom_jitter(width = 0.10)
+
+ggplot(data = stat113_df, aes(x = Award, y = Pulse)) +
+  geom_violin(colour = "darkolivegreen", fill = "dimgrey")
+```
+
+## Section 2.4: Practice Part 1
+
+Class Exercise 1.
+
+```{r}
+stat113_df
+ggplot(data = stat113_df, aes(x = SocialMedia)) +
+  geom_bar()
+
+stat113_restructured <- stat113_df |> group_by(SocialMedia) |>
+  summarise(n_social = n())
+stat113_restructured
+
+## geom_bar() just counts up the number of times
+## social media levels appear in the data frame
+ggplot(data = stat113_restructured, aes(x = SocialMedia)) +
+  geom_bar()
+
+## geom_col() allows us to specify the counts as an aesthetic
+ggplot(data = stat113_restructured, aes(x = SocialMedia,
+                                        y = n_social)) +
+  geom_col()
+
+```
+
+Class Exercise 2.
+
+```{r}
+library(tidyverse)
+fitness_full <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/higham_fitness_clean.csv",
+                         col_types = list(stepgoal = col_factor())) |>
+  mutate(weekend_ind = case_when(weekday == "Sat" | weekday == "Sun" ~ "weekend",
+                                 .default = "weekday"))
+
+ggplot(data = fitness_full, aes(x = distance, y = active_cals)) +
+  geom_point() +
+  geom_smooth()
+```
+
+Class Exercise 3.
+
+```{r}
+ggplot(data = fitness_full, aes(x = Date, y = steps)) +
+  geom_line() +
+  geom_smooth()
+```
+
+Class Exercise 4.
+
+```{r}
+ggplot(data = stat113_df, aes(x = Exercise, y = GPA)) +
+  geom_point() +
+  facet_grid(Sex ~ Sport)
+```
+
+## Section 2.5: Aesthetics
+
