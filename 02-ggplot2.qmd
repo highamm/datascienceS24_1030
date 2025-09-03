@@ -128,5 +128,91 @@ ggplot(data = stat113_df, aes(x = Exercise, y = GPA)) +
   facet_grid(Sex ~ Sport)
 ```
 
+Class Exercise 5.
+
+```{r}
+ggplot(data = stat113_df, aes(x = Year,
+                              y = TV)) +
+  geom_boxplot(outlier.shape = 8)
+```
+
+Class Exercise 6. Skip
+
+## Your Turn
+
+Your Turn 1. See handwritten sheet.
+
+Your Turn 2.
+
+```{r}
+ggplot(data = stat113_df, aes(x = TV,
+                              y = GPA)) +
+  geom_point() +
+  facet_wrap(~ Year)
+
+ggplot(data = stat113_df, aes(x = TV,
+                              y = GPA)) +
+  geom_point(aes(colour = Year)) 
+
+## the faceted plot looks better here: in general,
+## the more levels there are, the better it is 
+## to facet compared to colour
+```
+
+Your Turn 3
+
+```{r}
+ggplot(data = stat113_df, aes(x = Exercise,
+                              y = GPA)) +
+  geom_point(aes(colour = Sport))
+
+ggplot(data = stat113_df, aes(x = Exercise,
+                              y = GPA)) +
+  geom_point()  +
+  facet_wrap(~ Sport)
+
+## the coloured version is better: it's more
+## easy to compare the levels when there are 
+## so few levels (2 here)
+```
+
+Your Turn 4.
+
+```{r}
+ggplot(data = fitness_full, aes(x = active_cals)) +
+  geom_histogram(bins = 15) +
+  facet_wrap(~ month)
+
+ggplot(data = fitness_full, aes(x = active_cals)) +
+  geom_freqpoly(bins = 15, aes(colour = month))
+
+## faceted histogram is okay, but the coloured
+## frequency plot has way too many colours- they
+## are indistinguishiable!
+```
+
+Your Turn 5. You need exactly one y for each value of x for this to be readable.
+
+```{r}
+## this plot is not interpretable since
+## there is more than one GPA value per unique
+## exercise value
+ggplot(data = stat113_df, aes(x = Exercise, y = GPA)) +
+  geom_line()
+```
+
+Your Turn 6. The message is now clear that these values are just missing (likely these are First-year students who do not have a GPA yet).
+
+Your Turn 7 and 8. Skip
+
 ## Section 2.5: Aesthetics
 
+## Section 2.6: Exercises
+
+Your Turn 1. 
+
+a is wrong because method = "lm" should not be an aesthetic (lm is not a variable in our data frame).
+
+b. is correct: the global colour = groupvar aestehtic will be overridden by the local colour = "purple" argument in geom_point().
+
+c. 
