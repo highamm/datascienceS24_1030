@@ -209,10 +209,47 @@ Your Turn 7 and 8. Skip
 
 ## Section 2.6: Exercises
 
+Class Exercise 1.
+
+```{r}
+stat113_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/stat113.csv")
+
+ggplot(data = stat113_df, aes(x = Wgt, y = Hgt)) +
+  geom_point(aes(colour = Sport)) +
+  geom_smooth()
+## the plot has a single smoother now because
+## I have now specified Sport as a local colour aestehetic
+## that only applies to geom_point().
+```
+
+Class Exercise 2.
+
+```{r}
+ggplot(data = stat113_df, aes(x = TV)) +
+  geom_histogram(colour = "black", fill = "white")
+```
+
 Your Turn 1. 
 
 a is wrong because method = "lm" should not be an aesthetic (lm is not a variable in our data frame).
 
 b. is correct: the global colour = groupvar aestehtic will be overridden by the local colour = "purple" argument in geom_point().
 
-c. 
+c. c is wrong because purple is not an aesthetic but groupvar should be an aesthetic.
+
+d. d is wrong because colour = groupvar needs to go inside aes().
+
+e. e is correct!
+
+f. f is wrong: purple should not be inside aes().
+
+Your Turn 2.
+
+Transition (e) to be all local aesthetics.
+
+```{r}
+#| eval: false
+ggplot(data = toy_df) +
+  geom_point(colour = "purple", aes(x = xvar, y = yvar)) +
+  geom_smooth(method = "lm", aes(x = xvar, y = yvar, colour = groupvar))
+```
