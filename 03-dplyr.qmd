@@ -1,0 +1,44 @@
+---
+title: "Section 3: dplyr"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(babynames)
+library(tidyverse)
+babynames
+```
+
+Class Exercises 1 and 2
+
+```{r}
+babynames_2017m <- babynames |> filter(year == 2017 & sex == "M") |>
+  arrange(desc(n)) |>
+  slice(1:10)
+
+ggplot(data = babynames_2017m, aes(x = name, y = n)) +
+  geom_col()
+```
+
+Class Exercises 3 and 4
+
+```{r}
+babynames_john <- babynames |> filter(name == "John" & sex == "M")
+ggplot(data = babynames_john, aes(x = year, y = n)) +
+  geom_line() ##+
+  ##geom_smooth()
+```
+
+Class Exercise 5.
+
+fitness_df |> mean(distance) is equivalent to mean(fitness_df, distance), but, the first argument to mean has to be a variable, not a data frame. 
+
+Your Turn 1.
+
+```{r}
+babynames_not45 <- babynames |> filter(year != 1945)
+babynames_whatever_n <- babynames |> filter(n >= 400 & n <= 5000)
+```
