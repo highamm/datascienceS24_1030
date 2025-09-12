@@ -54,6 +54,18 @@ ggplot(data = babynames_monhil, aes(x = year, y = n)) +
   geom_line(aes(colour = name))
 ```
 
+Your Turn 3
+
+```{r}
+babynames_5 <- babynames |> filter((name == "Matthew" & sex == "M") |
+                      (name == "Jessica" & sex == "F") |
+                      (name == "Robin" & sex == "M") |
+                      (name == "Lillian" & sex == "F") |
+                      (name == "Ivan" & sex == "M"))
+ggplot(data = babynames_5, aes(x = year, y = n)) +
+  geom_line(aes(colour = name))
+```
+
 Your Turn 4
 
 ```{r}
@@ -63,4 +75,79 @@ babynames_top2004 <- babynames |> filter(year == 2004 & sex == "M") |>
 
 ggplot(data = babynames_top2004, aes(x = name, y = n)) +
   geom_col(colour = "goldenrod4", fill = "goldenrod1")
+```
+
+```{r}
+library(tidyverse)
+slumajors_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/SLU_Majors_17_21.csv")
+slumajors_df
+
+slumajors_df <- slumajors_df |>
+  mutate(ntotal = nfemales + nmales) |>
+  mutate(percfemale = 100 * nfemales / (nfemales + nmales))
+slumajors_df <- slumajors_df |>
+  mutate(morewomen = if_else(percfemale > 50,
+                             true = "Yes",
+                             false = "No")) |>
+  mutate(large_majority =
+           case_when(percfemale >= 70 ~ "female",
+                     percfemale <= 30 ~ "male",
+                     percfemale > 30 & percfemale < 70 ~ "none")) 
+```
+## Section 3.4: More Practice
+
+Class Exercises 1 and 2.
+
+Class Exercise 3.
+
+```{r}
+slumajors_df |> mutate(testcase = case_when(percfemale >= 40 ~ "Yes",
+                                            percfemale > 60 ~ "No")) |>
+  ##select(testcase, everything()) |>
+  relocate(testcase)
+## if there are overlapping conditions, the first condition receives
+## priority (goes in order of the conditions specified)
+## if none of the conditions are satisfied, an NA goes in.
+
+slumajors_df |> mutate(testcase = case_when(percfemale >= 40 ~ "Yes",
+                                            percfemale > 60 ~ "No",
+                                            .default = "maybe")) |>
+  ##select(testcase, everything()) |>
+  relocate(testcase)
+## .default assigns a value to any row that did not satisfy any of the
+## conditions in case_when()
+```
+
+Class Exercise 4.
+
+```{r}
+babynames |> group_by(year, sex) |>
+  mutate(rankvar = rank(desc(n))) |>
+  filter(rankvar == 1) |>
+  group_by(name) |>
+  summarise(n_years = n()) |>
+  arrange(desc(n_years))
+```
+
+Class Exercise 5.
+
+```{r}
+babynames |> group_by(year, sex) |>
+  filter(n == max(n)) |>
+  group_by(name) |>
+  summarise(n_years = n()) |>
+  arrange(desc(n_years))
+```
+
+Class Exercise 6.
+
+```{r}
+babynames_test <- babynames |>
+  group_by(year, sex) |> mutate(ntest = n / prop)
+babynames_test |> slice(1, 2, 3, 4, 5)
+## this is returning 5 rows per group (276 * 5 = 1380)
+
+## if I truly want just the first 5 rows
+babynames_test |> ungroup() |>  ## drops the grouping structure
+  slice(1, 2, 3, 4, 5)
 ```
