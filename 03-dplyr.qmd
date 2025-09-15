@@ -151,3 +151,70 @@ babynames_test |> slice(1, 2, 3, 4, 5)
 babynames_test |> ungroup() |>  ## drops the grouping structure
   slice(1, 2, 3, 4, 5)
 ```
+
+Your Turn 1. Skip. see handwritten packet.
+
+Your Turn 2.
+
+```{r}
+toy_df <- tibble(x = c(NA, 3, 4, 7),
+                 y = c(1, 4, 3, 2),
+                 z = c("A", "A", "B", NA))
+toy_df
+
+## a
+toy_df |> mutate(x_over_y = x / y)
+## row where x is NA gets assigned an NA
+
+## b: arrange
+toy_df |> arrange(x)
+## NAs get put at the bottom
+
+## c
+toy_df |> filter(x < 5)
+## filter() removes the NA values by default
+
+## d
+toy_df |> summarise(mean_x = mean(x))
+## returns an NA if _any_ values of x are missing
+
+## if you want to find the mean after removing NAs:
+toy_df |> summarise(mean_x = mean(x, na.rm = TRUE))
+
+## e
+toy_df |> group_by(z) |>
+  summarise(mean_x = mean(x))
+## NA values for z are treated as their own group
+```
+
+Your Turn 3.
+
+```{r}
+## a: mutate(): generally safe: all we are doing is adding a new column
+
+## b: arrange(): generally safe: again, we are not
+## changing the data itself (just how it's ordered)
+
+## c: filter(): generally unsafe (only safe if you know
+## you never need to use the rows you've filtered out)
+
+## d: summarise(): unsafe: summarise() completely changes the structure of the data.
+
+# e: select(): only safe if you are sure that you will
+## never use the columns that you've selected out.
+```
+
+Your Turn 4.
+
+```{r}
+slumajors_df |>
+  summarise(meantotalmajor = mean(ntotal),
+            totalgrad = sum(ntotal)) 
+slumajors_df |>
+  mutate(meantotalmajor = mean(ntotal),
+            totalgrad = sum(ntotal)) |>
+  select(meantotalmajor, totalgrad, everything())
+```
+
+mutate() just adds a new column but the resulting data set always has the same number of rows as the original. summarise() collapses the data so that there is one row per group (there are no groups here, so 1 row total) and columns for any grouping variables (0 here) as well as the new summary variables.
+
