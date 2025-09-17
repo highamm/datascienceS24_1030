@@ -218,3 +218,33 @@ slumajors_df |>
 
 mutate() just adds a new column but the resulting data set always has the same number of rows as the original. summarise() collapses the data so that there is one row per group (there are no groups here, so 1 row total) and columns for any grouping variables (0 here) as well as the new summary variables.
 
+Your Turn 5.
+
+```{r}
+babynames_unique <- babynames |> group_by(year) |>
+  summarise(n_unique = n())
+
+ggplot(data = babynames_unique, aes(x = year, y = n_unique)) +
+  geom_line()
+## this does double count names that are present for each
+## sex
+```
+
+Your Turn 6.
+
+```{r}
+babynames_unique_gend <- babynames |> group_by(year, sex) |>
+  summarise(n_unique = n())
+
+ggplot(data = babynames_unique_gend,
+       aes(x = year, y = n_unique)) +
+  geom_line(aes(colour = sex))
+```
+
+Your Turn 7.
+
+```{r}
+babynames |> group_by(name) |>
+  summarise(total_births = sum(n)) |>
+  arrange(desc(total_births))
+```
