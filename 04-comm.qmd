@@ -1,0 +1,57 @@
+---
+title: "Section 4: Communication"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+library(gapminder)
+
+country_df <- gapminder
+country_df
+```
+
+Class Exercises 1 through 7.
+
+```{r}
+ggplot(data = country_df, aes(x = year, y = lifeExp)) +
+  geom_line(aes(group = country)) +
+  facet_wrap(~ continent) +
+  labs(x = "year",
+       y = "life expectancy (years)",
+       title = "Life Expectancy of Countries through Time") +
+  theme_minimal()
+
+## colour the three countries of interest
+country_df |> filter(continent == "Europe") |>
+filter(lifeExp == min(lifeExp))
+## Turkey
+
+country_df |> filter(continent == "Africa") |>
+  filter(lifeExp == min(lifeExp))
+
+country_df |> filter(continent == "Asia" & year > 1970) |>
+  filter(lifeExp == min(lifeExp))
+
+## country names: Turkey, Rwanda, Cambodia
+
+country_3 <- country_df |> filter(country == "Turkey" | country == "Rwanda" | country == "Cambodia")
+
+ggplot(data = country_df, aes(x = year, y = lifeExp)) +
+  geom_line(aes(group = country), alpha = .2) +
+  facet_wrap(~ continent) +
+  labs(x = "year",
+       y = "life expectancy (years)",
+       title = "Life Expectancy of Countries through Time",
+       caption = "Cambodian Civil War and Rwandan Genocide caused the two major dips in life expectancy.") +
+  theme_minimal() +
+  geom_line(data = country_3, aes(colour = country),
+            linewidth = 1.2) +
+  scale_colour_viridis_d()
+
+## 4 and 6
+```
+
