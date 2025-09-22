@@ -1,9 +1,13 @@
 ---
 title: "Section 4: Communication"
 author: "Matt Higham"
+execute: 
+  warning: false
+  output: false
 format: 
   html:
     embed-resources: true
+    fig-height: 4
 ---
 
 ```{r}
@@ -17,6 +21,7 @@ country_df
 Class Exercises 1 through 7.
 
 ```{r}
+#| echo: false
 ggplot(data = country_df, aes(x = year, y = lifeExp)) +
   geom_line(aes(group = country)) +
   facet_wrap(~ continent) +
@@ -40,6 +45,27 @@ country_df |> filter(continent == "Asia" & year > 1970) |>
 
 country_3 <- country_df |> filter(country == "Turkey" | country == "Rwanda" | country == "Cambodia")
 
+
+
+
+country_3lab <- country_3 |> group_by(country) |>
+  filter(lifeExp == min(lifeExp))
+## alternative to colour: labeling the countries directly with 
+## geom_label() or geom_text()
+ggplot(data = country_df, aes(x = year, y = lifeExp)) +
+  geom_line(aes(group = country), alpha = .2) +
+  facet_wrap(~ continent) +
+  labs(x = "year",
+       y = "life expectancy (years)",
+       title = "Life Expectancy of Countries through Time",
+       caption = "Cambodian Civil War and Rwandan Genocide caused the two major dips in life expectancy.") +
+  theme_minimal() +
+  geom_text(data = country_3lab, aes(label = country), hjust = -0.1)
+
+```
+
+```{r}
+#| output: true
 ggplot(data = country_df, aes(x = year, y = lifeExp)) +
   geom_line(aes(group = country), alpha = .2) +
   facet_wrap(~ continent) +
@@ -51,7 +77,58 @@ ggplot(data = country_df, aes(x = year, y = lifeExp)) +
   geom_line(data = country_3, aes(colour = country),
             linewidth = 1.2) +
   scale_colour_viridis_d()
-
-## 4 and 6
 ```
+
+Your Turn 1.
+
+He deletes three rows in excel with point and click operations. He also adjusts the y-axis limits of the plot. He copies aspects over to microsoft word so that no one can see how he ran the t-test.
+
+Your Turn 2.
+
+```{r}
+fitness_full <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/higham_fitness_clean.csv",
+                         col_types = list(stepgoal = col_factor())) |>
+  mutate(weekend_ind = case_when(weekday == "Sat" | weekday == "Sun" ~ "weekend",
+                                 .default = "weekday"))
+
+## section 2 class exercise 3
+fitness_label <- fitness_full |> filter(steps > 29000) |>
+  filter(Date != "2023-07-15") |>
+  mutate(event = c("half-marathon", "grand canyon"))
+ggplot(data = fitness_full, aes(x = Date, y = steps)) +
+  geom_line() +
+  geom_smooth() +
+  geom_text(data = fitness_label, aes(label = event))
+```
+
+Your Turn 3.
+
+```{r}
+mtcars_rows <- mtcars |> rownames_to_column() |> rename(car_name = rowname)
+mtcars_rows
+
+mtcars_rows |> filter(mpg == max(mpg))
+mtcars_label <- mtcars_rows |> arrange(desc(mpg)) |> slice(1)
+
+ggplot(data = mtcars, aes(x = wt, y = mpg)) +
+  geom_point() +
+  geom_text(data = mtcars_label, aes(label = car_name),
+            colour = "skyblue") +
+  theme_minimal()
+```
+
+Your Turn 4.
+
+```{r}
+hpi_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/hpi-tidy.csv")
+
+ggplot(data = hpi_df, aes(x = Footprint, y = HappyLifeYears,
+                          colour = Region)) +
+  geom_point() +
+  theme(plot.background = element_rect(fill = "yellow"),
+       ## panel.border = element_rect(linetype = "dashed"),
+        panel.background = element_rect(fill = "white", colour = "grey50"),
+        panel.grid.major = element_line(linewidth = 5, colour = "red"))
+```
+
 
