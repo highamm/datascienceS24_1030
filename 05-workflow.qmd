@@ -1,0 +1,82 @@
+---
+title: "Section 5: Workflow"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+library(here)
+athletes_df <- read_csv(here("data/athletesdata.csv"))
+```
+
+## Class Exercise 1. 
+
+If I share me .qmd file with someone else and I load in packages with the checkboxes in the lower-right tab, the person I share with cannot tell which packages I am using. So, this is not a reproducible workflow!
+
+Class Exercise 2.
+
+```{r}
+ggplot(data = mtcars, aes(x = hp, y = drat)) +
+  geom_point(aes(colour = factor(gear))) +
+  facet_wrap(~ cyl) +
+  geom_smooth()
+```
+
+Class Exercise 3.
+
+```{r}
+library(palmerpenguins)
+penguins |> mutate(flipper_ratio = flipper_length_mm / body_mass_g) |>
+  group_by(species, island) |>
+  summarise(mean_flipper = mean(flipper_ratio, na.rm = TRUE)) |>
+  arrange(mean_flipper) |>
+  pivot_wider(names_from = c("species"), values_from = "mean_flipper")
+```
+
+Class Exercise 4.
+
+```{r}
+videogame_df <- read_csv(here("data/videogame_clean.csv"))
+videogame_df |> summarise(mean_playtime = mean(median_playtime, na.rm = TRUE),
+                          median_playtime = median(median_playtime, na.rm = TRUE))
+
+videogame_df |> filter(median_playtime <= 1000) |>
+  summarise(mean_playtime = mean(median_playtime, na.rm = TRUE),
+                          median_playtime = median(median_playtime, na.rm = TRUE))
+
+## just like in STAT 113, the mean is not robust to outliers!
+```
+
+Class Exercise 5.
+
+```{r}
+library(tidyverse)
+toy_df <- tibble(Term = c("F19", "F19", "F20", "S20"))
+toy_df
+## how can i separate the Term variable into a semester variable and a 
+## year variable?
+```
+
+Your Turn 3.
+
+```{r}
+penguins |> mutate(flipper_ratio = flipper_length_mm / body_mass_g) |>
+  summarise(med = median(flipper_ratio, na.rm = TRUE))
+
+penguins |> mutate(flipper_ratio = flipper_length_mm / body_mass_g) |>
+  filter(flipper_ratio > median(flipper_ratio, na.rm = TRUE)) |>
+  group_by(species) |>
+  summarise(count_var = n())
+```
+
+Your Turn 4.
+
+```{r}
+library(tidyverse)
+fake_data <- tibble(x = c(1, 4, 7),
+                    y = c(9, 1, 2))
+## how do I create a new column that adds x and y together?
+```
