@@ -1,0 +1,77 @@
+---
+title: "Section 6: tidyr"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+library(here)
+prices_df <- read_csv(here("data/UBSprices2.csv"))
+prices_df
+```
+
+Class Exercise 2.
+
+There are variables that are spread out over multiple columns (for example, there should be a column for year).
+
+Class Exercise 3.
+
+```{r}
+prices_rice <- prices_df |> pivot_longer(2:7, names_to = "temp",
+                          values_to = "price") |>
+  separate(temp, into = c("commodity", "year"),
+           sep = -4) |>
+  filter(commodity == "rice")
+prices_rice
+
+ggplot(data = prices_rice, aes(x = year, y = price, group = city)) +
+  geom_line(alpha = 0.4)
+```
+
+Class Exercise 4.
+
+```{r}
+prices_amsterdam <- prices_df |> pivot_longer(2:7, names_to = "temp",
+                          values_to = "price") |>
+  separate(temp, into = c("commodity", "year"),
+           sep = -4) |>
+  filter(city == "Amsterdam")
+
+ggplot(data = prices_amsterdam, aes(x = year, y = price)) +
+  geom_line(aes(colour = commodity, group = commodity)) +
+  scale_colour_viridis_d() +
+  theme_minimal()
+```
+
+Class Exercises 5 through 7
+
+```{r}
+mortality_df <- read_csv(here("data/under5mortality.csv"))
+head(mortality_df)
+
+mortality_long <- mortality_df |> pivot_longer(2:217, names_to = "year",
+                             values_to = "mortality",
+                             names_transform = list(year = as.numeric)) |>
+  rename(country = `Under five mortality`)
+
+ggplot(data = mortality_long, aes(x = year, y = mortality,
+                                  group = country)) +
+  geom_line(alpha = 0.2)
+
+## some countries are completely flat between 1800 and 1900-
+## possibly the data set is using some average for each of these countries.
+```
+
+Your Turn 1.
+
+```{r}
+library(tidyverse)
+library(here)
+baseball_df <- read_csv(here("data/mlb2016.csv"))
+head(baseball_df)
+```
+
+Your Turn 1. The values in salary, total.value, etc., contain dollar signs but tidy data should not have units in the values themselves. The column Years actually contains three variables: duration, a start year, an end year.
