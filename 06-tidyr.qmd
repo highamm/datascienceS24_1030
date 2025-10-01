@@ -75,3 +75,51 @@ head(baseball_df)
 ```
 
 Your Turn 1. The values in salary, total.value, etc., contain dollar signs but tidy data should not have units in the values themselves. The column Years actually contains three variables: duration, a start year, an end year.
+
+Your Turn 2 through Turn 4.
+
+```{r}
+baseball_clean <- baseball_df |>
+  separate(Years, into = c("Duration", "Range"),
+           sep = " ") |>
+  separate(Range, into = c("Start", "End"),
+           sep = "-")  |>
+  mutate(Salary = parse_number(Salary),
+         Total.Value = parse_number(Total.Value),
+         Avg.Annual = parse_number(Avg.Annual),
+         Start = parse_number(Start),
+         End = parse_number(End)) |>
+  mutate(End = 2000 + End)
+
+## there are single year contracts where no dash
+## is present so separate() cannot work on these rows
+```
+
+Your Turn 5.
+
+```{r}
+ggplot(data = baseball_clean, aes(x = POS, y = Salary)) +
+  geom_boxplot(colour = "skyblue4", fill = "skyblue1") +
+  theme_minimal()
+
+ggplot(data = baseball_clean, aes(POS, y = Salary)) +
+  geom_jitter(width = 0.10) +
+  theme_minimal()
+
+ggplot(data = baseball_clean, aes(x = POS, y = Salary)) +
+  geom_violin(colour = "skyblue4", fill = "skyblue1") +
+  theme_minimal()
+
+## BAD: sums salary for each position: 
+## so positions with a larger sample size "appear"
+## to have a higher average when that's not true
+ggplot(data = baseball_clean, aes(x = POS, y = Salary)) +
+  geom_col()
+## useful only if y is a count variable
+
+## BAD: only shows center (not outliers, spread, or shape).
+baseball_sum <- baseball_clean |> group_by(POS) |>
+  summarise(mean_salary = mean(Salary))
+ggplot(data = baseball_sum, aes(x = POS, y = mean_salary)) +
+  geom_col()
+```
