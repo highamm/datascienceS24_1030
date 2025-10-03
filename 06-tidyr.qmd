@@ -123,3 +123,72 @@ baseball_sum <- baseball_clean |> group_by(POS) |>
 ggplot(data = baseball_sum, aes(x = POS, y = mean_salary)) +
   geom_col()
 ```
+
+
+Your Turns 6 through 9.
+
+```{r}
+nfl_df <- read_csv(here::here("data/nfl_salary.csv"))
+nfl_long <- nfl_df |> pivot_longer(2:11, names_to = "position",
+                       values_to = "salary")
+
+nfl_long |> group_by(position, year) |>
+  arrange(desc(salary)) |>
+  slice(1)
+
+nfl_max <- nfl_long |> group_by(position, year) |>
+  summarise(max_salary = max(salary, na.rm = TRUE))
+nfl_max
+ggplot(data = nfl_max, aes(x = year, y = max_salary)) +
+  geom_line(aes(colour = position), show.legend = FALSE) +
+  facet_wrap(~ position) +
+  theme_minimal() +
+  scale_colour_viridis_d()
+```
+
+Your Turn 9. Use the mean salary of the top 32 players. 
+
+```{r}
+nfl_mean32 <- nfl_long |> group_by(position, year) |>
+  arrange(desc(salary)) |>
+  slice(1:32) |>
+  summarise(mean_salary = mean(salary))
+
+ggplot(data = nfl_mean32, aes(x = year, y = mean_salary)) +
+  geom_line(aes(colour = position), show.legend = FALSE) +
+  facet_wrap(~ position) +
+  theme_minimal() +
+  scale_colour_viridis_d()
+```
+
+Your Turn 11.
+
+```{r}
+## 8.6%
+nfl_mean_adj <- nfl_long |> 
+  filter(year == 2011 | year == 2018) |>
+  mutate(adj_salary = if_else(year == 2011,
+                              true = salary * 1.086,
+                              false = salary)) |>
+  group_by(position, year) |>
+  arrange(desc(adj_salary)) |>
+  slice(1:32) |>
+  summarise(mean_salary = mean(adj_salary)) 
+
+ggplot(data = nfl_mean_adj, aes(x = year, y = mean_salary)) +
+  geom_line(aes(colour = position), show.legend = FALSE) +
+  facet_wrap(~ position) +
+  theme_minimal() +
+  scale_colour_viridis_d()
+```
+
+Your Turn 12.
+
+```{r}
+nfl_df |> pivot_longer(2:11, names_to = "position",
+                       values_to = "salary") |>
+  filter(year == 2018) |>
+  group_by(position) |>
+  mutate(rank_var = rank(desc(salary)))
+```
+
