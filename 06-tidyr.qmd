@@ -185,10 +185,15 @@ ggplot(data = nfl_mean_adj, aes(x = year, y = mean_salary)) +
 Your Turn 12.
 
 ```{r}
-nfl_df |> pivot_longer(2:11, names_to = "position",
+nfl_rank <- nfl_df |> pivot_longer(2:11, names_to = "position",
                        values_to = "salary") |>
   filter(year == 2018) |>
   group_by(position) |>
   mutate(rank_var = rank(desc(salary)))
+
+ggplot(data = nfl_rank, aes(x = rank_var,
+                            y = salary)) +
+  geom_line(aes(group = position)) +
+  facet_wrap(~ position)
 ```
 

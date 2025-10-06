@@ -1,0 +1,59 @@
+---
+title: "Section 7: Base R"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+set.seed(15125141)
+toy_df <- tibble(xvar = rnorm(100, 3, 4),
+                 yvar = rnorm(100, -5, 10),
+                 group1 = sample(c("A", "B", "C"), size = 100, replace = TRUE),
+                 group2 = sample(c("Place1", "Place2", "Place3"), size = 100,
+                                 replace = TRUE))
+toy_df
+
+
+fitness_df <- read_csv(here("data/higham_fitness_notclean.csv"))
+```
+
+Class Exercise 2.
+
+```{r}
+toy_df
+
+table(toy_df$group1)
+
+toy_df |> group_by(group1) |> 
+  summarise(count = n()) |>
+  pivot_wider(names_from = group1, values_from = count)
+
+table(toy_df$group1, toy_df$group2)
+toy_df |> group_by(group1, group2) |>
+  summarise(count = n()) |>
+  pivot_wider(names_from = group2, values_from = count)
+```
+
+Class Exercise 1.
+
+
+```{r}
+fitness_df
+
+weekend_vec <- c("Sat", "Sun")
+weekday_vec <- c("Mon", "Tue", "Wed", "Thu", "Fri")
+
+fitness_df |> mutate(weekend_ind = if_else(weekday %in% weekend_vec,
+                                           true = 1,
+                                           false = 0)) |>
+  relocate(weekend_ind)
+## weekday %in% weekend_vec is equivalent to
+## weekday == "Sat" | weekday == "Sun"
+```
+
+Your Turns
+
+Skip.
