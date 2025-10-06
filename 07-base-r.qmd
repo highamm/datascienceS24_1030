@@ -51,7 +51,8 @@ fitness_df |> mutate(weekend_ind = if_else(weekday %in% weekend_vec,
                                            false = 0)) |>
   relocate(weekend_ind)
 ## weekday %in% weekend_vec is equivalent to
-## weekday == "Sat" | weekday == "Sun"
+## weekday == "Sat" | weekday == "Sun" 
+
 ```
 
 Your Turns
