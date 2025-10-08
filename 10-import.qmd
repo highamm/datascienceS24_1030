@@ -1,0 +1,43 @@
+---
+title: "Section 10: Import"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Section 10.1: `read_csv()`
+
+```{r}
+library(tidyverse)
+library(here)
+cars_df <- read_csv(here("data/mtcarsex.csv"))
+head(cars_df)
+
+## fix the first two lines
+cars_df <- read_csv(here("data/mtcarsex.csv"),
+                    skip = 2,
+                    na = c("NA", "", " ", "-999"))
+
+read_csv(here("data/mtcarsex.csv"), na = c("NA", "-999"), skip = 2) |>
+  spec()
+
+cars_df <- read_csv(here("data/mtcarsex.csv"),
+                    skip = 2,
+                    na = c("NA", "", " ", "-999"),
+                    col_types = cols(
+                      mpg = col_double(),
+                      cyl = col_factor(),
+                      disp = col_double(),
+                      hp = col_double(),
+                      drat = col_double(),
+                      wt = col_double(),
+                      qsec = col_double(),
+                      vs = col_factor(),
+                      am = col_factor(),
+                      gear = col_double(),
+                      carb = col_double()
+                    )) |>
+  slice(-c(1:2))
+cars_df
+```
