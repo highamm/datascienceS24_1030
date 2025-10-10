@@ -1,0 +1,51 @@
+---
+title: "Section 8: forcats"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+library(here)
+standings_df <- read_csv(here("data/standings.csv"))
+standings_df
+```
+
+Your Turn 1 and Your Turn 5
+
+```{r}
+table(standings_df$team_name)
+```
+
+```{r}
+playoffs_top <- standings_df |> mutate(playoffs_logical = if_else(playoffs == "Playoffs",
+                                                  true = 1,
+                                                  false = 0)) |>
+  relocate(playoffs, playoffs_logical) |>
+  group_by(team_name) |>
+  summarise(total_playoffs = sum(playoffs_logical)) |>
+  arrange(desc(total_playoffs)) |>
+  slice(1:10)
+
+standings_df |> filter(playoffs == "Playoffs") |>
+  relocate(playoffs) |>
+  group_by(team_name) |>
+  summarise(total_playoffs = n()) |>
+  arrange(desc(total_playoffs)) |>
+  slice(1:10)
+
+ggplot(data = playoffs_top) +
+    geom_segment(aes(x = team_name, xend = team_name,
+                   y = 0, yend = total_playoffs), colour = "skyblue1") +
+  geom_point(aes(x = team_name, y = total_playoffs), colour = "skyblue4") +
+
+  coord_flip() +
+  theme_minimal()
+```
+
+team_name | number_of_playoffs
+Patriots | 10
+Bills | 5
+
