@@ -46,7 +46,29 @@ ggplot(data = pokemon_long, aes(x = Type_Deford,
 
 This is trying to reorder the factor type within each # group. This does not make sense. This is a common issue with forcats: it does not generally like grouped data when it is re-ordering.
 
+Class Exercise 4.
 
+```{r}
+library(tidyverse)
+responses_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/heatmap.csv",
+                         col_types = cols(time = col_factor(),
+                                          challenge = col_factor()))
+responses_sum <- responses_df |> group_by(time, challenge) |>
+  summarise(n_responses = n()) |>
+  mutate(time = fct_recode(time, `Most Time` = "1",
+                           `Second` = "2",
+                           `Third` = "3",
+                           `Least Time` = "4"
+                           ),
+         challenge = fct_recode(challenge, `Most Challenge` = "1",
+                                `Second` = "2",
+                                `Third` = "3",
+                                `Least Challenge` = "4"))
+
+ggplot(data = responses_sum, aes(x = time, y = challenge)) +
+  geom_tile(aes(fill = n_responses))
+
+```
 
 ```{r}
 library(tidyverse)
