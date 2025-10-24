@@ -1,0 +1,19 @@
+---
+title: "Section 11: Merging and Joining"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+a. 5 rows
+
+b. 6 rows
+
+c. 8 rows
+
+d. 3 rows
+
+e. 3 rows
+
+f. 2 rows

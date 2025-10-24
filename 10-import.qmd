@@ -1,0 +1,27 @@
+---
+title: "Section 10: Import"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+Class Exercises 1 and 4 (skip 2 and 3)
+
+Class Exercise 1.
+
+```{r}
+library(tidyverse)
+df <- read_delim(here("data/birthdays.txt"), delim = " - ",
+                 skip = 4,
+                 col_names = c("birthday", "name", "species", "length"),
+                 na = c("?", "N/A", "NA", ""),
+                 col_types = cols(
+  birthday = col_character(), ## will deal with dates with lubridate
+  name = col_character(),
+  species = col_factor(),
+  length = col_character()
+)) |>
+  mutate(length = parse_number(length))
+head(df)
+```

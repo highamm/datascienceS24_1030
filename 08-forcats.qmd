@@ -53,7 +53,7 @@ library(tidyverse)
 responses_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/heatmap.csv",
                          col_types = cols(time = col_factor(),
                                           challenge = col_factor()))
-responses_sum <- responses_df |> group_by(time, challenge) |>
+responses_sum <- responses_df |> group_by(time, challenge, .drop = FALSE) |>
   summarise(n_responses = n()) |>
   mutate(time = fct_recode(time, `Most Time` = "1",
                            `Second` = "2",
@@ -63,10 +63,16 @@ responses_sum <- responses_df |> group_by(time, challenge) |>
          challenge = fct_recode(challenge, `Most Challenge` = "1",
                                 `Second` = "2",
                                 `Third` = "3",
-                                `Least Challenge` = "4"))
+                                `Least Challenge` = "4")) |>
+  mutate(time = fct_relevel(time, c("Most Time", "Second", "Third", "Least Time")),
+         challenge = fct_relevel(challenge, c("Most Challenge", "Second", "Third", "Least Challenge"))) |>
+  mutate(challenge = fct_rev(challenge)) ## revereses the factor order
 
 ggplot(data = responses_sum, aes(x = time, y = challenge)) +
-  geom_tile(aes(fill = n_responses))
+  geom_tile(aes(fill = n_responses)) +
+  scale_x_discrete(position = "top") +
+  theme_minimal() +
+  scale_fill_viridis_c()
 
 ```
 
