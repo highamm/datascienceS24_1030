@@ -66,7 +66,50 @@ mortality_df <- read_csv(here("data/gun_violence_us.csv"))
 
 dc_df <- tibble(state = "DC", mortality_rate = 16.7,
                 ownership_rate = 0.087, region = "NE")
-bind_rows(mortality_df, dc_df)
+all_df <- bind_rows(mortality_df, dc_df)
+```
+
+Class Exercise 4.
+
+```{r}
+df1 <- as_tibble(state.x77)
+df2 <- as_tibble(state.abb)
+states_df <- bind_cols(df1, df2)
+## must assume that the data frames follow the same
+## order.
+```
+
+Class Exercise 5.
+
+```{r}
+states_df |> relocate(value)
+all_df
+left_join(all_df, states_df, join_by(state == value))
+full_join(all_df, states_df, join_by(state == value))
+```
+
+Class Exercises 6 - 8
+
+Class Exercise 6.
+
+```{r}
+inner_join(all_df, states_df, join_by(state == value))
+left_join(states_df, all_df, join_by(value == state))
+```
+
+Class Exercise 7.
+
+```{r}
+states_df
+ne_df <- all_df |> filter(region == "NE")
+semi_join(states_df, ne_df, join_by(value == state))
+```
+
+Class Exercise 8.
+
+```{r}
+notne_df <- all_df |> filter(region != "NE")
+anti_join(states_df, notne_df, join_by(value == state))
 ```
 
 ## Your Turns
@@ -92,3 +135,22 @@ d. 4 rows
 e. 4 rows
 
 f. 2 rows
+
+Your Turn 3. Skip
+
+Your Turn 4.
+
+a. 300 rows (there are no duplicates in info_df)
+
+b. 5 rows (5 rows have a matching key in courses_df)
+
+c. 285 rows (300 minus the 5 * 3 that are in the second data set).
+
+d. 5 * 3 = 15 rows (all other professors get dropped).
+
+e. 310 rows = 15 rows (inner_join) + 285 (dropped from the first in the inner_join) + 10 (dropped from the second in the inner_join).
+
+
+
+
+
