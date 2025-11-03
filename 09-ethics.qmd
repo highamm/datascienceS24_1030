@@ -1,0 +1,35 @@
+---
+title: "Section 9: Ethics"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Class Exercises
+
+Class Exercise 1. THe main purpose of this activity is to emphasize that just because you do not put your name on something, your data may still be connected to back to you (and is not private).
+
+Class Exercise 2.
+
+a. more borderline.
+
+b. not ethical- could deduce someone's grade from that information (if, for example, there is just 1 senior stat major in the course).
+
+c. more okay: nothing is sensitive here.
+
+d. not ethical (same reasons as b)
+
+## Your Turns
+
+Your Turn 1. Hypothesis confirmation is specifying a specific hypothesis before looking at the data and then testing that hypothesis (STAT 113) while hypothesis generation is more exploratory: answering a variety of questions with one data set (STAT/DATA 234).
+
+Your Turn 2. As many times as we like for hypothesis generation whereas just once for hypothesis confirmation.
+
+Your Turn 3.
+
+a. Hypothesis confirmation (one question of interest).
+
+b. Hypothesis generation (multiple questions that we might answer and we don't have a specific hypothesis).
+
+c. Hazy (it's not always straightforward in determining which setting we are in).
