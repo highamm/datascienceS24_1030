@@ -1,0 +1,123 @@
+---
+title: "Section 14: k-nearest-neighbors"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Section 14.2: Choosing predictors and choosing k
+
+```{r}
+set.seed(1119) ## ensures we all get the same training/test split
+library(tidyverse)
+library(here) 
+
+pokemon <- read_csv(here("data", "pokemon_full.csv")) |>
+  filter(Type %in% c("Steel", "Dark", "Fire", "Ice")) |>
+  mutate(across(where(is.numeric), ~ (.x - min(.x)) /
+                                 (max(.x) - min(.x)))) 
+## scaling the numeric predictor variables
+## where(is.numeric) says to only do this scaling
+## for numeric variables (<dbl> or <int>)
+```
+
+```{r}
+## putting 75 poikemon (randomly selected) into the
+## training sample
+train_sample <- pokemon |>
+  slice_sample(n = 75)
+
+test_sample <- anti_join(pokemon, train_sample)
+## test_sample is any pokemon not in the training_sample
+```
+
+```{r}
+## choosing predictors
+library(GGally)
+ggpairs(data = train_sample, columns = c(4, 5, 6, 3))
+## columns as HP, Attack, Defense, Type
+## Type is the response and usually goes last
+
+## Defense looks like the best predictor though Attack and
+## HP also look useful (looking at the last column for
+## "separation" in the boxplots as evidence for a "good"
+## predictor)
+```
+
+```{r}
+ggpairs(data = train_sample, columns = c(7, 8, 12, 3))
+## all predictors might be useful as there is some separation
+## in each set of boxplots
+```
+
+```{r}
+## install.packages("class")
+library(class)
+
+## create a data frame that only has the predictors
+## that we will use
+train_small <- train_sample |> select(HP, Attack, Defense, Speed,
+                                      SpAtk) ## data frame that only has our chosen predictors
+test_small <- test_sample |> select(HP, Attack, Defense, Speed,
+                                    SpAtk) ## data frame that has only the same set of predictors
+
+## put our response variable into a vector
+train_cat <- train_sample$Type ## training sample response
+test_cat <- test_sample$Type ## test sample response
+
+## k is the number of nearest neighbors
+knn_mod <- knn(train = train_small, test = test_small,
+               cl = train_cat, k = 11)
+knn_mod
+## vector of predictions for the pokemon in the test sample
+## ie. the first pokemon is predicted to be Fire
+## the second is also predicted to be Fire, etc
+```
+
+Evaluating the model
+
+```{r}
+table(knn_mod, test_cat) 
+## all of the correct classifications are on the diagonal
+## off-diagonal elements contain all of the misclassifications
+
+## exercises 2-3
+## for example, 11 fire pokemon were correctly predicted to be fire
+## for example, 3 fire pokemon were incorrectly predicted to be dark
+```
+
+Primary Metric: Classification Rate
+
+```{r}
+(1 + 11 + 1 + 3) / 45
+
+## classification rate is 0.35556
+## larger classification rate <=> better model
+```
+
+Exericse 5. Automatically compute the classification rate
+
+```{r}
+tab <- table(knn_mod, test_cat) 
+sum(diag(tab)) / sum(tab)
+```
+
+Exercise 6. Adding SpAtk or changing k to 11 or both was useful: my classification rate increased!
+
+Exercise 7. Compute Baseline Classification Rate
+
+```{r}
+## figure out which level of Type is most common in the training sample? (using code)
+train_sample |> group_by(Type) |>
+  summarise(n_type = n()) |>
+  arrange(desc(n_type))
+## with the test sample, figure out the proportion of pokemon that
+## match the type that is most common in the training sample
+test_sample |> mutate(is_fire = if_else(Type == "Fire",
+                                        true = 1, false = 0)) |>
+  relocate(is_fire) |>
+  summarise(bsae_class_rate = mean(is_fire))
+## our baseline classification rate is 0.356 so we hope
+## our model will do much better than this!
+```
