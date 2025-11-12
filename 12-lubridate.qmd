@@ -1,0 +1,44 @@
+---
+title: "Section 12: lubridate"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Class Exercises
+
+Class Exercises 1 and 2.
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(here)
+ds_df <- read_csv(here("data/ds_google.csv"))
+ds_df <- ds_df |> mutate(date_var = ym(Month))
+ggplot(data = ds_df, aes(x = date_var, y = Data_Science)) +
+  geom_line() +
+  geom_smooth(se = FALSE) +
+  theme_minimal()
+```
+
+## Your Turns
+
+Your Turns 1 through 3.
+
+```{r}
+ac_ss <- read_csv(here("data/videogame_ac_ss.csv"),
+                  skip = 3,
+                  col_names = c("date_var", "ac_pop", "ss_pop")) 
+
+ac_ss <- ac_ss |> mutate(date_var = ym(date_var))
+ac_ss_long <- ac_ss |> pivot_longer(2:3, names_to = "search_term",
+                      values_to = "popularity")
+
+ggplot(data = ac_ss_long, aes(x = date_var, y = popularity,
+                         colour = search_term)) +
+  geom_line() +
+  geom_smooth() +
+  theme_minimal() +
+  scale_colour_viridis_d(option = "C")
+```
