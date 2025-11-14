@@ -22,6 +22,55 @@ ggplot(data = ds_df, aes(x = date_var, y = Data_Science)) +
   theme_minimal()
 ```
 
+## Class Exercise 3. Make a plot of gamestop stock price through time.
+
+```{r}
+library(tidyquant)
+library(tidyverse)
+stocks_long <- tq_get(c("AAPL", "CMG", "NTDOY", "SPY", "GME"), get = "stock.prices")
+
+stocks_gme <- stocks_long |> filter(symbol == "GME")
+ggplot(data = stocks_gme, aes(x = date, y = close)) +
+  geom_line() +
+  theme_minimal()
+```
+
+Class Exercise 4.
+
+```{r}
+stocks_chipotle <- stocks_long |> filter(symbol == "CMG")
+stocks_chipotle <- stocks_chipotle |>
+  mutate(price_lag = lag(close)) |>
+  relocate(price_lag, close)
+stocks_chipotle |> mutate(is_higher = if_else(close > price_lag, true = 1, false = 0)) |>
+  relocate(is_higher) |>
+  filter(!is.na(is_higher)) |>
+  summarise(prop_higher = mean(is_higher))
+
+stocks_chipotle |> mutate(weekday = wday(date, label = TRUE)) |>
+  relocate(weekday) |>
+  filter(weekday == "Wed") |>
+  mutate(price_lag = lag(close)) |>
+  mutate(is_higher = if_else(close > price_lag, true = 1, false = 0)) |>
+  relocate(is_higher) |>
+  filter(!is.na(is_higher)) |>
+  summarise(prop_higher = mean(is_higher))
+
+stocks_chipotle |>
+  mutate(month = month(date),
+         year = year(date)) |>
+  relocate(month, year) |>
+  group_by(month, year) |>
+  slice(1) |>
+  ungroup() |>
+  arrange(year, month) |>
+  mutate(price_lag = lag(close)) |>
+  mutate(is_higher = if_else(close > price_lag, true = 1, false = 0)) |>
+  relocate(is_higher) |>
+  filter(!is.na(is_higher)) |>
+  summarise(prop_higher = mean(is_higher))
+```
+
 ## Your Turns
 
 Your Turns 1 through 3.
