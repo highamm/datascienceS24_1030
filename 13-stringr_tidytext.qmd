@@ -1,0 +1,60 @@
+---
+title: "Section 13: stringr"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Class Exercises
+
+```{r}
+library(schrute)
+library(tidyverse)
+office_df <- schrute::theoffice |> tibble()
+## tibble() makes sure this prints "nicely"
+office_df
+## character column gives the name of the speaking charcter
+## text column gives the character's spoken line
+```
+
+```{r}
+library(tidytext)
+office_unnest <- office_df |> unnest_tokens(output = "word", input = "text")
+office_kelly <- office_unnest |> filter(character == "Kelly")
+
+## filter out stop words (using stop_words data frame in tidytext)
+kelly_nostop <- anti_join(office_kelly, stop_words, by = join_by(word == word))
+
+kelly_top15 <- kelly_nostop |> group_by(word) |>
+  summarise(num_word = n()) |>
+  arrange(desc(num_word)) |>
+  slice(1:15) |>
+  mutate(word = fct_reorder(word, num_word))
+
+ggplot(data = kelly_top15, aes(x = num_word, y = word)) +
+  geom_segment(aes(x = 0, xend = num_word, y = word, yend = word)) +
+  geom_point() +
+  theme_minimal()
+```
+
+```{r}
+office_num_episodes <- office_df |> group_by(season) |>
+  filter(episode == max(episode)) |>
+  slice(1) |>
+  mutate(season = factor(season))
+
+kelly_seasons <- office_kelly |> group_by(season) |> summarise(num_words = n()) |>
+  mutate(season = factor(season)) |>
+  mutate(season = fct_rev(season))
+
+kelly_seasons <- left_join(kelly_seasons, office_num_episodes,
+          by = join_by(season == season)) |>
+  mutate(words_per_episode = num_words / episode)
+
+ggplot(data = kelly_seasons, aes(x = words_per_episode, y = season))  +
+  geom_segment(aes(x = 0, xend = words_per_episode, y = season, yend = season)) +
+  geom_point() +
+  theme_minimal()
+  
+```
