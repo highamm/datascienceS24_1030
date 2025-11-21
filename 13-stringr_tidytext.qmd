@@ -6,6 +6,68 @@ format:
     embed-resources: true
 ---
 
+## Section 13.2
+
+```{r}
+library(here)
+library(tidyverse)
+med_djok_df <- read_csv(here("data/med_djok.csv"))
+med_djok_df
+
+
+## keeps any row where the point string has an @ symbol
+## (which symbol;izes an unforced error)
+med_djok_df |> filter(str_detect(point, pattern = "@") == TRUE)
+
+
+med_djok_df |> filter(str_detect(point, pattern = "@") == TRUE) |>
+  mutate(error_type = case_when(str_detect(point, pattern = "d@") ~ "deep error",
+                                str_detect(point, pattern = "w@") ~ "wide error",
+                                str_detect(point, pattern = "n@") ~ "net error")) |>
+  group_by(PtWinner, error_type) |>
+  summarise(n_errors = n())
+```
+
+Exercise 4.
+
+```{r}
+med_djok_df <- med_djok_df |>
+  mutate(serve_location = case_when(str_detect(point, pattern = "^4") ~ "wide",
+                                    str_detect(point, pattern = "^5") ~ "body",
+                                    str_detect(point, pattern = "^6") ~ "down the center")) |>
+  relocate(serve_location)
+```
+
+Your Turn 1
+
+```{r}
+med_djok_df |> relocate(isSvrWinner)
+med_djok_sum <- med_djok_df |> group_by(serve_location, Serving) |>
+  summarise(n_serves = n())
+
+ggplot(data = med_djok_sum, aes(x = serve_location, y = n_serves)) +
+  geom_col() +
+  facet_wrap(~ Serving)
+
+## Your Turn 2
+med_djok_sum2 <- med_djok_df |> group_by(serve_location, Serving) |>
+  summarise(prop_win = mean(isSvrWinner))
+ggplot(data = med_djok_sum2, aes(x = serve_location, y = prop_win)) +
+  geom_col() +
+  facet_wrap(~ Serving)
+
+## option 2
+med_djok_sum3 <- med_djok_df |> group_by(serve_location, Serving, isSvrWinner) |>
+  summarise(n_serves = n())
+
+ggplot(data = med_djok_sum3, aes(x = serve_location, y = n_serves)) +
+  geom_col(aes(fill = factor(isSvrWinner))) +
+  facet_wrap(~ Serving) +
+  scale_fill_viridis_d()
+
+## skip your turn 3
+```
+
 ## Class Exercises
 
 ```{r}

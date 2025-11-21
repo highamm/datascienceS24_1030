@@ -1,0 +1,85 @@
+---
+title: "Untitled"
+format: html
+---
+
+```{r}
+library(RSQLite)
+library(DBI) 
+library(dplyr)
+library(dbplyr)
+
+imdb_db <- dbConnect(RSQLite::SQLite(), 
+                     dbname = here::here("data/imdb_tv.sqlite"))
+
+dbListTables(conn = imdb_db)
+
+library(tidyverse)
+
+sql <- "
+  SELECT parentTconst, averageRating, numVotes
+  FROM show_ratings 
+  WHERE numVotes > 100000
+"
+
+dbGetQuery(imdb_db, sql) |>
+  as_tibble()
+```
+
+Exercise 1. From the show_ratings data frame (table), it is only keeping shows where the number of votes are larger than 100,000. And then it's only keeping three of the original variables (fields).
+
+Exercise 2. WHERE is like `filter()` and SELECT is like `select()`
+
+
+## Section 16.2
+
+```{r}
+library(dbplyr)
+episode_rating_tbl <- tbl(imdb_db, "episode_rating")
+episode_rating_tbl
+```
+
+```{r}
+episode_query1 <- episode_rating_tbl |> 
+  filter(averageRating > 9.0) |> 
+  select(parentTconst, Episode_Name, numVotes, averageRating)
+episode_query1
+#> # Source:   SQL [?? x 4]
+#> # Database: sqlite 3.50.3 [/Users/highamm/git_repos/courses/ds234_quarto/data/imdb_tv.sqlite]
+#>   parentTconst Episode_Name          numVotes averageRating
+#>   <chr>        <chr>                    <dbl>         <dbl>
+#> 1 tt7221388    December 19               6245           9.4
+#> 2 tt5753856    Die Reisenden            13000           9.4
+#> 3 tt5753856    Vom Suchen und Finden    11905           9.2
+#> 4 tt5753856    Ein unendlicher kreis    14775           9.5
+#> 5 tt5753856    Der weiße Teufel         11809           9.1
+#> 6 tt5753856    Enden und Anfänge        14651           9.4
+#> # ℹ more rows
+
+## collect() converts this back to our standard "tibble" which
+## now behaves exactly like everything we've seen in this course.
+episode_query1 |>
+  collect()
+
+episode_query1 |>
+  show_query()
+
+```
+
+```{r}
+mean_query1 <- episode_rating_tbl |>
+  group_by(parentTconst) |>
+  summarise(mean_rating = mean(averageRating)) |>
+  arrange(desc(mean_rating))
+mean_query1
+
+mean_query1 |> show_query()
+## GROUP BY is like group_by()
+## ORDER BY with DESC at the end is like arranage(desc(xxxxx))
+## SELECT AVG(`averageRating`) AS `mean_rating` is like summarise(mean_rating = mean(averageRating))
+
+
+```
+
+
+
