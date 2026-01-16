@@ -1,0 +1,68 @@
+---
+title: "Section 2: Plotting with ggplot"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+stat113_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/stat113.csv")
+```
+
+## Section 2.3: Introduction to Plotting
+
+
+A Single Quantitative Variable
+
+```{r}
+stat113_df
+ggplot(data = stat113_df, aes(x = GPA)) +
+  geom_histogram(colour = "black", fill = "lightpink", bins = 15)
+
+ggplot(data = stat113_df, aes(x = GPA)) +
+  geom_freqpoly(bins = 17)
+
+## can have more than one geom (they get added as layers)
+ggplot(data = stat113_df, aes(x = GPA)) +
+    geom_histogram(colour = "gold4", fill = "magenta2", bins = 17) +
+    geom_freqpoly(bins = 17)
+```
+
+Single Categorical Variable
+
+```{r}
+ggplot(data = stat113_df, aes(x = Award)) +
+  geom_bar(colour = "blue4", fill = "slateblue1")
+```
+
+Two Categorical Variables
+
+```{r}
+ggplot(data = stat113_df, aes(x = Year, fill = SocialMedia)) +
+  geom_bar() 
+
+ggplot(data = stat113_df, aes(x = Sport, fill = Sex)) +
+  geom_bar(position = "fill") +
+  labs(y = "Proportion")
+## there is a slightly higher proportion of male students
+## that play a sport
+```
+
+One Categorical and One Quantitative
+
+```{r}
+ggplot(data = stat113_df, aes(x = Award, y = Exercise)) +
+  geom_boxplot()
+
+stat113_df
+ggplot(data = stat113_df, aes(x = Sex, y = Hgt)) +
+  geom_violin(colour = "seagreen4", fill = "seagreen1")
+
+ggplot(data = stat113_df, aes(x = Award, y = Exercise)) +
+  geom_jitter(width = 0.10)
+## in the strip plot, we can see a rough sample size per group
+```
+
+
