@@ -184,3 +184,73 @@ ggplot(data = stat113_df, aes(x = Hgt, y = Wgt)) +
 ## better to facet than to colour
 ```
 
+Your Turn 3. Skip.
+
+Your Turn 4.
+
+```{r}
+fitness_full
+
+ggplot(data = fitness_full, aes(x = distance,
+                                colour = stepgoal)) +
+  geom_freqpoly()
+
+ggplot(data = fitness_full, aes(x = distance)) +
+  geom_histogram(colour = "skyblue4", fill = "skyblue1") +
+  facet_wrap(~ stepgoal, ncol = 1)
+
+ggplot(data = fitness_full, aes(x = stepgoal, y = distance)) +
+  geom_boxplot()
+## easier to see separation here, but you do lose sample size
+```
+
+Your Turn 5.
+
+```{r}
+## THIS IS BAD
+ggplot(data = stat113_df, aes(x = GPA, y = Exercise)) +
+  geom_line()
+## this doesn't make sense because there is more than one 
+## Exercise value for each unique GPA
+```
+
+Skip Your Turns 6-8.
+
+## Section 2.5
+
+
+## Section 2.6
+
+```{r}
+stat113_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/stat113.csv")
+glimpse(stat113_df)
+## useful if there are a lot of variables in your data
+```
+
+Class Exercise 1.
+
+```{r}
+ggplot(data = stat113_df, aes(x = Wgt, y = Hgt, colour = Sport)) +
+  geom_point() +
+  geom_smooth()
+
+ggplot(data = stat113_df, aes(x = Wgt, y = Hgt)) +
+  geom_point(aes(colour = Sport)) +
+  geom_smooth()
+## geom_smooth() no longer has the colour aesthetic
+
+ggplot(data = stat113_df, aes(x = Wgt, y = Hgt)) +
+  geom_point() +
+  geom_smooth(aes(colour = Sport))
+## now points are all black but i get three smoothers
+```
+
+Class Exercise 2.
+
+```{r}
+ggplot(data = stat113_df, aes(x = TV)) +
+  geom_histogram(colour = "black", fill = "white")
+## black and white are not variables so they go outside of an
+## aes() function.
+```
+
