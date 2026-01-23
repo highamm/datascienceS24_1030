@@ -254,3 +254,27 @@ ggplot(data = stat113_df, aes(x = TV)) +
 ## aes() function.
 ```
 
+Your Turn 1.
+
+a. no. "lm" is not a variable so it should not go in aes().
+
+b. this would work!
+
+c. no: colour = "purple" should not be in aes() but colour = groupvar should be in aes().
+
+d. no: colour = groupvar should be in aes().
+
+e. this would work!
+
+f. no: colour = "purple" should not be in aes().
+
+Your Turn 2.
+
+ggplot(data = toy_df, aes(x = xvar, y = yvar)) +
+  geom_point(colour = "purple") +
+  geom_smooth(method = "lm", aes(colour = groupvar))
+
+
+ggplot(data = toy_df) +
+  geom_point(aes(x = xvar, y = yvar), colour = "purple") +
+  geom_smooth(method = "lm", aes(x = xvar, y = yvar, colour = groupvar))
