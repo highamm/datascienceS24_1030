@@ -6,23 +6,71 @@ format:
     embed-resources: true
 ---
 
-## Quarto
+## Section 3.1
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+## Section 3.2
 
 ```{r}
-1 + 1
+library(babynames)
+library(tidyverse)
+babynames
 ```
 
-You can add options to executable code like this 
+Class Exercises 1 and 2.
 
 ```{r}
-#| echo: false
-2 * 2
+babynames_top2017 <- babynames |>
+  filter(sex == "M" & year == 2017) |>
+  arrange(desc(n)) |>
+  slice(1:10)
+
+ggplot(data = babynames_top2017, aes(x = name, y = n)) +
+  geom_col(colour = "skyblue4", fill = "skyblue1")
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+Class Exercises 3 and 4.
+
+```{r}
+babynames_matthew <- babynames |> filter(name == "Matthew" & sex == "M")
+
+ggplot(data = babynames_matthew, aes(x = year, y = n)) +
+  geom_line() +
+  geom_vline(xintercept = 1991, linetype = 2) ## extra
+```
+
+Class Exercise 5.
+
+Piping only works if the first argument of the function you are piping into is a data frame.
+
+## Your Turns
+
+Your Turn 1.
+
+```{r}
+babynames |> filter(year != 1945)
+
+babynames |> filter(n >= 400 & n <= 5000)
+```
+
+Your Turn 2.
+
+```{r}
+babynames_mh <- babynames |> 
+  filter((name == "Monica" & sex == "F") | (name == "Hilary" & sex == "F"))
+
+ggplot(data = babynames_mh, aes(x = year, y = n, colour = name)) +
+  geom_line()
+
+```
+
+Your Turns 3 and 4.
+
+```{r}
+babynames5 <- babynames |> filter((name == "Matthew" & sex == "M") |
+                      (name == "Ivan" & sex == "M") |
+                      (name == "Jessica" & sex == "F") |
+                      (name == "Robin" & sex == "M") |
+                      (name == "Lillian" & sex == "F"))
+ggplot(data = babynames5, aes(x = year, y = n, colour = name)) +
+  geom_line()
+```
