@@ -74,3 +74,113 @@ babynames5 <- babynames |> filter((name == "Matthew" & sex == "M") |
 ggplot(data = babynames5, aes(x = year, y = n, colour = name)) +
   geom_line()
 ```
+
+## Section 3.4
+
+```{r}
+library(tidyverse)
+slumajors_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/SLU_Majors_17_21.csv")
+slumajors_df
+#> # A tibble: 30 × 3
+#>   Major                        nfemales nmales
+#>   <chr>                           <dbl>  <dbl>
+#> 1 Anthropology                       35     13
+#> 2 Art & Art History                  62     11
+#> 3 Biochemistry                       15      6
+#> 4 Biology                           152     58
+#> 5 Business in the Liberal Arts      192    301
+#> 6 Chemistry                          28     20
+#> # ℹ 24 more rows
+```
+
+```{r}
+slumajors_df <- slumajors_df |>
+  mutate(ntotal = nfemales + nmales) |>
+  mutate(percfemale = 100 * nfemales / (nfemales + nmales))
+
+slumajors_df <- slumajors_df |>
+  mutate(morewomen = if_else(percfemale > 50,
+                             true = "Yes",
+                             false = "No")) |>
+  mutate(large_majority =
+           case_when(percfemale >= 70 ~ "female",
+                     percfemale <= 30 ~ "male",
+                     percfemale > 30 & percfemale < 70 ~ "none")) 
+
+slumajors_df |> mutate(testcase = case_when(percfemale >= 40 ~ "Yes",
+                                            percfemale > 60 ~ "No")) |>
+  relocate(testcase) ## puts testcase so that it is the first variable
+## assigns an NA if a row satisfies none of the conditions in case_when()
+## if a row satisfies multiple conditions, it will be assigned to whatever
+## the first condition specifies
+```
+
+Class Exercise 2.
+
+```{r}
+library(babynames)
+babynames |> group_by(year, sex) |>
+  mutate(rank_pop = rank(desc(n))) |> ## rank in descending order within each year-sex combination
+  filter(rank_pop == 1) |>
+  ungroup() |>
+  group_by(name) |>
+  summarise(n_pop = n()) |>
+  arrange(desc(n_pop))
+```
+
+Class Exercise 3.
+
+```{r}
+babynames |> group_by(year, sex) |>
+  arrange(desc(n)) |>
+  slice(1) |>
+  ungroup() |>
+  group_by(name) |>
+  summarise(n_pop = n()) |>
+  arrange(desc(n_pop))
+```
+
+Class Exercise 4.
+
+```{r}
+babynames_test <- babynames |>
+  group_by(year, sex) |> mutate(ntest = n / prop)
+babynames_test |> ungroup() |> slice(1, 2, 3, 4, 5)
+```
+
+Class Exercise 5.
+
+```{r}
+fitness_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/higham_fitness_clean.csv") |>
+  select(-stepgoal)
+fitness_df |> mutate(stepgoal_ind = if_else(steps >= 10000,
+                                            true = 1,
+                                            false = 0)) |>
+  relocate(stepgoal_ind) |>
+  summarise(prop_goal = mean(stepgoal_ind))
+
+fitness_df |> mutate(stepgoal_ind = if_else(steps >= 10000,
+                                            true = 1,
+                                            false = 0)) |>
+  relocate(stepgoal_ind) |>
+  group_by(year) |>
+  summarise(prop_goal = mean(stepgoal_ind)) |>
+  arrange(desc(prop_goal))
+
+```
+
+## Your Turns
+
+Your Turn 1. See Basic Syntax Handout.
+
+Your TUrn 3.
+
+a. mutate() would be okay: adding a variable does not really disrupt the original data even if you make a mistake.
+
+b. arrange() would be okay: it's only sorting the data set but all of the data is still there after an arrange.
+
+c. filter() is less safe: if you remove rows and assign the same name, those rows are gone for good.
+
+d. summarise() is less safe: summarise() completely changes the structure of the data- it removes columns that aren't involved and it makes it so that there is one row per group.
+
+e. select() is also less safe: if you remove columns and assign the same name, those columns are gone for good.
