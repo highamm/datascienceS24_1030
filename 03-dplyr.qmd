@@ -173,7 +173,37 @@ fitness_df |> mutate(stepgoal_ind = if_else(steps >= 10000,
 
 Your Turn 1. See Basic Syntax Handout.
 
-Your TUrn 3.
+Your Turn 2. 
+
+```{r}
+toy_df <- tibble(x = c(NA, 3, 4, 7),
+                 y = c(1, 4, 3, 2),
+                 z = c("A", "A", "B", NA))
+toy_df
+
+## a
+toy_df |> mutate(test = case_when(x >= 4 ~ "Yes",
+                                  x < 4 ~ "No"))
+## NA is still NA in the new variable.
+
+toy_df |> arrange(desc(x))
+## NAs go at the end for both regular and desc()
+
+toy_df |> filter(x < 5)
+## NAs get dropped here
+
+toy_df |> summarise(sum_x = sum(x))
+## returns NA (sum of NA, 7, 4, 3 is NA)
+
+toy_df |> summarise(sum_x = sum(x, na.rm = TRUE))
+## removes NA values before we sum()
+
+toy_df |> group_by(z) |>
+  summarise(sum_x = sum(x))
+## the NAs will count as their own group in group_by().
+```
+
+Your Turn 3.
 
 a. mutate() would be okay: adding a variable does not really disrupt the original data even if you make a mistake.
 
@@ -184,3 +214,52 @@ c. filter() is less safe: if you remove rows and assign the same name, those row
 d. summarise() is less safe: summarise() completely changes the structure of the data- it removes columns that aren't involved and it makes it so that there is one row per group.
 
 e. select() is also less safe: if you remove columns and assign the same name, those columns are gone for good.
+
+Your Turn 4.
+
+```{r}
+slumajors_df |>
+  summarise(meantotalmajor = mean(ntotal),
+            totalgrad = sum(ntotal)) 
+slumajors_df |>
+  mutate(meantotalmajor = mean(ntotal),
+            totalgrad = sum(ntotal)) |>
+  select(meantotalmajor, totalgrad, everything())
+
+## summarise() returns 1 row  (OR 1 row per group level)
+## mutate() returns the same number of rows as the original data.
+
+```
+
+Your Turn 5.
+
+```{r}
+library(babynames)
+babynames_distinct <- babynames |>
+  group_by(year) |>
+  summarise(n_distinct = n())
+
+ggplot(data = babynames_distinct, aes(x = year, y = n_distinct)) +
+  geom_line()
+```
+
+Your Turn 6.
+
+```{r}
+babynames_fm <- babynames |>
+  group_by(year, sex) |>
+  summarise(n_distinct = n())
+
+ggplot(data = babynames_fm, aes(x = year, y = n_distinct)) +
+  geom_line(aes(colour = sex))
+```
+
+Your Turn 7.
+
+```{r}
+babynames |>
+  group_by(name) |>
+  summarise(total_births = sum(n)) |>
+  arrange(desc(total_births))
+```
+
