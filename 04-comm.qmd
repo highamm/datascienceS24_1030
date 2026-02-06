@@ -1,10 +1,71 @@
 ---
 title: "Section 4: Communication"
 author: "Matt Higham"
+execute: 
+  warning: false
 format: 
   html:
     embed-resources: true
 ---
+
+Class Exercises
+
+```{r}
+#| echo: false
+library(tidyverse)
+```
+
+```{r}
+library(gapminder)
+country_df <- gapminder
+glimpse(country_df)
+
+ggplot(data = country_df, aes(x = year, y = lifeExp,
+                              group = country)) +
+  geom_line() +
+  facet_wrap(~ continent) +
+  theme_minimal()
+
+## highlight three countries in two different ways
+country_df |> group_by(continent) |>
+  filter(lifeExp == min(lifeExp))
+## Europe: Turkey
+## African: Rwanda
+country_df |> filter(continent == "Asia" & year >= 1970 & year <= 1980 & lifeExp < 36)
+## Asia: Cambodia
+
+## first: colour the lines only for those three countries (use a separate geom_line() and use a local data set)
+
+country_3 <- country_df |>
+  filter(country == "Cambodia" | country == "Turkey" | country == "Rwanda")
+
+## change labels, add a title and caption
+## for caption, figure out the events in cambodia and rwanda
+## change alpha (transparency)
+## change the colour scale to be CVD-friendly
+## change the theme
+ggplot(data = country_df, aes(x = year, y = lifeExp,
+                              group = country)) +
+  geom_line(alpha = 0.2) + ## controls line transparency
+  geom_line(data = country_3, aes(colour = country)) +
+  facet_wrap(~ continent) +
+  theme_minimal() +
+  labs(x = "year", y = "life expectancy",
+       title = "Life Expectancy through Time",
+       caption = "Rwanda and Cambodia had dips in life expectancy due to a civil war and a genocide.") +
+  scale_colour_viridis_d()
+## second: label the countries on the line (at their minimum) directly
+
+country_3_lab <- country_3 |> group_by(country) |>
+  filter(lifeExp == min(lifeExp))
+ggplot(data = country_df, aes(x = year, y = lifeExp,
+                              group = country)) +
+  geom_line() +
+  geom_text(data = country_3_lab, aes(label = country)) +
+  facet_wrap(~ continent) +
+  theme_minimal()
+
+```
 
 Your Turn 1. Deleting rows with point and click is problematic- someone wouldn't be able to tell that he did so. Changing the limits and labels and copying into word is also not reproducible. Finally, you wouldn't be able to tell exactly what test he did unless he explicitly stated the excel function.
 
