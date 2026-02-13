@@ -58,4 +58,34 @@ toy_df
 ## how can i create a term variable and a year variable?
 ```
 
+Your Turns
+
+Your Turn 3.
+
+```{r}
+penguins |> mutate(flipper_ratio = flipper_length_mm / body_mass_g) |>
+  relocate(flipper_ratio) |>
+  filter(flipper_ratio > median(flipper_ratio, na.rm = TRUE)) |>
+  group_by(species) |>
+  summarise(count_var = n())
+```
+
+Your Turn 4.
+
+```{r}
+### NOT A REPREX: people do not have access to athletesdata
+athletes_df <- read_csv(here("data/athletesdata.csv"))
+athletes_df
+## how can I keep the maximum endorsements for each Sport?
+
+## REPREX
+library(tidyverse)
+sport_toy <- tibble(Sport = c("Football", "Basketball", "Football", "Football",
+                 "Basketball"),
+       endorsements = c(55555, 44444, 6674543, 42312, 5253))
+## how can I keep the maximum endorsements for each Sport?
+
+```
+
+
 
