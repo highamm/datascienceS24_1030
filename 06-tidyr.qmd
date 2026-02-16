@@ -1,0 +1,97 @@
+---
+title: "Section 6: Tidying"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+
+## Class Exercises
+
+Class Exercise 2.
+
+```{r}
+prices_df <- read_csv(here("data/UBSprices2.csv"))
+prices_df
+## this violates (1): each variable must be in its own column but
+## year and commodity two variables in one column
+```
+
+Class Exercises 3 and 4.
+
+```{r}
+prices_tidy <- prices_df |> pivot_longer(2:7, names_to = "temp",
+                          values_to = "price") |>
+  separate(temp, c("commodity", "year"), sep = -4)
+prices_tidy
+
+prices_rice <- prices_tidy |> filter(commodity == "rice")
+ggplot(data = prices_rice, aes(x = year, y = price)) +
+  geom_line(aes(group = city))
+
+## ce 4
+prices_amsterdam <- prices_tidy |> filter(city == "Amsterdam")
+ggplot(data = prices_amsterdam, aes(x = year, y = price)) +
+  geom_line(aes(group = commodity, colour = commodity)) +
+  scale_colour_viridis_d() +
+  theme_minimal()
+```
+
+Class Exercises 5-7
+
+```{r}
+mortality_df <- read_csv(here("data/under5mortality.csv"))
+mortality_df
+
+mortality_long <- mortality_df |> pivot_longer(2:217, names_to = "year",
+                             values_to = "mortality") |>
+  rename(country = `Under five mortality`) |>
+  mutate(year = as.numeric(year))
+
+ggplot(data = mortality_long, aes(x = year, y = mortality)) +
+  geom_line(aes(group = country), alpha = 0.2)
+## some lines might be flat if the data was using a mortality
+## estimate for the entire century
+```
+
+Your Turns
+
+```{r}
+library(tidyverse)
+library(here)
+baseball_df <- read_csv(here("data/mlb2016.csv"))
+glimpse(baseball_df)
+baseball_df
+## violates 4: some variables have units ($) when they shouldn't
+## violates 1: the Years variable actually contains 3 different variables: 
+## duration, start year, end year
+```
+
+Your Turns 2-4
+
+```{r}
+baseball_df <- baseball_df |> separate(Years, c("duration", "temp"), sep = " ") |>
+  separate(temp, c("Start", "End"), sep = "-")
+
+## warning message that some rows do not have an end year (these are one year contracts)
+
+## yt 4
+baseball_df <- baseball_df |>
+  mutate(Salary = parse_number(Salary),
+         Total.Value = parse_number(Total.Value),
+         Avg.Annual = parse_number(Avg.Annual),
+         Start = parse_number(Start),
+         End = parse_number(End))
+baseball_df
+```
+
+
+
+
+
