@@ -91,6 +91,57 @@ baseball_df <- baseball_df |>
 baseball_df
 ```
 
+```{r}
+## BAD plot: showing the total salary for each position-
+## SP is really inflated because there are so many in the data set
+ggplot(data = baseball_df, aes(x = POS, y = Salary)) +
+  geom_col()
+
+ggplot(data = baseball_df, aes(x = POS, y = Salary)) +
+  geom_boxplot()
+ggplot(data = baseball_df, aes(x = POS, y = Salary)) +
+  geom_violin()
+ggplot(data = baseball_df, aes(x = Salary)) +
+  geom_histogram(colour = "skyblue4", fill = "skyblue1", bins = 15) +
+  facet_wrap(~POS)
+```
+
+
+Your Turn 6.
+
+```{r}
+nfl_df <- read_csv(here::here("data/nfl_salary.csv"))
+nfl_df
+```
+
+Not tidy: not every variable is in its own column. There should be columns for position and there should be a column for salary.
+
+Your Turn 7
+
+```{r}
+nfl_long <- nfl_df |> pivot_longer(2:11,
+                                   names_to = "position",,
+                       values_to = "salary")
+nfl_max <- nfl_long |> group_by(position, year) |>
+  summarise(max_salary = max(salary, na.rm = TRUE))
+nfl_max
+
+## OR
+nfl_max2 <- nfl_long |> group_by(position, year) |>
+  filter(salary == max(salary, na.rm = TRUE))
+## OR
+nfl_max3 <- nfl_long |> group_by(position, year) |>
+  arrange(desc(salary)) |>
+  slice(1)
+
+ggplot(data = nfl_max, aes(x = year, y = max_salary)) +
+  geom_line(aes(colour = position))
+```
+
+Your Turn 8. Make this same plot, but this time, for the average of the top 32 highest paid players for each position.
+
+
+
 
 
 
