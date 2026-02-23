@@ -140,6 +140,61 @@ ggplot(data = nfl_max, aes(x = year, y = max_salary)) +
 
 Your Turn 8. Make this same plot, but this time, for the average of the top 32 highest paid players for each position.
 
+```{r}
+nfl_32 <- nfl_long |> group_by(position, year) |>
+  arrange(desc(salary)) |>
+  slice(1:32) |>
+  summarise(mean_sal = mean(salary))
+
+ggplot(data = nfl_32, aes(x = year, y = mean_sal)) +
+  geom_line(aes(group = position)) +
+  facet_wrap(~ position) +
+  theme_minimal() +
+  labs(title = "Avg. for Top 32 Players")
+```
+
+Your Turn 10.
+
+```{r}
+## assuming 1.59 is the inflation rate
+nfl_adj <- nfl_long |> filter(year == 2011 | year == 2018) |>
+  mutate(salary_adj = if_else(year == 2011,
+                              true = salary * 1.59,
+                              false = salary)) |>
+  group_by(position, year) |>
+  arrange(desc(salary_adj)) |>
+  slice(1:32) |>
+  summarise(mean_sal = mean(salary_adj))
+
+ggplot(data = nfl_adj, aes(x = year, y = mean_sal)) +
+  geom_line() +
+  facet_wrap(~ position)
+```
+
+
+Your Turn 11.
+
+```{r}
+nfl_rank <- nfl_long |> filter(year == 2018) |>
+  group_by(position) |>
+  mutate(salary_rank = rank(desc(salary)))
+
+ggplot(data = nfl_rank, aes(x = salary_rank, y = salary)) +
+  geom_line(aes(colour = position), show.legend = FALSE) +
+  ## show.legend = FALSE hides the legend (it's not necessary to have 
+  ## a legend here)
+  facet_wrap(~position) +
+  theme_minimal() +
+  scale_colour_viridis_d()
+
+library(babynames)
+babynames10 <- babynames |> filter(year == 2017 & sex == "F") |>
+  arrange(desc(n)) |>
+  slice(1:10) |>
+  mutate(name2 = fct_reorder(name, n))
+ggplot(data = babynames10, aes(x = n, y = name2)) +
+  geom_col()
+```
 
 
 
