@@ -1,0 +1,102 @@
+---
+title: "Section 7: Factors"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+Class Exercise 1. Defense is quantitative and so we cannot see the spreads, the shapes of the distributions, outliers, sample size.
+
+BGarplots and lollipop plots are useful for plotting counts of a categorical variable or totals.
+
+
+Clsas Exercisew 2.
+
+```{r}
+library(tidyverse)
+library(here)
+pokemon_df <- read_csv(here("data/pokemon_allgen.csv")) |>
+  mutate(Generation_cat = factor(Generation))
+
+pokemon_nodup <- pokemon_df |> group_by(`#`) |> slice(1) |>
+  ungroup()
+##  for each pokemon # (the group by part), keep only the first
+## row (slice(1)) -> this therefore drops all other rows for a 
+## particular pokemon #.
+
+## cleaner way
+pokemon_df |> distinct(`#`, .keep_all = TRUE)
+## keep only one row for each unique value of the variable(s) specified
+```
+
+
+Class Exercise 3.
+
+```{r}
+pokemon_nodup <- pokemon_df |> group_by(`#`) |> slice(1) |>
+  ungroup()
+pokemon_long <- pokemon_nodup |>
+  pivot_longer(c(`Type 1`, `Type 2`),
+               names_to = "Number",
+               values_to = "Type")
+
+pokemon_long <- pokemon_long |>
+  filter(!is.na(Type)) |>
+  mutate(Type_Deford = fct_reorder(.f = Type, .x = Defense,
+                                   .fun = median))
+ggplot(data = pokemon_long, aes(x = Type_Deford,
+                               y = Defense)) +
+  geom_boxplot() + 
+  coord_flip()
+## forcats functions *especially fct_reorder()) do not like groups:
+## they will try to reorder the factor level within each group, which
+## makes no sense
+```
+
+Your Turns
+
+Your Turn 
+
+Your Turns 1 through 4.
+
+```{r}
+library(tidyverse)
+library(here)
+standings_df <- read_csv(here("data/standings.csv"))
+standings_df |>
+  relocate(playoffs)
+
+table(standings_df$team_name)
+## gives each level of the categorical variable and the number of times
+## the level appears
+
+## yt 2
+standings_df <- standings_df |> mutate(team_name = fct_recode(team_name,
+                                              Commanders = "Redskins"))
+view(standings_df)
+
+## yt 3
+standings_df <- standings_df |> unite("franchise", c(team, team_name), sep = " ")
+
+## spaces in the new factor levels mean I have to use backticks
+standings_clean <- standings_df |>
+  mutate(franchise = fct_collapse(franchise, 
+                                  `St. Louis / LA Rams` = c("St. Louis Rams",
+                                                          "Los Angeles Rams"),
+                                  `San Diego / LA Chargers` = c("San Diego Chargers",
+                                                              "Los Angeles Chargers")))
+
+standings_clean |> relocate(playoffs)
+```
+
+```{r}
+## strategy 1:
+## filter to keep only the rows with teams that made the playoffs
+## then group by franchise so that you can count the number of times each 
+## franchise mis in the "playoffs data set"
+
+```
+
+
+
