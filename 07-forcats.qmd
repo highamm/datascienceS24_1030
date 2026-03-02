@@ -54,9 +54,37 @@ ggplot(data = pokemon_long, aes(x = Type_Deford,
 ## makes no sense
 ```
 
-Your Turns
+Class Exercise 4.
 
-Your Turn 
+```{r}
+path <- "https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/"
+medals_df <- read_csv(paste0(path, "medals.csv"))
+medals_df
+
+## 1.
+medals_type <- medals_df |> group_by(medal_type, country) |>
+  summarise(total_medals = n())
+
+## 2
+medals_total <- medals_df |> group_by(country) |> 
+  summarise(total_medals = n()) |>
+  arrange(desc(total_medals)) |>
+  slice(1:15)
+
+## 3: don't need to know yet
+medals_heat <- semi_join(medals_type, medals_total, join_by(country == country))
+
+## 4
+medals_heat <- medals_heat |> ungroup() |>
+  mutate(medal_type = fct_relevel(medal_type, c("Gold Medal", "Silver Medal", "Bronze Medal"))) |>
+  mutate(country = fct_reorder(country, total_medals))
+ggplot(data = medals_heat, aes(x = medal_type, y = country)) +
+  geom_tile(aes(fill = total_medals)) +
+  scale_fill_viridis_c()
+```
+
+
+Your Turns
 
 Your Turns 1 through 4.
 
@@ -92,9 +120,32 @@ standings_clean |> relocate(playoffs)
 
 ```{r}
 ## strategy 1:
-## filter to keep only the rows with teams that made the playoffs
+## keep only the rows with teams that made the playoffs
 ## then group by franchise so that you can count the number of times each 
 ## franchise mis in the "playoffs data set"
+standings_t10 <- standings_clean |> filter(playoffs == "Playoffs") |>
+  group_by(franchise) |>
+  summarise(total_playoffs = n()) |>
+  arrange(desc(total_playoffs)) |>
+  slice(1:10) |>
+  mutate(franchise = fct_reorder(franchise, total_playoffs))
+
+ggplot(data = standings_t10, aes(x = total_playoffs, y = franchise)) +
+  geom_segment(aes(x = 0, xend = total_playoffs, yend = franchise)) +
+  geom_point() +
+  theme_minimal()
+## strategy 2:
+## make an indicator variable that is 1 if the team made the playoffs and 0
+## if they didn't. then group by franchise and add up our indicator variable.
+standings_clean |> mutate(playoffs_ind = if_else(playoffs == "Playoffs", 
+                                                 true = 1,
+                                                 false = 0)) |>
+  relocate(playoffs_ind) |>
+  group_by(franchise) |>
+  summarise(total_playoffs = sum(playoffs_ind)) |>
+  arrange(desc(total_playoffs)) |>
+  slice(1:10)
+
 
 ```
 
