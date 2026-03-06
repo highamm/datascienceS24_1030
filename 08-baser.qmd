@@ -1,0 +1,30 @@
+---
+title: "Section 8: Base R"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+fitness_df <- read_csv(here("data/higham_fitness_notclean.csv"))
+```
+
+```{r}
+weekend_vec <- c("Sat", "Sun")
+weekday_vec <- c("Mon", "Tue", "Wed", "Thu", "Fri")
+
+fitness_df |>
+  mutate(weekend_ind = case_when(weekday %in% weekend_vec ~ "weekend",
+                                 weekday %in% weekday_vec ~ "weekday")) |>
+  relocate(weekend_ind)
+
+## equivalent but needs more syntax
+fitness_df |>
+  mutate(weekend_ind = case_when(weekday == "Sat" | weekday == "Sun" ~ "weekend",
+                                 weekday == "Mon" | weekday == "Tue" | weekday == "Wed" | weekday == "Thu" | weekday == "Fri" ~ "weekday")) |>
+  relocate(weekend_ind)
+```
+
+
