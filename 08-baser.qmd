@@ -25,6 +25,8 @@ fitness_df |>
   mutate(weekend_ind = case_when(weekday == "Sat" | weekday == "Sun" ~ "weekend",
                                  weekday == "Mon" | weekday == "Tue" | weekday == "Wed" | weekday == "Thu" | weekday == "Fri" ~ "weekday")) |>
   relocate(weekend_ind)
+
+## var %in% c("A", "B", "C", "E") <==> var == "A" | var == "B" | var == "C" | var == "E"
 ```
 
 

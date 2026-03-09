@@ -17,9 +17,46 @@ e. 3 rows.
 
 f. 2 rows.
 
+Class Exercise 1. To use bind_cols(), the two data frames must have cases in the same exact order.
+
+Class Exercise 2.
+
+```{r}
+library(tidyverse)
+library(here)
+slumajors_df <- read_csv(here("data/SLU_Majors_17_21.csv"))
+collegemajors_df <- read_csv(here("data/college-majors.csv"))
+slumajors_df |> glimpse()
+collegemajors_df |> glimpse()
+
+left_join(slumajors_df, collegemajors_df,
+          join_by(Major == Major))
+## this is a problem: when joining, the keys have to match
+## exactly.
+```
+
+
+
+
+
+Your Turn 1.
+
+a. true
+
+b. true. For both a and b, an inner_join only returns rows with matching keys in both data frames while a left_ and full_ join return at least these rows and possibly others.
+
+c. false: see YT 2 a and e for a counterexample.
+
 Your Turn 2.
 
 a. 6 rows (A, A, C, C, F, F)
 
 b. 8 rows (A, A, B, C, C, D, D, D)
 
+c. 10 rows (A, A, B, C, C, D, D, D, F, F)
+
+d. 4 rows (A, A, C, C).
+
+e. 4 rows (A, A, C, C, yvar is not kept at all)
+
+f. 2 rows (F, F).
