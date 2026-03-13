@@ -1,0 +1,15 @@
+---
+title: "Section 9: Ethics"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Class Exercises 
+
+Class Exercise 1. The purpose of doing this activity is to see that, a survye that does not require you to give your name can still potentially identify you if you give enough identifying information. For example, providing your sex, reason, and year in a survey for a class could potentially identify you.
+
+Class Exercise 2. (c) would be most okay: there is no sensitive information being shared. (a) would probably be fine if you assume that people do not know others' Canvas patterns.
+
+both B and d, with a small enough class, yo9u could potentially identify someone's gpa with the right combination. so these would be bad.

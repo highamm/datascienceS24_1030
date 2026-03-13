@@ -70,6 +70,14 @@ ggplot(data = grades_clean, aes(x = section, y = grade)) +
   geom_boxplot(outlier.shape = 8)
 ```
 
+Class Exercise 4.
+
+the name of the winning player: `<chr>` character
+the surface that the match was played on (Hard, Grass, Clay): `<fct>`: factor.
+the number of aces (unreturned serves) the winning player hit. `<int>`: integer.
+the percentage of times the winning player made their first serve.: `<dbl>`: double.
+whether or not the winning player was currently ranked higher than the losing player. `<lgl>` (or maybe factor).
+
 
 
 

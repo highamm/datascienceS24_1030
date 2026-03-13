@@ -107,3 +107,15 @@ d. 4 rows (A, A, C, C).
 e. 4 rows (A, A, C, C, yvar is not kept at all)
 
 f. 2 rows (F, F).
+
+Your Turn 4.
+
+left_join(courses_df, info_df): 300 rows 
+
+semi_join(info_df, courses_df): 5 rows (the five rows corresponding to the profs in info_df that have matching keys (so are present in) the courses_df).
+
+anti_join(courses_df, info_df): 285 rows (filters out the 15 rows in courses_df that have the common key in info_df, 300 - 15)
+
+inner_join(courses_df, info_df): 15 rows (5 profs x 3 courses = 15).
+
+full_join(courses_df, info_df): 310 (285 from inner_join plus 15 rows in coursses_df without a matching key in info_df plus 10 rows in info_)df without the matching key in courses_df )
