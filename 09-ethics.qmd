@@ -13,3 +13,20 @@ Class Exercise 1. The purpose of doing this activity is to see that, a survye th
 Class Exercise 2. (c) would be most okay: there is no sensitive information being shared. (a) would probably be fine if you assume that people do not know others' Canvas patterns.
 
 both B and d, with a small enough class, yo9u could potentially identify someone's gpa with the right combination. so these would be bad.
+
+
+Your Turn
+
+Your Turn 1. Hypothesis generation is more focused on creating many visualizations or tables with a single set of data (like we do in this class, STAT 234). Hypothesis confirmation is more about setting up and then answering a single question of interest (like a lot of what you did in STAT 113).
+
+
+Your Turn 2. For generation/exploration, as many times as you want! For confirmation, it's just once.
+
+Your Turn 3.
+
+a. Confirmation (one question of interest to answer, using each day a single time).
+
+b. Generation/Exploration (there are many questions that this single data set is trying to answer).
+
+c. ???? the last part of the prompt makes more hypothesis generation.
+
