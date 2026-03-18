@@ -1,0 +1,41 @@
+---
+title: "Section 12: Intro to Stat. Learning with knn"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+set.seed(1119)
+library(tidyverse)
+library(pander)
+library(here) 
+
+pokemon <- read_csv(here("data", "pokemon_full.csv")) |>
+  filter(Type %in% c("Steel", "Dark", "Fire", "Ice")) |> ## filtered out types of interest
+  mutate(across(where(is.numeric), ~ (.x - min(.x)) /
+                                 (max(.x) - min(.x)))) 
+  ## scaling our possible predictors so that they are all between 0 and 1.
+  ## where(is.numeric) says to only apply that formula to columns that are numeric (not categorical or factor)
+  
+
+pokemon
+```
+
+```{r}
+train_sample <- pokemon |>
+  slice_sample(n = 75)
+## training sample of 75 pkemon
+test_sample <- anti_join(pokemon, train_sample)
+## put the rest in the test_sample (45 pokemon)
+
+library(GGally)
+ggpairs(data = train_sample, columns = c(4, 5, 6, 3))
+## in the defense-type s-b-s boxplot, it looks like defense
+## will be a useful predidctor since steel type pokemon, on average,
+## have higher defense than the other types.
+## attack and HP are more questionable.
+```
+
+
