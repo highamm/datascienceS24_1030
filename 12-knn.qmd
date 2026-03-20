@@ -15,9 +15,10 @@ library(here)
 pokemon <- read_csv(here("data", "pokemon_full.csv")) |>
   filter(Type %in% c("Steel", "Dark", "Fire", "Ice")) |> ## filtered out types of interest
   mutate(across(where(is.numeric), ~ (.x - min(.x)) /
-                                 (max(.x) - min(.x)))) 
+                                 (max(.x) - min(.x)))) |>
   ## scaling our possible predictors so that they are all between 0 and 1.
   ## where(is.numeric) says to only apply that formula to columns that are numeric (not categorical or factor)
+  mutate(Type = as.factor(Type))
   
 
 pokemon
@@ -31,11 +32,65 @@ test_sample <- anti_join(pokemon, train_sample)
 ## put the rest in the test_sample (45 pokemon)
 
 library(GGally)
-ggpairs(data = train_sample, columns = c(4, 5, 6, 3))
+ggpairs(data = train_sample, columns = c(7, 8, 13, 3))
 ## in the defense-type s-b-s boxplot, it looks like defense
 ## will be a useful predidctor since steel type pokemon, on average,
 ## have higher defense than the other types.
 ## attack and HP are more questionable.
+
+## fit the knn model with 9 nearest neighbors
+library(kknn)
+knn_mod <- kknn(Type ~ Attack + Defense + Speed + SpAtk, train = train_sample,
+                test = test_sample, k = 7)
+
+knn_mod
+
+## look at predictions:
+knn_mod$fitted.values
+## in the test sample, the model is predicting the first pokemon to be Fire,
+## the second pokemon to be Fire, ...., the fifth pokemon to be Ice
 ```
+
+```{r}
+table(knn_mod$fitted.values, test_sample$Type) 
+```
+
+Exercise 2. The model correctly predicted 12 pokemon to be Fire type.
+
+Exercise 3. There are 3 pokemon that the model predicted to be Ice but are actually Dark.
+
+Exercise 4. THere are no Pokemon in the test sample that the model predicted to be Steel but are actually Dark.
+
+Exercise 5. The classification rate for this model is: (2 + 12 + 1 + 5) / 45 (45 is the number of Pokemon in the `test_sample`).
+
+```{r}
+(2 + 12 + 1 + 5) / 45
+## model classification rate is 0.4444
+
+## autmoated way to get the classification rate with code:
+tab <- table(knn_mod$fitted.values, test_sample$Type) 
+sum(diag(tab)) / sum(tab)
+```
+
+Exercise 6.
+
+```{r}
+## use the training data set to figure out the most common type.
+train_sample |> group_by(Type) |>
+  summarise(n_type = n()) |>
+  arrange(desc(n_type))
+## Fire is the most common Type in the trainig data.
+
+## calculate the proportion of pokemon in the test sample that are the most
+## common type in the training sample.
+test_sample |>
+  mutate(type_ind = if_else(Type == "Fire", true = 1, false = 0)) |>
+  relocate(type_ind) |>
+  summarise(prop_fire_test = mean(type_ind))
+## baseline classification rate is 0.356
+## our model (0.47) is beating this, which is good!
+```
+
+
 
 
