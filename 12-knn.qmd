@@ -91,6 +91,68 @@ test_sample |>
 ## our model (0.47) is beating this, which is good!
 ```
 
+Exercise 8.
+
+Making k too small means that you are overly reliant on just a few pokemon in the training sample (high variance) but making k too large means that you are using pokemon that are not _that_ related to your test sample case (high bias).
+
+## 12.4: Class Exercises
+
+```{r}
+library(tidyverse)
+
+pokemon <- read_csv(here::here("data/pokemon_full.csv")) |>
+  mutate(Type = as.factor(Type))
+set.seed(1119)
+
+## scale the quantitative predictors
+pokemon_scaled <- pokemon |>
+  mutate(across(where(is.numeric), ~ (.x - min(.x)) /
+                  (max(.x) - min(.x))))
+
+train_sample <- pokemon_scaled |>
+  slice_sample(n = 550)
+test_sample <- anti_join(pokemon_scaled, train_sample)
+
+library(kknn)
+
+knn_mod <- kknn(Type ~ HP + Attack + Defense + Speed + SpAtk + SpDef + height + weight,
+                train = train_sample, test = test_sample, k = 9)
+knn_mod
+
+tab <- table(knn_mod$fitted.values, test_sample$Type)
+sum(diag(tab)) / sum(tab)
+```
 
 
+```{r}
+get_class_rate <- function(k_val) {
+  knn_mod <- kknn(Type ~ HP + Attack + Defense + Speed + SpAtk + SpDef + height + weight,
+                  train = train_sample, test = test_sample, k = k_val)
+  
+  tab <- table(knn_mod$fitted.values, test_sample$Type)
+  class_rate <- sum(diag(tab)) / sum(tab)
+  
+  return(class_rate)
+}
+## one input: k_val
+## one output: class_rate
+get_class_rate(k_val = 27)
+
+k_vec <- 1:140 ## set up possible values for k that we want to map through
+class_rates <- map_dbl(k_vec, get_class_rate)
+## this says run get_class_rate with k_val = 1, then
+## run get_class_rate with k_val = 2, then .....
+## run get_class_rate with k_val = 140
+
+class_rate_df <- tibble(k_vec = k_vec, class_rates = class_rates)
+class_rate_df
+
+## make a line plot looking at classification rate for different k's
+## write dplyr code to figure out which k corresponds to the max class rate.
+ggplot(data = class_rate_df, aes(x = k_vec, y = class_rates)) +
+  geom_line() +
+  theme_minimal()
+class_rate_df |> filter(class_rates == max(class_rates))
+## might just pick k = 64
+```
 
