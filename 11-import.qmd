@@ -54,6 +54,51 @@ fitness_df <- read_csv(here::here("data/higham_fitness_notclean.csv"),
 fitness_df
 ```
 
+## Section 11.2: Data Scraping
+
+```{r}
+library(tidyverse)
+library(rvest)
+
+## provide the URL and name it something (in this case, url).
+url <- "https://en.wikipedia.org/wiki/Gun_violence_in_the_United_States_by_state"
+
+## read_html() convert the html code from the URL into something R can read
+tab <- read_html(url) |> 
+  html_nodes("table") ## html_nodes can grab only the tables 
+
+tab
+
+tab[[1]] |> html_table() ## convert an html table into an r data frame
+tab[[2]] |> html_table()
+tab[[3]] |> html_table()
+```
+
+```{r}
+url <- "https://saintsathletics.com/sports/baseball/stats/2025"
+
+tab <- read_html(url) |> html_nodes("table")
+tab
+obj <- tab[[1]] |> html_table()
+obj
+obj2 <- tab[[2]] |> html_table()
+obj2
+```
+
+
+```{r}
+url_diversity <- "https://www.stlawu.edu/offices/institutional-research/student-diversity-2021"
+tab_diversity <- read_html(url_diversity) |> html_nodes("table")
+
+tab_diversity[[1]] |> html_table()
+```
+
+## Section 11.3
+
+Skip.
+
+
+
 ## Class Exercises
 
 Class Exercise 1
@@ -73,4 +118,26 @@ df <- read_delim(here("data/birthdays.txt"), delim = " - ",
   mutate(time = parse_number(time))
 df
 ```
+
+Class Exercise 4.
+
+```{r}
+url_tennis <- "https://en.wikipedia.org/wiki/Current_tennis_rankings"
+tab_tennis <- read_html(url_tennis) |> html_nodes("table")
+
+## specifying what I want the new names to be
+new_names <- c("number", "player", "points", "move")
+
+tennis_df <- tab_tennis[[1]] |> html_table(header = FALSE) |>
+  set_names(new_names) |> ## setting those new_names as the column names
+  slice(-c(1:2))
+tennis_clean <- tennis_df |> mutate(points = parse_number(points)) |>
+  mutate(player = fct_reorder(player, points))
+  
+
+ggplot(data = tennis_clean, aes(x = points, y = player)) +
+  geom_col(fill = "#CCFF00", colour = "black") +
+  theme_minimal()
+```
+
 
