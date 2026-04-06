@@ -24,6 +24,75 @@ med_djok_df <- med_djok_df |>
   relocate(serve_location, Serving, isSvrWinner)
 ```
 
+Class Exercise 1.
+
+
+```{r}
+library(tidyverse)
+library(schrute)
+schrute::theoffice
+
+view(theoffice)
+```
+
+ construct a plot that lets you explore the most common words that character said in the series.
+
+```{r}
+office_jim <- theoffice |> filter(character == "Jim")
+
+library(tidytext)
+unnest_jim <- office_jim |> unnest_tokens(output = "word",
+                            input = "text") |>
+  relocate(word)
+
+stop_words
+
+extra_stop_words <- tibble(word = c("yeah", "hey", "um", "uh", "gonna"))
+all_stop_words <- bind_rows(stop_words, extra_stop_words)
+
+jim_clean <- anti_join(unnest_jim, all_stop_words, join_by(word == word))
+
+jim_25 <- jim_clean |> group_by(word) |>
+  summarise(total_times = n()) |>
+  arrange(desc(total_times)) |>
+  slice(1:25) |>
+  mutate(word = fct_reorder(word, total_times))
+
+ggplot(data = jim_25, aes(x = total_times, y = word)) +
+  geom_col() +
+  theme_minimal()
+```
+
+
+Then, assess whether the character you chose seems to speak more or speak less, on average, from season to season.
+
+```{r}
+season_jim <- unnest_jim |>
+  group_by(season) |>
+  summarise(total_words = n())
+
+ggplot(data = season_jim, aes(x = season, y = total_words)) +
+  geom_line() +
+  theme_minimal() +
+  ylim(c(0, NA))
+## this is a misleading plot: some seasons have more episodes than others
+
+## adjustment: visualize is the average number of words per episode in each season.
+
+episodes_df <- unnest_jim |> group_by(season) |>
+  distinct(episode) |>
+  summarise(n_episodes = n())
+
+jim_joined <- inner_join(season_jim, episodes_df,
+           join_by(season == season)) |>
+  mutate(avg_words_per_episode = total_words / n_episodes)
+
+ggplot(data = jim_joined, aes(x = season, y = avg_words_per_episode)) +
+  geom_line() +
+  theme_minimal() +
+  ylim(c(0, NA))
+```
+
 Your Turn 1-3.
 
 Your Turn 1.
