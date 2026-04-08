@@ -1,0 +1,99 @@
+---
+title: "Section 16: Intro to SQL"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(RSQLite)
+library(DBI) 
+library(dplyr)
+library(dbplyr)
+
+imdb_db <- dbConnect(RSQLite::SQLite(), 
+                     dbname = here::here("data/imdb_tv.sqlite"))
+imdb_db
+```
+
+```{r}
+## lists the data tables (data frames) in our data base
+dbListTables(conn = imdb_db)
+
+## lists the fields (variables) in a particular data table
+dbListFields(conn = imdb_db, name = "episode_rating")
+```
+
+```{r}
+library(tidyverse)
+
+sql <- "
+  SELECT parentTconst, averageRating, numVotes
+  FROM show_ratings 
+  WHERE numVotes > 100000
+"
+
+## exercises 1 and 2
+## WHERE is SQL's version of filter()
+## FROM show_ratings says to do these operations on the
+## show_ratings data table.
+## SELECT is similar to select()
+
+dbGetQuery(imdb_db, sql) |>
+  as_tibble()
+```
+
+## Section 16.2: `dbplyr`
+
+```{r}
+library(dbplyr)
+episode_rating_tbl <- tbl(imdb_db, "episode_rating")
+episode_rating_tbl
+## stores the episode_rating data table as its own object
+```
+
+```{r}
+episode_query1 <- episode_rating_tbl |> 
+  filter(averageRating > 9.0) |> 
+  select(parentTconst, Episode_Name, numVotes, averageRating)
+episode_query1
+## data tables only show a "preview" of the output, so we don't
+## know the total number of rows (??)
+## the second line in the output clarifies where this database is.
+
+episode_query1 |>
+  collect()
+## if we want to see all of the rows and we want to convert this
+## from a data table to a data frame
+
+episode_query1 |>
+  show_query()
+## shows the equivalent SQL commands for the dplyr query we made above.
+```
+
+```{r}
+mean_query1 <- episode_rating_tbl |>
+  group_by(parentTconst) |>
+  summarise(mean_rating = mean(averageRating)) |>
+  arrange(desc(mean_rating))
+mean_query1
+
+mean_query1 |> show_query()
+```
+
+Exercise 3.
+
+```{r}
+n_episode_query <- episode_rating_tbl |>
+  group_by(parentTconst) |>
+  summarise(n_episodes = n())
+
+n_episode_query |> show_query()
+## group_by()  is similar to GROUP BY
+## summarise() is appearing is SELECT, where COUNT(*) is equivalent to n()
+## and AS `n_episodes` is the name of the summary variable
+```
+
+
+
