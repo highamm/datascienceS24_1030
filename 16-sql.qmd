@@ -95,5 +95,111 @@ n_episode_query |> show_query()
 ## and AS `n_episodes` is the name of the summary variable
 ```
 
+## Section 16.3: SQL Matches to `dplyr`
+
+```{r}
+episode_rating_tbl |> show_query()
+```
+
+* `SELECT` in `SQL` covers `select()`, `rename()` (oldname AS newname), `mutate()` (x * y as prod), `summarise()` (MEDIAN(x) as medx).
+* `GROUP BY` matches to `group_by()`.
+* `WHERE` matches to `filter()`
+* `ORDER BY` matches to `arrange()`
+
+```{r}
+show_info_tbl <- tbl(imdb_db, "show_info")
+
+left_join(episode_rating_tbl, show_info_tbl,
+          join_by(parentTconst == parentTconst)) |>
+  show_query()
+```
+
+* LEFT JOIN is translated to `left_join()`: the key is specified as datatable1.key = datatable2.key instead of `join_by(key == key)`.
+
+Exercise 4.
+
+```{r}
+show_info_tbl |> 
+  filter(Show_Name == "Ozark") |>
+  show_query()
+```
+
+Class Exercise 1.
+
+```{r}
+show_info_tbl |>
+  rename(show_name = Show_Name) |>
+  arrange(desc(startYear)) |>
+  show_query()
+```
+
+
+Your Turns 1 through 4.
+
+Your Turn 1.
+
+```{r}
+episode_rating_tbl |>
+  group_by(parentTconst) |>
+  summarise(best_episode = max(averageRating, na.rm = TRUE)) |>
+  show_query()
+## summary functions in SELECT like max, min, median, etc. get
+## translated to summarise() while raw calcualtions like
+## x + y, x / y, etc., get translated to mutate()
+```
+
+Your Turn 2.
+
+```{r}
+#| error: true
+episode_rating_tbl |> mutate(test = fct_reorder(parentTconst,
+                                                averageRating))
+## errors: specific r packages like stringr, forcats, and lubridate
+## do not translate into other languages
+```
+
+Your Turn 3.
+
+```{r}
+episode_rating_tbl |> filter(seasonNumber != "1") |>
+  show_query()
+## != is !=
+episode_rating_tbl |>
+  filter(seasonNumber %in% c("1", "2")) |>
+  show_query()
+## %in% is IN
+episode_rating_tbl |> distinct(parentTconst) |>
+  show_query()
+## distinct() is DISTINCT
+```
+
+
+Your Turn 4.
+
+```{r}
+episode_rating_tbl |>
+  filter(seasonNumber == "1") |>
+  group_by(parentTconst) |>
+  summarise(n_episodes = n()) |>
+  arrange(desc(n_episodes)) |>
+  show_query()
+```
+
+Your Turn 5.
+
+```{r}
+imdb_df <- left_join(episode_rating_tbl, show_info_tbl,
+          join_by(parentTconst == parentTconst)) |>
+  collect()
+table(imdb_df$Show_Name)
+
+imdb_stranger <- imdb_df |> filter(Show_Name == "Stranger Things") |>
+  mutate(episodeNumber = as.numeric(episodeNumber))
+ggplot(imdb_stranger, aes(x = episodeNumber,
+                          y = averageRating)) +
+  geom_line() +
+  facet_wrap(~ seasonNumber )
+```
+
 
 
