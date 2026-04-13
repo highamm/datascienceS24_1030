@@ -1,0 +1,100 @@
+---
+title: "Section 14: `lubridate`"
+author: "Matt Higham"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+Class Exercises
+
+Class Exercise 1.
+
+```{r}
+library(tidyverse)
+library(lubridate)
+ds_df <- read_csv(here("data/ds_google.csv"))
+ds_df
+
+ds_df <- ds_df |> mutate(search_date = ym(Month))
+
+ggplot(data = ds_df, aes(x = search_date, y = Data_Science)) +
+  geom_line() +
+  geom_smooth()
+```
+
+Class Exerciswe 3.
+
+```{r}
+library(tidyquant)
+stocks_long <- tq_get(c("AAPL", "CMG", "NTDOY", "SPY", "GME"), get = "stock.prices")
+stocks_gme <- stocks_long |> filter(symbol == "GME")
+ggplot(data = stocks_gme, aes(x = date, y = close)) +
+  geom_line() +
+  theme_minimal()
+
+```
+
+Class Exercise 4.
+
+```{r}
+tibble(date = c("2024-01-01", "2024-01-02", "2024-01-03"),
+       price = c(31, 40, 20)) |>
+  mutate(lag_price = lag(price))
+
+## hints:
+## use lag()
+## for parts 2 and 3, use lubridate functions
+```
+
+```{r}
+stocks_spy <- stocks_long |> filter(symbol == "SPY")
+stocks_spy |> mutate(lag_close = lag(close)) |>
+  relocate(close, lag_close) |>
+  mutate(is_higher = if_else(close > lag_close, true = 1, false = 0)) |>
+  relocate(is_higher) |>
+  summarise(prop_higher = mean(is_higher, na.rm = TRUE))
+## during this span, the S and P was higher the day after about 55% of the time.
+
+## week to week
+stocks_spy |> mutate(weekday = wday(date, label = TRUE)) |>
+  filter(weekday == "Wed") |>
+  mutate(lag_close = lag(close)) |>
+  relocate(close, lag_close) |>
+  mutate(is_higher = if_else(close > lag_close, true = 1, false = 0)) |>
+  relocate(is_higher) |>
+  summarise(prop_higher = mean(is_higher, na.rm = TRUE))
+## 0.629
+
+## month to month
+stocks_spy |> mutate(day_of_month = mday(date)) |>
+  filter(day_of_month == 15) |>
+  mutate(lag_close = lag(close)) |>
+  relocate(close, lag_close) |>
+  mutate(is_higher = if_else(close > lag_close, true = 1, false = 0)) |>
+  relocate(is_higher) |>
+  summarise(prop_higher = mean(is_higher, na.rm = TRUE))
+## this is flawed if the 15th falls on a weekend, your lag will be too long
+
+stocks_spy |> mutate(day_of_month = mday(date),
+                     year = year(date),
+                     month = month(date)) |>
+  group_by(month, year) |>
+  slice(1) |>
+  ungroup() |>
+  arrange(date) |>
+  mutate(lag_close = lag(close)) |>
+  relocate(close, lag_close) |>
+  mutate(is_higher = if_else(close > lag_close, true = 1, false = 0)) |>
+  relocate(is_higher) |>
+  summarise(prop_higher = mean(is_higher, na.rm = TRUE))
+```
+
+
+
+
