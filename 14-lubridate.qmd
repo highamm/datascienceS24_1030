@@ -95,6 +95,35 @@ stocks_spy |> mutate(day_of_month = mday(date),
   summarise(prop_higher = mean(is_higher, na.rm = TRUE))
 ```
 
+Your Turns 1 through 5.
+
+```{r}
+eclipse_df <- read_csv(here::here("data/multiTimeline (1).csv"),
+         skip = 2) |>
+  rename(date = Month,
+         eclipse = `eclipse: (United States)`,
+         staring = `staring at the sun: (United States)`)
+eclipse_df <- eclipse_df |> mutate(date = ym(date))
+eclipse_long <- eclipse_df |>
+  # assume <1 is "close enough" to 1
+  mutate(staring = parse_number(staring)) |>
+  pivot_longer(c(eclipse, staring), names_to = "term",
+               values_to = "popularity") 
+ggplot(data = eclipse_long, aes(x = date, y = popularity)) +
+  geom_line(aes(colour = term)) +
+  scale_colour_viridis_d()
+```
+
+Your Turn 3.
+
+```{r}
+eclipse_long |>
+  mutate(year_var = year(date)) |>
+  group_by(year_var, term) |>
+  summarise(max_pop = max(popularity),
+            avg_pop = mean(popularity))
+```
+
 
 
 
