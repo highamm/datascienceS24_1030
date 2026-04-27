@@ -1,0 +1,26 @@
+---
+title: "Test Title"
+format: revealjs
+---
+
+
+
+## Data Introduction
+
+* bullets about your data
+
+## Question(s) of Interest
+
+
+
+## Graphs or Tables on Subsequent Slides
+
+When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+ggplot(data = eclipse_long, aes(x = date, y = popularity)) +
+  geom_line(aes(colour = term)) +
+  scale_colour_viridis_d()
+```
+
+
