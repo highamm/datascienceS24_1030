@@ -15,12 +15,12 @@ format: revealjs
 
 ## Graphs or Tables on Subsequent Slides
 
-When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
 
 ```{r}
-ggplot(data = eclipse_long, aes(x = date, y = popularity)) +
-  geom_line(aes(colour = term)) +
-  scale_colour_viridis_d()
+library(tidyverse)
+ggplot(data = mtcars, aes(x = mpg)) +
+  geom_histogram(colour = "black", fill = "lightpink") +
+  theme_minimal(base_size = 22)
 ```
 
 
